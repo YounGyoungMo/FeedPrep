@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +21,8 @@ import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestE
 @Entity
 @Table(name = "feedbackresponses")
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 public class FeedBack extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
