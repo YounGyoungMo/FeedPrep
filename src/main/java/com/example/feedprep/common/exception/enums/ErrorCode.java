@@ -62,6 +62,9 @@ public enum ErrorCode {
     CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
     UNAUTHORIZED_CANCEL(HttpStatus.FORBIDDEN, "이 피드백 요청을 취소할 권한이 없습니다."),
 
+    // 추천
+    PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "잘못된 페이지 입니다."),
+
     // 조회/접근 관련
     FEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 피드백 요청을 찾을 수 없습니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "이 피드백에 접근할 수 없습니다."),
