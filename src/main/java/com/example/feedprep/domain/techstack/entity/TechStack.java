@@ -28,7 +28,7 @@ public class TechStack {
 	private String techStack;
 
 	@OneToMany(mappedBy = "techStack", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<UserTechStack> userTechStacks;
+	private List<UserTechStack> userTechStacks = new ArrayList<>();
 
 	public TechStack(String techStack) {
 		this.techStack = techStack;
