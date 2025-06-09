@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 
 @Repository
-public interface FeedbackRequestEntityRepository extends JpaRepository<FeedbackRequestEntity, Long>
-	, FeedbackRequestEntityRepositoryCustom{
-
-}
+public interface FeedbackRequestEntityRepository
+	extends JpaRepository<FeedbackRequestEntity, Long>, FeedbackRequestEntityRepositoryCustom{}

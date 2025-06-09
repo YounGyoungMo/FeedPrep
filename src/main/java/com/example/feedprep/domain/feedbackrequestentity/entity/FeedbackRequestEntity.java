@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import com.example.feedprep.common.entity.BaseTimeEntity;
@@ -20,6 +22,8 @@ import com.example.feedprep.domain.user.entity.User;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "feedbackrequestentitys")
 public class FeedbackRequestEntity extends BaseTimeEntity {
 	//속성
