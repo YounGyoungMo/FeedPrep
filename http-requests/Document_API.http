@@ -1,3 +1,52 @@
+### 학생 회원가입
+POST localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "윤경모",
+  "email": "user1234@naver.com",
+  "password": "asdasdjkDF23",
+  "role": "STUDENT"
+}
+
+### 학생 로그인
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "user1234@naver.com",
+  "password": "asdasdjkDF23"
+}
+
+> {%
+    client.global.set("studentAccessToken", response.body.data.accessToken)
+    client.global.set("studentRefreshToken", response.body.data.refreshToken)
+%}
+
+### 튜터 회원가입
+POST localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "윤경모",
+  "email": "tutor123@naver.com",
+  "password": "asdasdjkDF23",
+  "role": "TUTOR"
+}
+
+### 튜터 로그인
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "tutor123@naver.com",
+  "password": "asdasdjkDF23"
+}
+
+> {%
+    client.global.set("tutorAccessToken", response.body.data.accessToken)
+%}
+
 ### 문서 등록
 POST localhost:8080/documents
 Authorization: Bearer {{studentAccessToken}}

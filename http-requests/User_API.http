@@ -27,8 +27,6 @@ Content-Type: application/json
   "newPassword" : "NEWasdasdjkDF23"
 }
 
-
-
 ### 튜터 승인
 POST localhost:8080/admin/authority/tutor/1
 Authorization: Bearer {{adminAccessToken}}

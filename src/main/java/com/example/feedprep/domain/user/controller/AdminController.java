@@ -6,6 +6,7 @@ import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
 import com.example.feedprep.domain.techstack.service.TechStackService;
+import com.example.feedprep.domain.user.dto.response.ApproveTutorResponseDto;
 import com.example.feedprep.domain.user.dto.response.TutorResponseDto;
 import com.example.feedprep.domain.user.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/tutor/{tutorId}")
-    public ResponseEntity<ApiResponseDto<TutorResponseDto>> approveTutor(
+    public ResponseEntity<ApiResponseDto<ApproveTutorResponseDto>> approveTutor(
         @PathVariable Long tutorId
     ) {
         return ResponseEntity.status(HttpStatus.OK)

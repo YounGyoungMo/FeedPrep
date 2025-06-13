@@ -1,25 +1,26 @@
-### 유저 회원가입
+### 학생 회원가입
 POST localhost:8080/auth/signup
 Content-Type: application/json
 
 {
   "name": "윤경모",
-  "email": "user123@naver.com",
+  "email": "user1234@naver.com",
   "password": "asdasdjkDF23",
   "role": "STUDENT"
 }
 
-### 유저 로그인
+### 학생 로그인
 POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "user123@naver.com",
+  "email": "user1234@naver.com",
   "password": "asdasdjkDF23"
 }
 
 > {%
-    client.global.set("accessToken", response.body.data.accessToken)
+    client.global.set("studentAccessToken", response.body.data.accessToken)
+    client.global.set("studentRefreshToken", response.body.data.refreshToken)
 %}
 
 ### 튜터 회원가입
@@ -43,7 +44,7 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.data.accessToken)
+    client.global.set("tutorAccessToken", response.body.data.accessToken)
 %}
 
 ### 관리자 회원가입
@@ -82,34 +83,33 @@ Authorization: Bearer {{accessToken}}
 
 ###피드백 신청
 POST localhost:8080/feedback-requests
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 4,
+  "documentId": 2,
   "content":"이력서 검토를 받고 싶습니다."
 }
 
 ###피드백 신청 조회
 GET localhost:8080/feedback-requests?inputMonth=2025-06
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{studentAccessToken}}
 
 ###피드백 신청 수정
 PUT localhost:8080/feedback-requests/1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 1,
+  "documentId": 2,
   "content":"이러한 이유로 이력서를 수정했습니다."
 }
 
 ###피드백 신청 취소
 DELETE localhost:8080/feedback-requests/1
-Authorization: Bearer {{accessToken}}
-
+Authorization: Bearer {{studentAccessToken}}
 
 ###피드백 상세 조회 (튜터, 유저)
 GET localhost:8080/feedback-requests/1

@@ -5,10 +5,12 @@ import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
 import com.example.feedprep.domain.techstack.entity.TechStack;
 import com.example.feedprep.domain.techstack.repository.TechStackRepository;
+import com.example.feedprep.domain.user.dto.response.ApproveTutorResponseDto;
 import com.example.feedprep.domain.user.dto.response.TutorResponseDto;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public TutorResponseDto approveTutor(Long tutorId) {
+    public ApproveTutorResponseDto approveTutor(Long tutorId) {
 
         User user = userRepository.findByIdOrElseThrow(tutorId);
 
@@ -32,11 +34,19 @@ public class AdminServiceImpl implements AdminService{
 
         user.setRole(UserRole.APPROVED_TUTOR);
 
-        return new TutorResponseDto(user.getRole());
+        return new ApproveTutorResponseDto(user.getRole());
     }
 
     @Override
     public void createTechStack(CreateTechStackRequestDto requestDto) {
+
+        Optional<TechStack> isTechStack = techStackRepository.findByTechStack(
+            requestDto.getTechStack());
+
+        if(isTechStack.isPresent()) {
+            throw new CustomException(ErrorCode.ALREADY_REGISTERED_TECHSTACK);
+        }
+
         TechStack techStack = new TechStack(requestDto.getTechStack());
         techStackRepository.save(techStack);
     }

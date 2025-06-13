@@ -3,8 +3,6 @@ package com.example.feedprep.common.security.jwt;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.security.service.CustomUserDetailsService;
-
-import com.example.feedprep.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

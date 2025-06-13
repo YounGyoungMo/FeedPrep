@@ -2,8 +2,6 @@ package com.example.feedprep.domain.auth.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.exception.enums.SuccessCode;
-import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.jwt.JwtUtil;
 import com.example.feedprep.common.security.jwt.TokenBlacklistService;
 import com.example.feedprep.domain.auth.dto.*;
@@ -16,16 +14,14 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
+
+import static com.example.feedprep.common.constants.BusinessRuleConstants.ACCESS_TOKEN_EXPIRATION_TIME;
 
 @Slf4j
 @Service
@@ -164,5 +160,33 @@ public class AuthServiceImpl implements AuthService {
 
         return claims;
     }
+
+    public TokenResponseDto refresh(String authHeader, String refreshTokenString, Long userId) {
+        // Bearer 제거
+        String accessToken = jwtUtil.substringToken(authHeader);
+
+        // 리프레시 토큰 유효성 검증
+        jwtUtil.validateToken(refreshTokenString);
+
+        User user = userRepository.findByIdOrElseThrow(userId);
+
+        // 기존의 액세스 토큰 블랙 리스트에 추가 및 리프레시 토큰 DB에서 삭제
+        if(!tokenBlacklistService.isTokenBlacklisted(accessToken)) {
+            tokenBlacklistService.addTokenToBlacklist(accessToken, ACCESS_TOKEN_EXPIRATION_TIME);
+        }
+
+        RefreshToken refreshToken = refreshTokenRepository.getByUser_UserIdOrElseThrow(userId);
+        refreshTokenRepository.delete(refreshToken);
+
+        // 액세스 토큰, 리프레시 토큰 재발급
+        String newAccessToken = jwtUtil.generateToken(user.getName(), user.getRole().name());
+        String newRefreshTokenString = jwtUtil.generateRefreshToken(user.getEmail());
+        RefreshToken newRefreshToken = new RefreshToken(newRefreshTokenString, user);
+        refreshTokenRepository.save(newRefreshToken);
+
+        // Response
+        return new TokenResponseDto(newAccessToken, newRefreshTokenString);
+    }
+
 
 }

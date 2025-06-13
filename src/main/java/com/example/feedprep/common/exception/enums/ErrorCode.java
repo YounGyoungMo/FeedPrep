@@ -34,6 +34,7 @@ public enum ErrorCode {
 
     // 관리자
     NOT_PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터가 아닙니다."),
+    ALREADY_REGISTERED_TECHSTACK(HttpStatus.BAD_REQUEST, "이미 등록된 기술스택 입니다."),
 
 
     //유저

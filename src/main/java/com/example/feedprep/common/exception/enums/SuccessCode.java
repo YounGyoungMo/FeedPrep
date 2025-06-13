@@ -14,6 +14,9 @@ public enum SuccessCode {
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃에 성공하였습니다."),
     WITHDRAW_SUCCESS(HttpStatus.OK, "회원 탈퇴에 성공하였습니다."),
 
+    // access token 및 refresh token 재발급
+    TOKEN_REFRESH_SUCCESS(HttpStatus.OK, "토큰 재발급에 성공하였습니다."),
+
     // 회원 정보
     GET_TUTORLIST_SUCCESS(HttpStatus.OK, "튜터 목록 조회를 성공하였습니다."),
     GET_MYINFO_SUCCESS(HttpStatus.OK,"내 정보 불러오기에 성공하였습니다."),

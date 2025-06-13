@@ -1,7 +1,6 @@
 package com.example.feedprep.domain.auth.service;
 
 import com.example.feedprep.domain.auth.dto.*;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Set;
 
@@ -15,4 +14,6 @@ public interface AuthService {
     void logout(String authHeader, Long userId);
 
     void withdraw(String authHeader, Long userId);
+
+    TokenResponseDto refresh(String authHeader,String refreshToken, Long userId);
 }

@@ -19,16 +19,9 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("studentAccessToken", response.body.data.accessToken)
+    client.global.set("studentAccessToken", response.body.data.accessToken)
+    client.global.set("studentRefreshToken", response.body.data.refreshToken)
 %}
-
-### 학생 로그아웃
-POST localhost:8080/auth/logout
-Authorization: Bearer {{studentAccessToken}}
-
-### 학생 회원탈퇴
-DELETE localhost:8080/auth/withdraw
-Authorization: Bearer {{studentAccessToken}}
 
 ### 튜터 회원가입
 POST localhost:8080/auth/signup
@@ -51,16 +44,9 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("tutorAccessToken", response.body.data.accessToken)
+    client.global.set("tutorAccessToken", response.body.data.accessToken)
 %}
 
-### 튜터 로그아웃
-POST localhost:8080/auth/logout
-Authorization: Bearer {{tutorAccessToken}}
-
-### 튜터 회원탈퇴
-DELETE localhost:8080/auth/withdraw
-Authorization: Bearer {{tutorAccessToken}}
 
 ### 관리자 회원가입
 
@@ -86,9 +72,6 @@ Content-Type: application/json
 }
 
 > {%
-  client.global.set("adminAccessToken", response.body.data.accessToken)
+    client.global.set("adminAccessToken", response.body.data.accessToken)
 %}
 
-### 관리자 로그아웃
-POST localhost:8080/auth/logout
-Authorization: Bearer {{adminAccessToken}}
