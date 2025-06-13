@@ -34,7 +34,7 @@ out/
 /.nb-gradle/
 
 ### .env.json ###
-http-client.env.json
+/http-client.env.json
 
 ### VS Code ###
 .vscode/
