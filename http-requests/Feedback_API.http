@@ -70,16 +70,26 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.data.accessToken)
+    client.global.set("adminAccessToken", response.body.data.accessToken)
 %}
 
-### 로그아웃
+### 관리자 로그아웃
 POST localhost:8080/auth/logout
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminAccessToken}}
 
-### 회원탈퇴
-DELETE localhost:8080/auth/withdraw
-Authorization: Bearer {{accessToken}}
+
+### 문서 등록
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
 
 ###피드백 신청
 POST localhost:8080/feedback-requests
@@ -88,7 +98,7 @@ Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 2,
+  "documentId": 1,
   "content":"이력서 검토를 받고 싶습니다."
 }
 
@@ -111,17 +121,22 @@ Content-Type: application/json
 DELETE localhost:8080/feedback-requests/1
 Authorization: Bearer {{studentAccessToken}}
 
-###피드백 상세 조회 (튜터, 유저)
+###피드백 상세 조회 (튜터)
 GET localhost:8080/feedback-requests/1
 Authorization: Bearer {{accessToken}}
 
+
+###피드백 상세 조회 (튜터, 유저)
+GET localhost:8080/feedback-requests/1
+Authorization: Bearer {{tutorAccessToken}}
+
 ###피드백 전체 조회 (튜터)
 GET localhost:8080/feedback-requests/tutor?page=0&size=20
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 신청 거절 (튜터)
 PATCH localhost:8080/feedback-requests/1?rejectNumber=1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -130,7 +145,7 @@ Content-Type: application/json
 
 ###피드백 작성 (튜터)
 POST localhost:8080/feedback?requestId=1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -140,7 +155,7 @@ Content-Type: application/json
 
 ###피드백 수정 (튜터)
 PATCH localhost:8080/feedback/1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -163,6 +178,11 @@ Content-Type: application/json
 ###피드백 리뷰 단건 조회 (유저, 튜터)
 GET localhost:8080/feedback/review/1
 Authorization: Bearer {{accessToken}}
+
+###피드백 리뷰 단건 조회 (유저, 튜터)
+GET localhost:8080/feedback/review/1
+Authorization: Bearer {{tutorAccessToken}}
+
 
 ###피드백 리뷰 다건 조회 (유저, 튜터)
 GET localhost:8080/feedback/review
