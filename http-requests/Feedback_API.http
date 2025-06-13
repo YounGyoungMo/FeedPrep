@@ -160,10 +160,13 @@ Content-Type: application/json
 }
 
 
-###피드백 리뷰 조회 (유저, 튜터)
-GET localhost:8080/feedback/review
+###피드백 리뷰 단건 조회 (유저, 튜터)
+GET localhost:8080/feedback/review/1
 Authorization: Bearer {{accessToken}}
 
+###피드백 리뷰 다건 조회 (유저, 튜터)
+GET localhost:8080/feedback/review
+Authorization: Bearer {{accessToken}}
 
 ###피드백 리뷰 수정 (유저)
 PUT localhost:8080/feedback/1/review/1
@@ -174,7 +177,6 @@ Content-Type: application/json
   "rating": 5,
   "content" : "유익한 리뷰이였습니다!"
 }
-
 
 ###피드백 리뷰 삭제 (유저)
 DELETE localhost:8080/feedback/1/review/1
