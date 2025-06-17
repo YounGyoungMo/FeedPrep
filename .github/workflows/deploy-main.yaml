@@ -1,0 +1,35 @@
+name: Deploy on main
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull juhyeong37/feedprep:1.0
+
+            CONTAINER_NAME=fp-container
+
+            if [ -n "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
+              docker stop $CONTAINER_NAME
+              docker rm $CONTAINER_NAME
+            fi
+
+            docker run -d -p 8080:8080 --name $CONTAINER_NAME \
+              -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              -e FEEDPREP_ACCESS_KEY="${{ secrets.FEEDPREP_ACCESS_KEY }}" \
+              -e FEEDPREP_SECRET_KEY="${{ secrets.FEEDPREP_SECRET_KEY }}" \
+              -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
+              -e REDIS_URL="${{ secrets.REDIS_URL }}" \
+              -e DB_URL="${{ secrets.DB_URL }}" \
+              juhyeong37/feedprep:1.0
