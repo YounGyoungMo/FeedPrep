@@ -36,11 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-application-test.properties
-application-*.yml
-application-*.properties
-src/main/resources/application.properties
-
 .DS_Store
 Thumbs.db
 
