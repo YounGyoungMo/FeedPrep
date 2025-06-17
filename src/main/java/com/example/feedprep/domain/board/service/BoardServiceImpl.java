@@ -12,6 +12,7 @@ import com.example.feedprep.domain.scrap.repository.ScrapRepository;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.repository.UserRepository;
 import com.example.feedprep.domain.user.enums.UserRole;
+import jakarta.transaction.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import com.example.feedprep.domain.recommend.repository.RecommendRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public void updateBoard(Long boardId, BoardRequestDto requestDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
