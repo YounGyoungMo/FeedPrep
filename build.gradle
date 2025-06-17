@@ -27,8 +27,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -56,6 +54,9 @@ dependencies {
     implementation 'software.amazon.awssdk:regions:2.20.46'
 
     implementation 'mysql:mysql-connector-java:8.0.33'
+    //Redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
+
     //QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
@@ -76,6 +77,12 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //Redis +Cache
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.data:spring-data-redis'
+    implementation 'org.apache.commons:commons-pool2'
 
 }
 
