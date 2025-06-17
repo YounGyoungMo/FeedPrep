@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ReddsionConfig {
+public class RedissonConfig {
 
 	@Bean
-	public RedissonClient reddsionClient(){
+	public RedissonClient redissonClient(){
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress("redis://127.0.0.1:6379")
