@@ -37,7 +37,7 @@ Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-  "techStack" : "자바"
+  "techStack" : "스프링-부트"
 }
 
 ### [관리자] 기술 스택 삭제
