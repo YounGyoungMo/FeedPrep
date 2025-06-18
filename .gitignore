@@ -46,3 +46,5 @@ Thumbs.db
 *.mv.db
 
 test-output/
+
+**/http-client.env.json
