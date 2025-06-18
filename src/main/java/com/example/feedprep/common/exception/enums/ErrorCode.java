@@ -35,6 +35,7 @@ public enum ErrorCode {
     // 메일
     CREATE_MAIL_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "메일 생성에 실피하였습니다."),
     SEND_MAIL_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "메일 송인이 실패하였습니다."),
+    NOT_CONFIRMED_AUTHNUMBER(HttpStatus.BAD_REQUEST, "인증번호가 만료 되었거나 일치 하지 않습니다."),
 
     // 관리자
     NOT_PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터가 아닙니다."),
