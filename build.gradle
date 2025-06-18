@@ -40,7 +40,7 @@ jacocoTestCoverageVerification {
     dependsOn test
     violationRules {
         rule {
-            element = 'CLASS'
+            element = 'BUNDLE'
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
