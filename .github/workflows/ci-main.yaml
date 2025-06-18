@@ -1,12 +1,12 @@
-name: CI/CD for dev branch
+name: Test on PR to main
 
 on:
-  push:
+  pull_request:
     branches:
-      - dev
+      - main
 
 jobs:
-  docker-build-push:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +22,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build bootJar
-        run: ./gradlew bootJar
+      - name: jacocoTestReport
+        run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -32,15 +32,3 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
-
-      - name: Docker build
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/feedprep:1.0 .
-
-      - name: Docker login
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/feedprep:1.0
