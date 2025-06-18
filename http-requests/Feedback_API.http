@@ -1,86 +1,3 @@
-### 학생 회원가입
-POST localhost:8080/auth/signup
-Content-Type: application/json
-
-{
-  "name": "윤경모",
-  "email": "user1234@naver.com",
-  "password": "asdasdjkDF23",
-  "role": "STUDENT"
-}
-
-### 학생 로그인
-POST localhost:8080/auth/login
-Content-Type: application/json
-
-{
-  "email": "user1234@naver.com",
-  "password": "asdasdjkDF23"
-}
-
-> {%
-    client.global.set("studentAccessToken", response.body.data.accessToken)
-    client.global.set("studentRefreshToken", response.body.data.refreshToken)
-%}
-
-### 튜터 회원가입
-POST localhost:8080/auth/signup
-Content-Type: application/json
-
-{
-  "name": "윤경모",
-  "email": "tutor123@naver.com",
-  "password": "asdasdjkDF23",
-  "role": "TUTOR"
-}
-
-### 튜터 로그인
-POST localhost:8080/auth/login
-Content-Type: application/json
-
-{
-  "email": "tutor123@naver.com",
-  "password": "asdasdjkDF23"
-}
-
-> {%
-    client.global.set("tutorAccessToken", response.body.data.accessToken)
-%}
-
-### 관리자 회원가입
-POST localhost:8080/admin/signup
-Content-Type: application/json
-
-{
-  "name": "윤경모",
-  "email": "admin123@naver.com",
-  "password": "asdasdjkDF23",
-  "role": "ADMIN",
-  "secretCode": "{{JWT_SECRET_KEY}}"
-}
-
-### 관리자 로그인
-
-POST localhost:8080/admin/login
-Content-Type: application/json
-
-{
-  "email": "admin123@naver.com",
-  "password": "asdasdjkDF23"
-}
-
-> {%
-    client.global.set("accessToken", response.body.data.accessToken)
-%}
-
-### 로그아웃
-POST localhost:8080/auth/logout
-Authorization: Bearer {{accessToken}}
-
-### 회원탈퇴
-DELETE localhost:8080/auth/withdraw
-Authorization: Bearer {{accessToken}}
-
 ###피드백 신청
 POST localhost:8080/feedback-requests
 Authorization: Bearer {{studentAccessToken}}
@@ -88,12 +5,12 @@ Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 2,
+  "documentId": 1,
   "content":"이력서 검토를 받고 싶습니다."
 }
 
 ###피드백 신청 조회
-GET localhost:8080/feedback-requests?inputMonth=2025-06
+GET localhost:8080/feedback-requests
 Authorization: Bearer {{studentAccessToken}}
 
 ###피드백 신청 수정
@@ -103,7 +20,7 @@ Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 2,
+  "documentId": 1,
   "content":"이러한 이유로 이력서를 수정했습니다."
 }
 
@@ -111,17 +28,22 @@ Content-Type: application/json
 DELETE localhost:8080/feedback-requests/1
 Authorization: Bearer {{studentAccessToken}}
 
-###피드백 상세 조회 (튜터, 유저)
+###피드백 상세 조회 (튜터)
 GET localhost:8080/feedback-requests/1
 Authorization: Bearer {{accessToken}}
 
+
+###피드백 상세 조회 (튜터, 유저)
+GET localhost:8080/feedback-requests/1
+Authorization: Bearer {{tutorAccessToken}}
+
 ###피드백 전체 조회 (튜터)
 GET localhost:8080/feedback-requests/tutor?page=0&size=20
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 신청 거절 (튜터)
 PATCH localhost:8080/feedback-requests/1?rejectNumber=1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -129,8 +51,8 @@ Content-Type: application/json
 }
 
 ###피드백 작성 (튜터)
-POST localhost:8080/feedback?requestId=1
-Authorization: Bearer {{accessToken}}
+POST localhost:8080/feedback?requestId=2
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -140,7 +62,7 @@ Content-Type: application/json
 
 ###피드백 수정 (튜터)
 PATCH localhost:8080/feedback/1
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 {
@@ -151,7 +73,7 @@ Content-Type: application/json
 
 ###피드백 리뷰 작성 (유저)
 POST localhost:8080/feedback/1/review
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
 {
@@ -160,10 +82,18 @@ Content-Type: application/json
 }
 
 
-###피드백 리뷰 조회 (유저, 튜터)
+###피드백 리뷰 단건 조회 (유저, 튜터)
+GET localhost:8080/feedback/review/1
+Authorization: Bearer {{studentAccessToken}}
+
+###피드백 리뷰 단건 조회 (유저, 튜터)
+GET localhost:8080/feedback/review/1
+Authorization: Bearer {{tutorAccessToken}}
+
+
+###피드백 리뷰 다건 조회 (유저, 튜터)
 GET localhost:8080/feedback/review
 Authorization: Bearer {{accessToken}}
-
 
 ###피드백 리뷰 수정 (유저)
 PUT localhost:8080/feedback/1/review/1
@@ -174,7 +104,6 @@ Content-Type: application/json
   "rating": 5,
   "content" : "유익한 리뷰이였습니다!"
 }
-
 
 ###피드백 리뷰 삭제 (유저)
 DELETE localhost:8080/feedback/1/review/1
