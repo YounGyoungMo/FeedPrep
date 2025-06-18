@@ -1,4 +1,4 @@
-package com.example.feedprep.common.config;
+package com.example.feedprep.common.redis.config;
 
 import java.nio.charset.StandardCharsets;
 
