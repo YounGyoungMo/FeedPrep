@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.example'
@@ -21,6 +22,36 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+jacoco{
+    toolVersion = "0.8.10"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn test
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.60  // 80% 미만이면 실패 처리
+            }
+        }
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport, jacocoTestCoverageVerification
 }
 
 dependencies {
