@@ -22,6 +22,7 @@ public enum SuccessCode {
     GET_MYINFO_SUCCESS(HttpStatus.OK,"내 정보 불러오기에 성공하였습니다."),
     UPDATE_MYINFO_SUCCESS(HttpStatus.OK,"내 정보 수정이 완료 되었습니다."),
     CHANGE_PASSWORD_SUCCESS(HttpStatus.OK,"비밀번호 수정을 성공하였습니다."),
+    SEND_MAIL_SUCCESS(HttpStatus.OK, "메일 발송을 성공하였습니다."),
 
     // 문서
     CREATE_DOCUMENT_SUCCESS(HttpStatus.CREATED, "문서 작성에 성공하였습니다."),

@@ -1,5 +1,6 @@
 package com.example.feedprep.common.config;
 
+import com.example.feedprep.common.redis.config.RedisConfig;
 import java.util.HashMap;
 import java.util.Map;
 

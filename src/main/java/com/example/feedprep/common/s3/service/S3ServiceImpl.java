@@ -24,10 +24,12 @@ public class S3ServiceImpl implements S3Service{
     private final S3Client s3Client;
     private final Environment env;
 
+    // 파일 저장소 명시
     private String getBucketName() {
         return env.getProperty("aws.s3.bucket");
     }
 
+    // S3에 파일 업로드 기능
     @Override
     public String uploadFile(MultipartFile file, String directory) {
 
@@ -53,6 +55,7 @@ public class S3ServiceImpl implements S3Service{
         }
     }
 
+    // S3에 파일 삭제 기능
     @Override
     @Async // 비동기 어노테이션
     public void deleteFile(String fileKey) {
