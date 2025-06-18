@@ -38,6 +38,13 @@ jacocoTestReport {
 
 jacocoTestCoverageVerification {
     dependsOn test
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        '**/Q*.class'
+                ])
+            })
+    )
     violationRules {
         rule {
             element = 'BUNDLE'
