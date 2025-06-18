@@ -42,7 +42,7 @@ public class PasswordFindServiceImpl implements PasswordFindService{
             throw new CustomException(ErrorCode.CREATE_MAIL_FAIL);
         }
 
-        // redis에 인증번호 저장 - 인증번호는 5분까지 유호
+        // redis에 인증번호 저장 - 인증번호는 5분까지 유효
         authNumberRedisService.saveAuthNumber(user.getEmail(), authNumber);
 
         // 이메일 전송 코드

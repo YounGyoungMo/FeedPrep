@@ -65,7 +65,7 @@ class MailServiceImplTest {
 
     @Test
     @DisplayName("메세지 전송 성공")
-    void sendMail_seccess() {
+    void sendMail_success() {
         // given
         MimeMessage message = new MimeMessage((Session) null);
 
@@ -74,7 +74,6 @@ class MailServiceImplTest {
 
         // then
         verify(javaMailSender, times(1)).send(message);
-
     }
 
     @Test
