@@ -35,6 +35,14 @@ jobs:
 
       - name: jacocoTestReport
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FEEDPREP_ACCESS_KEY: ${{ secrets.FEEDPREP_ACCESS_KEY }}
+          FEEDPREP_SECRET_KEY: ${{ secrets.FEEDPREP_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
 
       - name: Build with Gradle
         run: ./gradlew build
