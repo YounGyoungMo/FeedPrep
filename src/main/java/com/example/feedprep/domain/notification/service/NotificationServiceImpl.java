@@ -106,7 +106,7 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	public Integer getNotificationCount(Long receiverId) {
+	public Long getNotificationCount(Long receiverId) {
 		return notificationRepository.getCount();
 	}
 }
