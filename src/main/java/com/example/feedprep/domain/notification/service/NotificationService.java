@@ -17,5 +17,5 @@ public interface NotificationService {
 
 	 ApiResponseDto deleteNotification(Long userId, Long notificationId );
 
-	 Integer getNotificationCount(Long receiverId);
+	Long getNotificationCount(Long receiverId);
 }
