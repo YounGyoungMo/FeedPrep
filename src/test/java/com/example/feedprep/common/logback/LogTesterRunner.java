@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+// 의도적인 에러 발생, 아래 @Component의 주석을 제거하면 실행시 슬랙으로 메세지 전달
+// @Component
 public class LogTesterRunner implements CommandLineRunner {
 
     private static final Logger slackLogger = LoggerFactory.getLogger(LogTesterRunner.class);
