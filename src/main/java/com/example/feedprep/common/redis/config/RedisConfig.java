@@ -20,13 +20,12 @@ public class RedisConfig {
 	public RedisTemplate<String, Double> ratingTemplate(RedisConnectionFactory connectionFactory) {
 		RedisTemplate<String, Double> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
-
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setHashValueSerializer(new RedisSerializer<Double>() {
 
+		template.setValueSerializer(new RedisSerializer<Double>() {
 			@Override
 			public byte[] serialize(Double value) throws SerializationException {
-				return (value == null)? null: value.toString().getBytes(StandardCharsets.UTF_8);
+				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
 			}
 
 			@Override
@@ -34,6 +33,19 @@ public class RedisConfig {
 				return (bytes == null) ? null : Double.parseDouble(new String(bytes, StandardCharsets.UTF_8));
 			}
 		});
+
+		template.setHashValueSerializer(new RedisSerializer<Double>() {
+			@Override
+			public byte[] serialize(Double value) throws SerializationException {
+				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
+			}
+
+			@Override
+			public Double deserialize(byte[] bytes) throws SerializationException {
+				return (bytes == null) ? null : Double.parseDouble(new String(bytes, StandardCharsets.UTF_8));
+			}
+		});
+
 		return template;
 	}
 
@@ -46,20 +58,23 @@ public class RedisConfig {
 	public RedisTemplate<String, Long> template(RedisConnectionFactory connectionFactory) {
 		RedisTemplate<String, Long> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
-
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setHashValueSerializer(new RedisSerializer<Long>() {
+
+		RedisSerializer<Long> longSerializer = new RedisSerializer<Long>() {
 			@Override
 			public byte[] serialize(Long value) throws SerializationException {
-				return (value == null)? null: value.toString().getBytes(StandardCharsets.UTF_8);
+				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
 			}
 
 			@Override
 			public Long deserialize(byte[] bytes) throws SerializationException {
 				return (bytes == null) ? null : Long.parseLong(new String(bytes, StandardCharsets.UTF_8));
 			}
+		};
 
-		});
+		template.setValueSerializer(longSerializer);
+		template.setHashValueSerializer(longSerializer);
+
 		return template;
 	}
 
@@ -69,7 +84,9 @@ public class RedisConfig {
 		template.setConnectionFactory(connectionFactory);
 
 		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 		template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
 		return template;
 	}
 

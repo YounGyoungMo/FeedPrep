@@ -13,6 +13,8 @@ import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.repository.UserRepository;
 import com.example.feedprep.domain.user.enums.UserRole;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import com.example.feedprep.domain.recommend.repository.RecommendRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,11 @@ public class BoardServiceImpl implements BoardService {
     private final ScrapRepository scrapRepository;
     private final UserRepository userRepository;
     private final RecommendRepository recommendRepository; // 추천 정보 저장
+
+    @Qualifier("template")
+    private final RedisTemplate<String, Long> redisTemplate;
+
+    private static final String VIEW_COUNT_KEY_PREFIX = "post:viewcount:";
 
     @Override
     @Transactional
@@ -62,8 +68,14 @@ public class BoardServiceImpl implements BoardService {
                 && !currentUser.getRole().equals(UserRole.ADMIN)) {
             throw new AccessDeniedException("비밀글은 작성자, 튜터 또는 관리자만 조회할 수 있습니다.");
         }
+        // 조회수 증가
+        increaseViewCount(boardId);
 
-        return BoardResponseDto.from(board);
+        // Redis에서 조회수 가져와서 응답에 포함
+        Long viewCount = getViewCount(boardId);
+        BoardResponseDto dto = BoardResponseDto.from(board);
+        dto.setViewCount(viewCount);
+        return dto;
     }
 
     @Override
@@ -180,5 +192,16 @@ public class BoardServiceImpl implements BoardService {
         board.decreaseRecommendCount();
 
         return true;
+    }
+
+    // 조회수 증가 (Redis INCR)
+    private void increaseViewCount(Long boardId) {
+        redisTemplate.opsForValue().increment(VIEW_COUNT_KEY_PREFIX + boardId);
+    }
+
+    // Redis에서 현재 조회수 가져오기
+    private Long getViewCount(Long boardId) {
+        Long value = redisTemplate.opsForValue().get(VIEW_COUNT_KEY_PREFIX + boardId);
+        return (value != null) ? value : 0L;
     }
 }

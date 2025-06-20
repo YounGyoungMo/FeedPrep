@@ -37,7 +37,7 @@ public class Board {
     @Column(nullable = false)
     private int recommendCount = 0;
 
-    private int viewCount = 0;
+    private long viewCount = 0;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -51,6 +51,7 @@ public class Board {
                 .user(user)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .viewCount(0L)
                 .build();
     }
 
@@ -60,10 +61,6 @@ public class Board {
         this.tag = dto.getTag();
         this.secret = dto.isSecret();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public void increaseViewCount() {
-        this.viewCount++;
     }
 
     public void increaseRecommendCount() {
@@ -82,5 +79,10 @@ public class Board {
         if (this.recommendCount > 0) {
             this.recommendCount--;
         }
+    }
+
+    //조회수 설정 메서드 (스케줄러에서 사용)
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 }

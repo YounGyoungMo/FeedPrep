@@ -16,7 +16,7 @@ public class BoardResponseDto {
     private String tag;
     private boolean secret;
     private Long userId;
-    private int viewCount;
+    private long viewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -32,5 +32,10 @@ public class BoardResponseDto {
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
+    }
+
+    // Redis 조회수 덮어쓰기용 Setter (getBoard 시 사용)
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
     }
 }
