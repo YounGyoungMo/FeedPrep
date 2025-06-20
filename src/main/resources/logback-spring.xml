@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-  <property name="PUBLIC_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+  <property name="PUBLIC_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{99} %M [%L] - %msg%n" />
   <springProperty scope="context" name="SLACK_WEBHOOK" source="slack.webhook.url" />
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>${PUBLIC_PATTERN}</pattern>
+      <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %cyan(%logger{99}) - %msg%n</pattern>
     </encoder>
   </appender>
 
