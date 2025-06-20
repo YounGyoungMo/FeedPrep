@@ -122,6 +122,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-redis'
     implementation 'org.apache.commons:commons-pool2'
 
+    implementation 'com.github.maricn:logback-slack-appender:1.6.1'
 }
 
 tasks.named('test') {
