@@ -20,31 +20,15 @@
     </encoder>
   </appender>
 
-  <appender name="SLACK_WARN" class="com.github.maricn.logback.SlackAppender">
+  <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
     <webhookUri>${SLACK_WEBHOOK}</webhookUri>
     <layout class="ch.qos.logback.classic.PatternLayout">
       <pattern>${PUBLIC_PATTERN}</pattern>
     </layout>
     <username>Logback-FeedPrep</username> <iconEmoji>:robot_face:</iconEmoji>
-    <color>warning</color>
-    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+    <colorCoding>true</colorCoding>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>WARN</level>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
-    </filter>
-  </appender>
-
-  <appender name="SLACK_ERROR" class="com.github.maricn.logback.SlackAppender">
-    <webhookUri>${SLACK_WEBHOOK}</webhookUri>
-    <layout class="ch.qos.logback.classic.PatternLayout">
-      <pattern>${PUBLIC_PATTERN}</pattern>
-    </layout>
-    <username>Logback-FeedPrep</username> <iconEmoji>:robot_face:</iconEmoji>
-    <color>danger</color>
-    <filter class="ch.qos.logback.classic.filter.LevelFilter">
-      <level>ERROR</level>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
     </filter>
   </appender>
 
@@ -56,8 +40,7 @@
   <logger name="com.example" level="INFO" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
-    <appender-ref ref="SLACK_WARN"/>
-    <appender-ref ref="SLACK_ERROR"/>
+    <appender-ref ref="SLACK"/>
   </logger>
 
 </configuration>
