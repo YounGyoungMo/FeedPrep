@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogTesterRunner implements CommandLineRunner {
 
-    private static final Logger slackLogger = LoggerFactory.getLogger("com.example.FeedPrep");
+    private static final Logger slackLogger = LoggerFactory.getLogger(LogTesterRunner.class);
 
     @Override
     public void run(String... args) {
