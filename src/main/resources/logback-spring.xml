@@ -11,13 +11,16 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>logs/feedprep.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/feedprep-%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>30</maxHistory> <totalSizeCap>100MB</totalSizeCap> </rollingPolicy>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxHistory>30</maxHistory> <maxFileSize>100MB</maxFileSize>
+    </rollingPolicy>
     <encoder>
       <pattern>${PUBLIC_PATTERN}</pattern>
     </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
   </appender>
 
   <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
