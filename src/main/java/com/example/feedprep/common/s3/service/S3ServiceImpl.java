@@ -4,6 +4,8 @@ import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service{
+
+    private static final Logger slackLogger = LoggerFactory.getLogger(S3ServiceImpl.class);
 
     private final S3Client s3Client;
     private final Environment env;
@@ -68,9 +72,9 @@ public class S3ServiceImpl implements S3Service{
 
         try {
             s3Client.deleteObject(deleteObjectRequest);
-            log.info("S3 파일 삭제 성공 (비동기): {}", fileKey);
+            slackLogger.info("S3 파일 삭제 성공 (비동기): {}", fileKey);
         } catch (Exception e) {
-            log.error("S3 파일 삭제 실패 (비동기): {} - {}", fileKey, e.getMessage(), e);
+            slackLogger.warn("S3 파일 삭제 실패 (비동기): {} - {}", fileKey, e.getMessage(), e);
             throw new CustomException(ErrorCode.DONT_DELETE_S3FILE);
         }
     }
