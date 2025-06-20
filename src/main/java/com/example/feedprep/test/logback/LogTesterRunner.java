@@ -1,4 +1,4 @@
-package com.example.feedprep.common.logback;
+package com.example.feedprep.test.logback;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
