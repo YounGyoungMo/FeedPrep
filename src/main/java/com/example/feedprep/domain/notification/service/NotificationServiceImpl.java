@@ -2,9 +2,7 @@ package com.example.feedprep.domain.notification.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
-import com.example.feedprep.domain.notification.dto.response.NotificatinResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.entity.Notification;
 import com.example.feedprep.domain.notification.enums.NotificationType;
 import com.example.feedprep.domain.notification.repository.NotificationRepository;
@@ -26,7 +24,7 @@ public class NotificationServiceImpl implements NotificationService{
 	private final NotificationRepository notificationRepository;
 
 	@Override
-	public NotificatinResponseDto sendNotification(Long senderId, Long receiverId, Integer type) {
+	public NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type) {
 
 		User senderUser = userRepository.findByIdOrElseThrow(senderId);
 		User receiverUser = userRepository.findByIdOrElseThrow(receiverId);
@@ -41,11 +39,11 @@ public class NotificationServiceImpl implements NotificationService{
 		);
 
 		Notification saveNotification = notificationRepository.save(notification);
-		return new NotificatinResponseDto(saveNotification);
+		return new NotificationResponseDto(saveNotification);
 	}
 
 	@Override
-	public NotificatinResponseDto sendAdminNotification(Long adminId, Long receiverId, Integer type, String message) {
+	public NotificationResponseDto sendAdminNotification(Long adminId, Long receiverId, Integer type, String message) {
 		User senderUser = userRepository.findByIdOrElseThrow(adminId);
 		User receiverUser = userRepository.findByIdOrElseThrow(receiverId);
 		NotificationType notificationType =  NotificationType.fromNumber(type);
@@ -58,12 +56,12 @@ public class NotificationServiceImpl implements NotificationService{
 			);
 
 		Notification saveNotification = notificationRepository.save(notification);
-		return new NotificatinResponseDto(saveNotification);
+		return new NotificationResponseDto(saveNotification);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<NotificatinResponseDto> getNotifications(Long userId) {
+	public List<NotificationResponseDto> getNotifications(Long userId) {
 		User receiverUser = userRepository.findByIdOrElseThrow(userId);
 		if(receiverUser.getUserId().equals(userId)){
 			throw  new RuntimeException("접근 불가");
@@ -73,19 +71,19 @@ public class NotificationServiceImpl implements NotificationService{
 			.stream()
 			.toList();
 
-		return notifications.stream().map(NotificatinResponseDto:: new ).toList();
+		return notifications.stream().map(NotificationResponseDto:: new ).toList();
 	}
 
 	@Transactional
 	@Override
-	public NotificatinResponseDto isRead(Long userId, Long notificationId) {
+	public NotificationResponseDto isRead(Long userId, Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
 			.orElseThrow(()-> new RuntimeException("없음"));
 		if(notification.getReceiverId().equals(userId)){
 			throw new RuntimeException("");
 		}
 		notification.updateReadState(true);
-		return new NotificatinResponseDto(notification);
+		return new NotificationResponseDto(notification);
 	}
 
 	@Transactional
