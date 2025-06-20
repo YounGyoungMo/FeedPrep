@@ -3,17 +3,17 @@ package com.example.feedprep.domain.notification.service;
 import java.util.List;
 
 import com.example.feedprep.common.response.ApiResponseDto;
-import com.example.feedprep.domain.notification.dto.response.NotificatinResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 
 public interface NotificationService {
 
-	 NotificatinResponseDto sendNotification(Long senderId, Long receiverId, Integer type);
+	 NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type);
 
-	 NotificatinResponseDto sendAdminNotification(Long adminId, Long receiverId, Integer type, String message);
+	 NotificationResponseDto sendAdminNotification(Long adminId, Long receiverId, Integer type, String message);
 
-	 List<NotificatinResponseDto> getNotifications(Long userId );
+	 List<NotificationResponseDto> getNotifications(Long userId );
 
-	 NotificatinResponseDto isRead(Long userId, Long NotificationId);
+	 NotificationResponseDto isRead(Long userId, Long NotificationId);
 
 	 ApiResponseDto deleteNotification(Long userId, Long notificationId );
 
