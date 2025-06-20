@@ -1,0 +1,34 @@
+name: Test on PR to main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: jacocoTestReport
+        run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FEEDPREP_ACCESS_KEY: ${{ secrets.FEEDPREP_ACCESS_KEY }}
+          FEEDPREP_SECRET_KEY: ${{ secrets.FEEDPREP_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}

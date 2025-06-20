@@ -1,0 +1,46 @@
+name: CI/CD for dev branch
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  docker-build-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build bootJar
+        run: ./gradlew bootJar
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FEEDPREP_ACCESS_KEY: ${{ secrets.FEEDPREP_ACCESS_KEY }}
+          FEEDPREP_SECRET_KEY: ${{ secrets.FEEDPREP_SECRET_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+
+      - name: Docker build
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/feedprep:1.0 .
+
+      - name: Docker login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker push
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/feedprep:1.0

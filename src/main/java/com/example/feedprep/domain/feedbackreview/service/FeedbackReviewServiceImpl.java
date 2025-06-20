@@ -1,14 +1,23 @@
 package com.example.feedprep.domain.feedbackreview.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
@@ -25,12 +34,22 @@ import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	private final FeedBackReviewRepository feedBackReviewRepository;
 	private final FeedBackRepository feedBackRepository;
     private final UserRepository userRepository;
+	private final RedissonClient redissonClient;
+
+	@Autowired
+	@Qualifier("ratingTemplate")
+	private final RedisTemplate<String, Double> redisTemplate;
+
+	@Qualifier("stringRedisTemplate")
+	private final RedisTemplate<String, String> statusTemplate;
+
 	@Transactional
 	@Override
 	public FeedbackReviewResponseDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
@@ -91,12 +110,63 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 			.map(FeedbackReviewResponseDto ::new)
 			.collect(Collectors.toList());
 	}
-	@Transactional
+
 	@Override
 	public Double getAverageRating(Long tutorId) {
 		User tutor = userRepository.findByIdOrElseThrow(tutorId);
-		feedBackReviewRepository.getAverageRating(tutor.getUserId());
 		return feedBackReviewRepository.getAverageRating(tutor.getUserId());
+	}
+
+	@Transactional(readOnly = true)
+	@Scheduled(cron = "0 0 5 * * *")
+	public void updateRatings () {
+		String status = statusTemplate.opsForValue().get("status:updateRatings");
+		if (status != null && status.equals("processing")) {
+			log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
+			return; // 락 시도 없이 종료
+		}
+
+		//락
+		RLock lock = redissonClient.getLock("lock:updateRatings");
+		boolean isLocked = false;
+
+			try{
+				//최대 2초 동안 락 대기, 락 획득 시 3초간 유지( 그 이후 자동 해제 됨)
+				isLocked = lock.tryLock(2,3,TimeUnit.SECONDS);
+
+				if(isLocked) {
+					statusTemplate.opsForValue().set("status:updateRatings", "processing", 10, TimeUnit.MINUTES);
+
+					List<User> getTutors = userRepository.findAllByRole(UserRole.APPROVED_TUTOR);
+					if (!getTutors.isEmpty()) {
+						LocalDateTime now = LocalDateTime.now();
+						LocalDateTime next5am = LocalDateTime.now().toLocalDate().plusDays(1).atTime(5, 0);
+						Duration TTl = Duration.between(now, next5am);
+						Long Second = TTl.getSeconds();
+
+						for (User user : getTutors) {
+							Long userId = user.getUserId();
+							Double avg = getAverageRating(userId); // DB 쿼리 기반 평균 조회
+							redisTemplate.opsForValue().set("rating:" + userId.toString(), avg, Second, TimeUnit.SECONDS);
+
+						}
+					}
+					statusTemplate.opsForValue().set("status:updateRatings", "done", 10, TimeUnit.MINUTES);
+					log.info("캐시 완료: {} tutors, TTL: {}s", getTutors.size(), TimeUnit.SECONDS);
+					log.info("상태 완료: status:updateRatings = done");
+				}
+			} catch(InterruptedException ex){
+				log.warn("[업데이트 실패] 락 대기 중 인터럽트 발생", ex);
+				Thread.currentThread().interrupt(); // 복원
+			}catch (Exception ex) {
+				statusTemplate.opsForValue().set("status:updateRatings", "error", 10, TimeUnit.MINUTES);
+				log.error("[평점 업데이트 실패] 예외 발생", ex);
+			}
+			finally {
+				if(isLocked){
+					lock.unlock();
+				}
+			}
 	}
 	@Transactional
 	@Override
