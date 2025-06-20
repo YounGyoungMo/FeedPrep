@@ -23,7 +23,7 @@ Content-Type: application/json
 {
   "title": "공개글 수정됨",
   "content": "내용이 수정되었습니다.",
-  "tag": "후기",
+  "tag": "정보",
   "secret": false,
   "userId": 1
 }
