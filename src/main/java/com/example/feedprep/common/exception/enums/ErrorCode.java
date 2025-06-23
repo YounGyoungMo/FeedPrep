@@ -102,6 +102,9 @@ public enum ErrorCode {
     CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
     CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백만 거절할 수 있습니다."),
 
+    //알림
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다.")
+
     ;
 
     private final HttpStatus httpStatus;
