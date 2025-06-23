@@ -11,6 +11,7 @@ import com.example.feedprep.domain.notification.enums.NotificationType;
 @Getter
 public class NotificationResponseDto {
 	private Long id;
+	private Long receiverId;
 	private NotificationType notificationType;
 	private String content;
 	private String url;
@@ -19,6 +20,7 @@ public class NotificationResponseDto {
 
 	public NotificationResponseDto(Notification notification) {
 		this.id = notification.getId();
+		this.receiverId = notification.getReceiverId();
 		this.notificationType = notification.getNotificationType();
 		this.content = notification.getContent();
 		this.url = notification.getUrl();
