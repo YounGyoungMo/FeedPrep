@@ -1,6 +1,5 @@
 package com.example.feedprep.domain.notification.entity;
 
-import java.util.Optional;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,11 +43,17 @@ public class Notification extends BaseTimeEntity {
 
 	}
 
-	public Notification(NotificationType notificationType, Long senderId, Long receiverId, Optional<String> s, String urlTemplate) {
+	public Notification(
+		NotificationType notificationType,
+		Long senderId,
+		Long receiverId,
+		String message,
+		String urlTemplate) {
+
 		this.notificationType = notificationType;
 		this.senderId = senderId;
 		this.receiverId = receiverId;
-		this.content = content;
+		this.content = message;
 		this.url = urlTemplate;
 	}
 
