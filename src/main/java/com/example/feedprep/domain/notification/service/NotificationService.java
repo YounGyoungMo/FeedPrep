@@ -9,11 +9,9 @@ public interface NotificationService {
 
 	 NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type);
 
-	 NotificationResponseDto sendAdminNotification(Long adminId, Long receiverId, Integer type, String message);
-
 	 List<NotificationResponseDto> getNotifications(Long userId );
 
-	 NotificationResponseDto isRead(Long userId, Long NotificationId);
+	 NotificationResponseDto isRead(Long userId, Long notificationId);
 
 	 ApiResponseDto deleteNotification(Long userId, Long notificationId );
 
