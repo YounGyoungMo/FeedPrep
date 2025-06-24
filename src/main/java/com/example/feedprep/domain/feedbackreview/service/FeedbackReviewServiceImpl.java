@@ -70,8 +70,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public FeedbackReviewResponseDto getReview( Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
-		FeedbackReview feedbackReview = feedBackReviewRepository.findById(reviewId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(user.getRole().equals(UserRole.STUDENT)){
 			if(!feedbackReview.getUserId().equals(userId)){
 				throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
@@ -92,15 +91,12 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 
 		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 		Page<FeedbackReview> reviews = null;
-		if(!user.getRole().equals(UserRole.APPROVED_TUTOR))
+		if(user.getRole().equals(UserRole.APPROVED_TUTOR))
 		{
-			if(!user.getUserId().equals(userId)){
-				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-			}
-			reviews =  feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(user.getUserId(),pageable);
+			reviews = feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(user.getUserId(),pageable);
 		}
         else {
-			reviews = feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(user.getUserId(),pageable);
+			reviews =  feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(user.getUserId(),pageable);
 		}
 		return reviews.stream()
 			.map(FeedbackReviewResponseDto ::new)
@@ -110,7 +106,8 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public Double getAverageRating(Long tutorId) {
 		User tutor = userRepository.findByIdOrElseThrow(tutorId);
-		return feedBackReviewRepository.getAverageRating(tutor.getUserId());
+		Double avg = feedBackReviewRepository.getAverageRating(tutor.getUserId());
+		return avg != null? avg :0.0;
 	}
 
 	@Transactional(readOnly = true)
@@ -168,11 +165,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public FeedbackReviewResponseDto updateReview(Long userId, Long reviewId, FeedbackReviewRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
-		if(!user.getUserId().equals(userId)){
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
-		FeedbackReview feedbackReview = feedBackReviewRepository.findById(reviewId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
         if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
 		}
@@ -185,11 +178,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public ApiResponseDto deleteReview(Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
-		if(!user.getUserId().equals(userId)){
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
-		FeedbackReview feedbackReview = feedBackReviewRepository.findById(reviewId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
 		}
