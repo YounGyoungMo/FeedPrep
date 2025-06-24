@@ -139,7 +139,10 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 
 						for (User user : getTutors) {
 							Long userId = user.getUserId();
-							Double avg = getAverageRating(userId); // DB 쿼리 기반 평균 조회
+							Double avg =  feedBackReviewRepository.getAverageRating(userId);
+							if(avg == null) {
+								avg = 0.0;
+							}
 							redisTemplate.opsForValue().set("rating:" + userId.toString(), avg, Second, TimeUnit.SECONDS);
 
 						}
