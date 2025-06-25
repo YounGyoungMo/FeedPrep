@@ -87,8 +87,6 @@ public class FeedbackReviewSpringbootTest {
 			//유저
 			Random random =new Random();
 
-			FeedbackReviewRequestDto feedbackReviewRequestDto
-				= new FeedbackReviewRequestDto(random.nextInt(0,6),"감사합니다.");
 			feedbackReviewService.createReview(
 				users.get(1).getUserId(),
 				1L,
@@ -110,9 +108,8 @@ public class FeedbackReviewSpringbootTest {
 		// given
 		Long tutorId = users.get(0).getUserId(); // Astra
 		feedbackReviewService.updateRatings();
+
 		// when
-
-
 		Double cachedRating = redisTemplate.opsForValue().get("rating:" + tutorId);
 
 		// then
