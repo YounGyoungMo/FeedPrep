@@ -2,10 +2,7 @@
 <configuration>
 
   <property name="PUBLIC_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{99} %M [%L] - %msg%n" />
-
-
   <springProperty scope="context" name="SLACK_WEBHOOK" source="slack.webhook.url" />
-
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
