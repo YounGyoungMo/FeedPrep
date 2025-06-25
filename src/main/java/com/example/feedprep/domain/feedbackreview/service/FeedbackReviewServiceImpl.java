@@ -140,11 +140,8 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 						for (User user : getTutors) {
 							Long userId = user.getUserId();
 							Double avg =  feedBackReviewRepository.getAverageRating(userId);
-							if(avg == null) {
-								avg = 0.0;
-							}
-							redisTemplate.opsForValue().set("rating:" + userId.toString(), avg, Second, TimeUnit.SECONDS);
-
+							double rounded =(avg == null)? 0.0: Math.round(avg * 10) / 10.0;
+							redisTemplate.opsForValue().set("rating:" + userId.toString(), rounded, Second, TimeUnit.SECONDS);
 						}
 					}
 					statusTemplate.opsForValue().set("status:updateRatings", "done", 10, TimeUnit.MINUTES);
