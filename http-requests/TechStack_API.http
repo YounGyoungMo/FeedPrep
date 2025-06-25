@@ -1,10 +1,14 @@
+### 기술 스택 종류 조회
+GET localhost:8080/tech-stacks
+Authorization: Bearer {{studentAccessToken}}
+
 ### 기술 스택 추가 (튜터)
 POST localhost:8080/tech-stacks?techId=1
-Authorization: Bearer {{studentAccessToken}}
+Authorization: Bearer {{tutorAccessToken}}
 
 ### 기술 스택 추가 (학생)
 POST localhost:8080/tech-stacks?techId=1
-Authorization: Bearer {{tutorAccessToken}}
+Authorization: Bearer {{studentAccessToken}}
 
 ### 기술 스택 삭제 (튜터)
 DELETE localhost:8080/tech-stacks/1
@@ -12,10 +16,6 @@ Authorization: Bearer {{tutorAccessToken}}
 
 ### 기술 스택 삭제 (학생)
 DELETE localhost:8080/tech-stacks/2
-Authorization: Bearer {{studentAccessToken}}
-
-### 기술 스택 종류 조회
-GET localhost:8080/tech-stacks
 Authorization: Bearer {{studentAccessToken}}
 
 ### 내 기술 스택 조회 (튜터, 학생)

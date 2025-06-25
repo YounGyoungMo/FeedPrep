@@ -7,6 +7,8 @@ import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +16,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("SELECT t From User t where t.role =:userRole And t.deletedAt IS NULL ")
+    List<User>  findByRoleAndDeletedAtIsNull(@Param("userRole")UserRole userRole);
 
 
     Optional<User>  findByUserIdAndDeletedAtIsNull(Long userId);

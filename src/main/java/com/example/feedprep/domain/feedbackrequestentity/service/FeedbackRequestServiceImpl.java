@@ -43,10 +43,11 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId(), ErrorCode.NOT_FOUND_TUTOR);
-
+        if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
+			throw new CustomException(ErrorCode.PENDING_TUTOR);
+		}
 		Document document = documentRepository.findById(dto.getDocumentId())
 			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
-
         FeedbackRequestEntity feedbackRequestEntity =
 			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
 				 userId,

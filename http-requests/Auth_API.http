@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "name": "윤경모",
-  "email": "user1234@naver.com",
+  "email": "user123@naver.com",
   "password": "asdasdjkDF23",
   "role": "STUDENT"
 }
@@ -22,7 +22,7 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "user1234@naver.com",
+  "email": "user123@naver.com",
   "password": "asdasdjkDF23"
 }
 
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 {
   "name": "윤경모",
-  "email": "tutor123@naver.com",
+  "email": "tutor12345@naver.com",
   "password": "asdasdjkDF23",
   "role": "TUTOR"
 }
@@ -72,7 +72,7 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "tutor123@naver.com",
+  "email": "tutor12345@naver.com",
   "password": "asdasdjkDF23"
 }
 
@@ -82,7 +82,6 @@ Content-Type: application/json
 
 
 ### 관리자 회원가입
-
 POST localhost:8080/admin/signup
 Content-Type: application/json
 
@@ -95,7 +94,6 @@ Content-Type: application/json
 }
 
 ### 관리자 로그인
-
 POST localhost:8080/admin/login
 Content-Type: application/json
 

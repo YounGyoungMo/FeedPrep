@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class BoardServiceImpl implements BoardService {
     private final RecommendRepository recommendRepository; // 추천 정보 저장
 
     @Override
+    @Transactional
     public BoardResponseDto createBoard(BoardRequestDto requestDto) {
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findByIdOrElseThrow(userId);
@@ -64,6 +66,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public void updateBoard(Long boardId, BoardRequestDto requestDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
@@ -77,6 +80,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public void deleteBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));

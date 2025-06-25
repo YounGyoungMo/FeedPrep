@@ -1,3 +1,11 @@
+### 게시글 삭제
+DELETE localhost:8080/boards/1
+Authorization: Bearer {{studentAccessToken}}
+
+### [학생] 댓글 삭제
+DELETE http://localhost:8080/boards/1/comments/1
+Authorization: Bearer {{studentAccessToken}}
+
 ### 학생 로그아웃
 POST localhost:8080/auth/logout
 Authorization: Bearer {{studentAccessToken}}

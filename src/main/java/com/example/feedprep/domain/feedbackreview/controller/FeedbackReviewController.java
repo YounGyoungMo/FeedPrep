@@ -39,9 +39,18 @@ public class FeedbackReviewController {
 				SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_CREATED,
 				feedbackReviewService.createReview(userId, feedbackId, dto)));
 	}
-
+	@GetMapping("/feedback/review/{reviewId}")
+	public ResponseEntity<ApiResponseDto<FeedbackReviewResponseDto>> getReview(
+		@AuthUser Long userId,
+		@PathVariable Long reviewId,
+		@Validated @RequestParam(defaultValue = "20") Integer size){
+		return  ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponseDto.success(
+				SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW,
+				feedbackReviewService.getReview(userId,reviewId)));
+	}
 	@GetMapping("/feedback/review")
-	public ResponseEntity<ApiResponseDto<List<FeedbackReviewResponseDto>>> getWrittenReviewsByStudent(
+	public ResponseEntity<ApiResponseDto<List<FeedbackReviewResponseDto>>> getReviews(
 		@AuthUser Long userId,
 		@RequestParam(defaultValue= "0") Integer page,
 		@Validated @RequestParam(defaultValue = "20") Integer size){
