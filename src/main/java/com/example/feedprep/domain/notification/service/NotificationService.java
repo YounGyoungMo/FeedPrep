@@ -9,7 +9,7 @@ public interface NotificationService {
 
 	 NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type);
 
-	 List<NotificationResponseDto> getNotifications(Long userId );
+	List<NotificationResponseDto> getNotifications(Long userId, Integer page, Integer size);
 
 	 NotificationResponseDto isRead(Long userId, Long notificationId);
 
