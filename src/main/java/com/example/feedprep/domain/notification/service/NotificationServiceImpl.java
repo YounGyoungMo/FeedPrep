@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -59,13 +61,14 @@ public class NotificationServiceImpl implements NotificationService{
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<NotificationResponseDto> getNotifications(Long userId) {
+	public List<NotificationResponseDto> getNotifications(Long userId, Integer page, Integer size) {
 		User receiverUser = userRepository.findByIdOrElseThrow(userId);
 		if(!receiverUser.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
+		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 		return notificationRepository
-			.findNotificationByReceiverId(receiverUser.getUserId())
+			.findNotificationByReceiverId(receiverUser.getUserId(), pageable)
 			.stream()
 			.map(NotificationResponseDto:: new )
 			.toList();
@@ -123,13 +126,10 @@ public class NotificationServiceImpl implements NotificationService{
 
 			if(isLocked) {
 				statusTemplate.opsForValue().set("status:notificationCheck", "processing", 10, TimeUnit.MINUTES);
-
-				LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
 				List<Notification> getNotifications =
-					notificationRepository.findByCreatedAtBeforeOrderByCreatedAtAsc(sevenDaysAgo);
+					notificationRepository.findAll();
 				if (!getNotifications.isEmpty()) {
 					LocalDateTime now = LocalDateTime.now();
-
 					for (Notification notification : getNotifications) {
 						Duration TTl = Duration.between(notification.getCreatedAt() , now);
 						long days = TTl.toDays();
