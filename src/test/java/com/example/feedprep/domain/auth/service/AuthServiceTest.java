@@ -2,10 +2,8 @@ package com.example.feedprep.domain.auth.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.security.annotation.AuthUser;
 import com.example.feedprep.domain.auth.dto.*;
 import com.example.feedprep.domain.auth.repository.RefreshTokenRepository;
-
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -13,9 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
