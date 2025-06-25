@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,8 +21,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	List<Notification> findByCreatedAtBeforeOrderByCreatedAtAsc(LocalDateTime threshold);
 
-	@Query("SELECT n FROM Notification n where n.receiverId =:receiverId order by n.createdAt DESC LIMIT 10")
-	List<Notification> findNotificationByReceiverId(Long receiverId);
+	@Query("SELECT n FROM Notification n where n.receiverId =:receiverId")
+	Page<Notification> findNotificationByReceiverId(@Param("receiverId") Long receiverId, PageRequest pageRequest);
 
 	@Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.isRead = false AND n.isStale = true")
 	Long getCountByReceiver(@Param("receiverId") Long receiverId);
