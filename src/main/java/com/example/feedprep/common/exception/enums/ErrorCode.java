@@ -98,6 +98,7 @@ public enum ErrorCode {
 
     SELF_FEEDBACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신에게는 피드백을 요청할 수 없습니다."),
     CANNOT_EDIT_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 수정할 수 없습니다."),
+    CANNOT_EDIT_PENDING_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
     CANNOT_EDIT_IN_PROCESS_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
     CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
     DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),

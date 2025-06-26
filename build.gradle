@@ -127,6 +127,8 @@ dependencies {
     implementation 'org.apache.commons:commons-pool2'
 
     implementation 'com.github.maricn:logback-slack-appender:1.6.1'
+    //Embedded Redis
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
 }
 
 tasks.named('test') {
