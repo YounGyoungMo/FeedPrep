@@ -1,0 +1,13 @@
+oauth:
+  providers:
+    kakao:
+      provider: kakao
+      client-id: ${KAKAO_CLIENT_ID}
+      authorize-uri: https://kauth.kakao.com/oauth/authorize
+      token-uri: https://kauth.kakao.com/oauth/token
+      user-info-uri: https://kapi.kakao.com/v2/user/me
+      redirect-uri: ${SERVER_HOST}/oauth/kakao/callback
+      fields:
+        id: id
+        email: kakao_account.email
+        nickname: kakao_account.profile.nickname

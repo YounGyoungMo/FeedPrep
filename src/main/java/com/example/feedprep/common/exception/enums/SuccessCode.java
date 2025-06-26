@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum SuccessCode {
 
+    // OAuth2
+    SOCIAL_OAUTH_LOGIN_SUCCESS(HttpStatus.OK, "소셜 로그인에 성공하였습니다."),
+
+
     // 회원가입, 로그인, 로그아웃, 탈퇴 성공
     SIGNUP_SUCCESS(HttpStatus.CREATED,"회원가입에 성공하였습니다." ),
     LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
