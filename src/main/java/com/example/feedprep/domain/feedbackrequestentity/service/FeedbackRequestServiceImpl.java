@@ -12,7 +12,6 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRe
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
-import com.example.feedprep.domain.notification.service.NotificationPushService;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
@@ -40,7 +39,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
 	private final NotificationServiceImpl notificationService;
-    private final NotificationPushService notificationPushService;
+    //private final NotificationPushService notificationPushService;
 	@Transactional
 	@Override
 	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
@@ -68,7 +67,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
-		notificationPushService.sendToUser(tutor.getUserId());
+		// notificationPushService.sendToUser(tutor.getUserId());
 		return new FeedbackRequestEntityResponseDto(getInfoRequest);
 	}
 
