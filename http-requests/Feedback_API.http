@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 2,
+  "documentId": 1,
   "content":"이력서 검토를 받고 싶습니다."
 }
 

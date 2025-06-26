@@ -2,14 +2,19 @@ package com.example.feedprep.common.exception.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+    // 서버 오류
+    SOCIAL_LOGIN_REDIRECT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 중 리다이렉트 요청이 실패했습니다."),
+    SOCIAL_LOGIN_TOKEN_REQUEST_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 토큰 요청에 실패했습니다."),
+    SOCIAL_LOGIN_INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜 로그인 제공자입니다."),
+    SOCIAL_LOGIN_AUTH_CODE_MISSING(HttpStatus.BAD_REQUEST, "인가 코드가 없습니다."),
 
     // 잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다." ),
+    UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "해당 소셜 로그인 방식은 지원하지 않습니다."),
 
     // @Column(unique = true) 값이 중복되는 오류
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 존재하는 값입니다. 중복된 입력을 확인해주세요."),
