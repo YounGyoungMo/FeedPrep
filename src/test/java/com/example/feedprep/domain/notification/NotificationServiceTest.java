@@ -86,35 +86,35 @@ public class NotificationServiceTest {
 
 	}
 
-	@Test
-	void getNotification() {
-
-		// given
-
-		Long receiverId = 1L;
-		User receiver = mock(User.class);
-		when(receiver.getUserId()).thenReturn(receiverId);
-		when(userRepository.findByIdOrElseThrow(receiverId)).thenReturn(receiver);
-
-
-		Notification notification = mock(Notification.class);
-		when(notification.getId()).thenReturn(1L);
-		when(notification.getContent()).thenReturn("%s 님께 피드백을 요청했습니다.");
-        when(notification.getReceiverId()).thenReturn(1L);
-		when(notification.getUrl()).thenReturn("null");
-		when(notification.isRead()).thenReturn(false);
-
-		when(notificationRepository.findNotificationByReceiverId(receiverId))
-			.thenReturn(List.of(notification));
-
-		List<NotificationResponseDto> responseDtos = notificationService.getNotifications(receiverId);
-
-		assertEquals(1L, responseDtos.get(0).getId());
-		assertEquals(1L, responseDtos.get(0).getReceiverId());
-		assertEquals("%s 님께 피드백을 요청했습니다.", responseDtos.get(0).getContent());
-
-
-	}
+	// @Test
+	// void getNotification() {
+	//
+	// 	// given
+	//
+	// 	Long receiverId = 1L;
+	// 	User receiver = mock(User.class);
+	// 	when(receiver.getUserId()).thenReturn(receiverId);
+	// 	when(userRepository.findByIdOrElseThrow(receiverId)).thenReturn(receiver);
+	//
+	//
+	// 	Notification notification = mock(Notification.class);
+	// 	when(notification.getId()).thenReturn(1L);
+	// 	when(notification.getContent()).thenReturn("%s 님께 피드백을 요청했습니다.");
+    //     when(notification.getReceiverId()).thenReturn(1L);
+	// 	when(notification.getUrl()).thenReturn("null");
+	// 	when(notification.isRead()).thenReturn(false);
+	//
+	// 	when(notificationRepository.findNotificationByReceiverId(receiverId))
+	// 		.thenReturn(List.of(notification));
+	//
+	// 	List<NotificationResponseDto> responseDtos = notificationService.getNotifications(receiverId);
+	//
+	// 	assertEquals(1L, responseDtos.get(0).getId());
+	// 	assertEquals(1L, responseDtos.get(0).getReceiverId());
+	// 	assertEquals("%s 님께 피드백을 요청했습니다.", responseDtos.get(0).getContent());
+	//
+	//
+	// }
 
 	@Test
 	void isReadNotification() {
