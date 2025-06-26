@@ -98,14 +98,19 @@ public enum ErrorCode {
 
     SELF_FEEDBACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신에게는 피드백을 요청할 수 없습니다."),
     CANNOT_EDIT_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 수정할 수 없습니다."),
+    CANNOT_EDIT_PENDING_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
+    CANNOT_EDIT_IN_PROCESS_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
     CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
     DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
 
     //피드백 작성  에러코드
-    INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 취소되었거나 완료된 상태입니다."),
+    INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 진행중인 것만 작성 가능합니다."),
     CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
     CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백만 거절할 수 있습니다."),
+
+    //알림
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다.")
 
     ;
 
