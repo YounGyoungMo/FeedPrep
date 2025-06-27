@@ -80,10 +80,10 @@ public class FeedbackReviewSpringbootTest  {
 			feedbackRequestService.createRequest( users.get(2).getUserId(), requestDtos.get(1));
 			feedbackRequestService.createRequest( users.get(3).getUserId(), requestDtos.get(2));
 
-			Long user1 = users.get(1).getUserId();
+			Long user1 = users.get(0).getUserId();
 			feedbackRequestService.acceptRequest(user1, 1L);
-			feedbackRequestService.acceptRequest(users.get(2).getUserId(), 2L);
-			feedbackRequestService.acceptRequest(users.get(3).getUserId(), 3L);
+			feedbackRequestService.acceptRequest(users.get(0).getUserId(), 2L);
+			feedbackRequestService.acceptRequest(users.get(0).getUserId(), 3L);
 			//튜터 피드백 작성
 			FeedbackWriteRequestDto feedbackWriteRequestDto =new FeedbackWriteRequestDto("작성 완료!");
 			feedbackService.createFeedback(users.get(0).getUserId(),1L, feedbackWriteRequestDto);
