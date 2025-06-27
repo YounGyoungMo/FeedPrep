@@ -36,29 +36,22 @@ public class PointServiceImpl implements PointService{
 
 	private final UserRepository userRepository;
 
-	private final RestTemplate restTemplate;
-
 	private final ObjectMapper objectMapper;
 
-	@Value("${portone.apiSecret}")
-	private String apiSecret;
-
-	@Value("${portone.storeId}")
-	private String storeId;
+	private final PaymentService paymentService;
 
 	// 포인트 환불 - 피드백 거절 및 피드백 취소에서 사용
 	@Transactional
 	@Override
 	public void refundPoint(FeedbackRequestEntity feedback) {
-		List<Point> byFeedback = pointRepository.findByFeedback(feedback);
-		for(Point p : byFeedback){
-			if(p.getType().equals(PointType.CHARGE)){
+		List<Point> PointList = pointRepository.findByFeedback(feedback);
+		if(PointList.isEmpty()){
+			throw new CustomException(ErrorCode.BAD_REQUEST);
+		}
+		for(Point p : PointList){
+			if(p.getType().equals(PointType.USE)){
 				Point refundStudent = new Point(FEEDBACK_COST, PointType.REFUND, feedback, feedback.getUser());
 				pointRepository.save(refundStudent);
-			}
-			if(p.getType().equals(PointType.INCOME)){
-				Point refundTutor = new Point(-FEEDBACK_COST, PointType.REFUND, feedback, feedback.getTutor());
-				pointRepository.save(refundTutor);
 			}
 		}
 	}
@@ -100,7 +93,7 @@ public class PointServiceImpl implements PointService{
 	public void handleWebhook(String webhookSecret, String rawBody, String signature, String timestamp) {
 		try {
 			// 웹훅 검증
-			if (com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
+			if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -119,7 +112,7 @@ public class PointServiceImpl implements PointService{
 			}
 
 			// 결제 정보 조회
-			PaymentResponseDto payment = getPayment(paymentId);
+			PaymentResponseDto payment = paymentService.getPayment(paymentId);
 			if (payment == null) {
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
@@ -149,26 +142,5 @@ public class PointServiceImpl implements PointService{
 	public List<Point> getPoint(Long userId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		return pointRepository.findAllByUser(user);
-	}
-
-	// 포트원 서버로 요청 보내기
-	private PaymentResponseDto getPayment(String paymentId) {
-		String url = UriComponentsBuilder
-			.fromHttpUrl("https://api.portone.io/payments/" + paymentId)
-			.queryParam("storeId", storeId)  // storeId 변수로 넣기
-			.toUriString();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "PortOne " + apiSecret);
-		HttpEntity<Void> request = new HttpEntity<>(headers);
-
-		ResponseEntity<PaymentResponseDto> response = restTemplate.exchange(
-			url,
-			HttpMethod.GET,
-			request,
-			PaymentResponseDto.class
-		);
-
-		return response.getBody();
 	}
 }
