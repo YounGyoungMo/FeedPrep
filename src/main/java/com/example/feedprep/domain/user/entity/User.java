@@ -1,28 +1,16 @@
 package com.example.feedprep.domain.user.entity;
 
 import com.example.feedprep.common.entity.BaseTimeEntity;
+import com.example.feedprep.domain.auth.oauth.enums.OAuthProvider;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.techstack.entity.UserTechStack;
 import com.example.feedprep.domain.user.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -64,6 +52,14 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private List<UserTechStack> userTechStacks = new ArrayList<>();
 
+    // 소셜 로그인 관련 필드
+    private String profileImageUrl;
+
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider provider;  // KAKAO, NAVER, GOOGLE 등
+
+    private String providerId; // OAuth 제공자가 주는 사용자 ID
+
     public User(String name, String email, String password, String address, String introduction,
         UserRole role) {
         this.name = name;
@@ -81,6 +77,18 @@ public class User extends BaseTimeEntity {
         this.password = password;
         this.role = role;
         this.point = 0L;
+    }
+
+    // 소셜 회원 가입
+    public User(String nickname, String email,String profileImageUrl, UserRole role, OAuthProvider provider, String providerId) {
+        this.name = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.email = email;
+        this.role = role;
+        this.point = 0L;
+
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     public void withdraw() {

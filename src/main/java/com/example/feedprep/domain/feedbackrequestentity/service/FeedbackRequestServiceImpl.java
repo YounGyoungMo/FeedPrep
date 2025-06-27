@@ -1,20 +1,5 @@
 package com.example.feedprep.domain.feedbackrequestentity.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.domain.document.entity.Document;
@@ -27,9 +12,24 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRe
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
+import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Repository
@@ -38,7 +38,8 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final FeedbackRequestEntityRepository feedbackRequestEntityRepository;
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
-
+	private final NotificationServiceImpl notificationService;
+    //private final NotificationPushService notificationPushService;
 	@Transactional
 	@Override
 	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
@@ -63,6 +64,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		FeedbackRequestEntity request = new FeedbackRequestEntity(dto, user, tutor, document);
 		request.updateRequestState(RequestState.PENDING);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+
+		notificationService.sendNotification(userId, tutor.getUserId(), 101);
+
+		// notificationPushService.sendToUser(tutor.getUserId());
 		return new FeedbackRequestEntityResponseDto(getInfoRequest);
 	}
 
@@ -143,10 +148,29 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
-
-		return new FeedbackRequestEntityResponseDto(request);
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+		return new FeedbackRequestEntityResponseDto(getInfoRequest);
 	}
 
+	@Override
+	public FeedbackRequestEntityResponseDto acceptRequest(Long userId, Long feedbackRequestId) {
+		//요청이 존재하는 가?
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findById(feedbackRequestId)
+			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+		if(!request.getUser().getUserId().equals(userId))
+		{
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		if (request.getRequestState() != RequestState.PENDING){
+			throw new CustomException(ErrorCode.CANNOT_EDIT_PENDING_REQUEST);
+		}
+
+		request.updateRequestState(RequestState.IN_PROGRESS);
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+		Map<String, Object> data =  new LinkedHashMap<>();
+		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+	}
 
 	@Transactional
 	@Override
@@ -163,10 +187,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		request.updateRequestState(RequestState.CANCELED);
-
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto(request);
+		return new FeedbackRequestEntityResponseDto( getInfoRequest);
 	}
 
 	@Transactional

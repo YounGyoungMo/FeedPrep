@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum SuccessCode {
 
+    // OAuth2
+    SOCIAL_OAUTH_LOGIN_SUCCESS(HttpStatus.OK, "소셜 로그인에 성공하였습니다."),
+
+
     // 회원가입, 로그인, 로그아웃, 탈퇴 성공
     SIGNUP_SUCCESS(HttpStatus.CREATED,"회원가입에 성공하였습니다." ),
     LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
@@ -53,6 +57,9 @@ public enum SuccessCode {
     OK_SUCCESS_FEEDBACK_REVIEW(HttpStatus.CREATED, "작성한 피드백 리뷰가 조회 되었습니다."),
     OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "작성한 피드백 리뷰가 작성 되었습니다."),
     OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "작성한 피드백 리뷰가 정상적으로 삭제되었습니다."),
+    //알림
+    OK_SUCCESS_Notification(HttpStatus.OK, "알림을 정상적으로 조회 했습니다."),
+    OK_SUCCESS_Notification_DELETED(HttpStatus.OK, "알림을 정상적으로 삭제 되었습니다."),
 
     // 기술스택
     TECH_STACK_CREATED(HttpStatus.CREATED, "기술 스택을 추가하였습니다."),
