@@ -27,7 +27,7 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseAllDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
 
@@ -99,7 +99,7 @@ public class FeedbackRequestController {
 				feedbackRequestService.cancelRequest(userId,requestId)));
 	}
 	@GetMapping("{requestId}")
-	public ResponseEntity<ApiResponseDto<FeedbackResponseAllDto>>  getFeedbackRequest(
+	public ResponseEntity<ApiResponseDto<FeedbackRequestDetailsDto>>  getFeedbackRequest(
 		@AuthUser Long userId,
 		@PathVariable  Long requestId
 	){

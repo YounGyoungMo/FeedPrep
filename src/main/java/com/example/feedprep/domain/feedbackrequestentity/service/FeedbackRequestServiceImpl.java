@@ -9,7 +9,7 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseAllDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
@@ -99,7 +99,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public FeedbackResponseAllDto getFeedbackRequest(Long userId, Long requestId) {
+	public FeedbackRequestDetailsDto getFeedbackRequest(Long userId, Long requestId) {
 		//유저 확인.
 		User user= userRepository.findByIdOrElseThrow(userId);
 
@@ -124,7 +124,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 			// STUDENT도 튜터도 아닌 경우 무조건 접근 금지
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-		return new FeedbackResponseAllDto(request);
+		return new FeedbackRequestDetailsDto(request);
 	}
 
 	@Transactional(readOnly = true)

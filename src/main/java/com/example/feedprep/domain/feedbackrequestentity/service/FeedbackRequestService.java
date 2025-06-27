@@ -7,7 +7,7 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseAllDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 
 public interface FeedbackRequestService {
@@ -26,7 +26,7 @@ public interface FeedbackRequestService {
 	);
 
 	// 피드백 요청 단건 상세 조회
-	FeedbackResponseAllDto getFeedbackRequest(Long tutorId, Long requestId);
+	FeedbackRequestDetailsDto getFeedbackRequest(Long tutorId, Long requestId);
 
 	// 피드백 요청 다건 조회 (튜터)
 	List<FeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size);
