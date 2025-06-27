@@ -9,9 +9,11 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
+import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -37,7 +39,8 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final FeedbackRequestEntityRepository feedbackRequestEntityRepository;
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
-
+	private final NotificationServiceImpl notificationService;
+    //private final NotificationPushService notificationPushService;
 	@Transactional
 	@Override
 	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
@@ -62,6 +65,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		FeedbackRequestEntity request = new FeedbackRequestEntity(dto, user, tutor, document);
 		request.updateRequestState(RequestState.PENDING);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+
+		notificationService.sendNotification(userId, tutor.getUserId(), 101);
+
+		// notificationPushService.sendToUser(tutor.getUserId());
 		return new FeedbackRequestEntityResponseDto(getInfoRequest);
 	}
 
@@ -92,14 +99,32 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public FeedbackResponseDetailsDto getFeedbackRequest(Long tutorId, Long requestId) {
-		//튜터 확인.
-		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+	public FeedbackRequestDetailsDto getFeedbackRequest(Long userId, Long requestId) {
+		//유저 확인.
+		User user= userRepository.findByIdOrElseThrow(userId);
+
+        //요청 조회
 		FeedbackRequestEntity request =feedbackRequestEntityRepository
 			.findById(requestId)
 			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
 
-		return new FeedbackResponseDetailsDto(request);
+		Long getUserId = request.getUser().getUserId();
+		Long getTutorId = request.getTutor().getUserId();
+
+		// 작성 유저/ 작성 대상 튜터인지 확인(상세보기)
+		if (user.getRole().equals(UserRole.STUDENT)) {
+			if (!user.getUserId().equals(getUserId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else if (user.getRole().equals(UserRole.APPROVED_TUTOR)) {
+			if (!user.getUserId().equals(getTutorId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else {
+			// STUDENT도 튜터도 아닌 경우 무조건 접근 금지
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		return new FeedbackRequestDetailsDto(request);
 	}
 
 	@Transactional(readOnly = true)
@@ -142,10 +167,35 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
-
-		return new FeedbackRequestEntityResponseDto(request);
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+		return new FeedbackRequestEntityResponseDto(getInfoRequest);
 	}
 
+	@Override
+	public FeedbackRequestEntityResponseDto acceptRequest(Long tutorId, Long requestId) {
+		// 1. 튜터 본인 확인
+		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+
+		// 2. 피드백 요청 존재 여부 확인
+		FeedbackRequestEntity request =feedbackRequestEntityRepository
+			.findById(requestId)
+			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+
+		// 2. 피드백 상태 확인 (Pending)
+		if(!request.getRequestState().equals(RequestState.PENDING)){
+			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
+		}
+
+		request.updateRequestState(RequestState.IN_PROGRESS);
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+
+		Map<String, Object> data =  new LinkedHashMap<>();
+		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+	}
 
 	@Transactional
 	@Override
@@ -162,10 +212,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		request.updateRequestState(RequestState.CANCELED);
-
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto(request);
+		return new FeedbackRequestEntityResponseDto( getInfoRequest);
 	}
 
 	@Transactional
