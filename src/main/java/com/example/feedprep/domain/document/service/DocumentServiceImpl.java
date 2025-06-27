@@ -34,6 +34,10 @@ public class DocumentServiceImpl implements DocumentService{
             throw new CustomException(ErrorCode.NOT_FOUND_FILE);
         }
 
+        Long megabyte = s3Service.convertFileSizeType(5L, "mb");
+
+        s3Service.limitedFileSize(file, megabyte);
+
         User user = userRepository.findByIdOrElseThrow(userId);
 
         // user의 이력서는 최대 5개까지 생성 제한
@@ -75,7 +79,7 @@ public class DocumentServiceImpl implements DocumentService{
     }
 
     @Override
-    public DocumentResponseDto getMyDocument(Long documentId, Long userId) {
+    public String getMyDocument(Long documentId, Long userId) {
 
         Document document = documentRepository.findByIdOrElseThrow(documentId);
 
@@ -84,7 +88,7 @@ public class DocumentServiceImpl implements DocumentService{
             throw new CustomException(ErrorCode.FOREIGN_DOCUMENT_ACCESS);
         }
 
-        return new DocumentResponseDto(document);
+        return s3Service.createFileUrl(document.getFileUrl());
     }
 
     @Override
