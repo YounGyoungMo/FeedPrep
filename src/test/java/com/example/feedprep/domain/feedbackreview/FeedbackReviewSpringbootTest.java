@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.document.repository.DocumentRepository;
@@ -32,6 +33,7 @@ import com.example.feedprep.domain.user.repository.UserRepository;
 @SpringBootTest
 @ActiveProfiles("test")
 @RequiredArgsConstructor
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class FeedbackReviewSpringbootTest  {
 
 	@Autowired
