@@ -49,6 +49,7 @@ public enum SuccessCode {
     OK_SUCCESS_FEEDBACK_REQUEST_CREATED(HttpStatus.CREATED,"정상적으로 요청 신청이 완료 되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST(HttpStatus.CREATED,"정상적으로 조회 되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_UPDATE(HttpStatus.CREATED,"정상적으로 요청이 수정 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REQUEST_ACCEPT(HttpStatus.OK, "피드백 요청이 수락되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_REJECTED(HttpStatus.OK, "피드백 요청이 거절되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_CANCELED(HttpStatus.OK, "정상적으로 요청이 취소 되었습니다."),
 
