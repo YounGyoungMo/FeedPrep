@@ -73,3 +73,30 @@ Content-Type: application/json
     client.global.set("adminAccessToken", response.body.data.accessToken)
 %}
 
+### 포트원 웹훅 테스트 예시
+POST http://localhost:8080/portone-webhook
+Content-Type: application/json
+x-portone-signature: "cEbXuvfiTAkJiT2XPg8RasgfAVHkSQrY0pX0pO42xEC3YPFttZSWDaN7TRazZGLrAgEydMAt82xeE1Xu"
+x-portone-timestamp: 1698199200
+
+{
+  "type": "Transaction.Paid",
+  "data": {
+    "paymentId": "pid_20250625185355_1",
+    "merchantUid": "order_1234",
+    "status": "paid",
+    "amount": 50000,
+    "currency": "KRW",
+    "buyer": {
+      "name": "홍길동",
+      "email": "user@example.com"
+    },
+    "method": {
+      "type": "card",
+      "card": {
+        "cardNumber": "xxxx-xxxx-xxxx-1234"
+      }
+    }
+  }
+}
+
