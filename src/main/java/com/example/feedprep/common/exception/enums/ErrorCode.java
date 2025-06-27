@@ -47,13 +47,16 @@ public enum ErrorCode {
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "잘못된 역할입니다. STUDENT, PENDING_TUTOR, ADMIN 중 하나를 선택해 주세요"),
     NOT_FOUND_TUTOR(HttpStatus.BAD_REQUEST,"검색 된 튜터가 없습니다."),
 
-    // 문서 및 S3 파일 업로드
+    // 문서 및 S3 파일
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND,"해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_FILE(HttpStatus.NOT_FOUND, "업로드 할 이력서를 넣어 주세요."),
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
     DONT_CREATE_MORE(HttpStatus.BAD_REQUEST, "이력서 저장은 최대 5개까지 입니다."),
     FOREIGN_DOCUMENT_ACCESS(HttpStatus.FORBIDDEN, "자신의 문서만 조회 할 수 있습니다."),
     DONT_DELETE_S3FILE(HttpStatus.INTERNAL_SERVER_ERROR,"저장된 이력서 삭제에 실패하였습니다."),
+    NOT_CREATED_S3FILE_URL(HttpStatus.INTERNAL_SERVER_ERROR, "조회 예정인 S3 파일의 URL 생성이 실패하였습니다."),
+    OVER_LIMIT_FILESIZE(HttpStatus.BAD_REQUEST, "업로드 할 파일 크기가 지정된 크기보다 큽니다."),
+    DONT_CONVERT_FILESIZE_TYPE(HttpStatus.BAD_REQUEST, "파일 크기 변환에 실패 하였습니다."),
 
 
     // 구독
