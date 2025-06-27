@@ -172,20 +172,26 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	}
 
 	@Override
-	public FeedbackRequestEntityResponseDto acceptRequest(Long userId, Long feedbackRequestId) {
-		//요청이 존재하는 가?
-		FeedbackRequestEntity request = feedbackRequestEntityRepository.findById(feedbackRequestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
-		if(!request.getUser().getUserId().equals(userId))
-		{
+	public FeedbackRequestEntityResponseDto acceptRequest(Long tutorId, Long requestId) {
+		// 1. 튜터 본인 확인
+		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-		if (request.getRequestState() != RequestState.PENDING){
-			throw new CustomException(ErrorCode.CANNOT_EDIT_PENDING_REQUEST);
+
+		// 2. 피드백 요청 존재 여부 확인
+		FeedbackRequestEntity request =feedbackRequestEntityRepository
+			.findById(requestId)
+			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+
+		// 2. 피드백 상태 확인 (Pending)
+		if(!request.getRequestState().equals(RequestState.PENDING)){
+			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
 		}
 
 		request.updateRequestState(RequestState.IN_PROGRESS);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 		return new FeedbackRequestEntityResponseDto(getInfoRequest);
