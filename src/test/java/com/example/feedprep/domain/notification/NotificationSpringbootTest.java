@@ -3,6 +3,8 @@ package com.example.feedprep.domain.notification;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +33,11 @@ public class NotificationSpringbootTest {
 
 	@Autowired
 	NotificationServiceImpl notificationService;
+
+	@BeforeEach
+	void clearRedis() {
+		statusTemplate.delete("status:notificationCheck");
+	}
 
 	@Test
 	void 알림_정리_정상_작동_삭제_및_갱신(){
