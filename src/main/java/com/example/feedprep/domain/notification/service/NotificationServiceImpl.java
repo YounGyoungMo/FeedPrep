@@ -35,8 +35,10 @@ import com.example.feedprep.domain.user.repository.UserRepository;
 public class NotificationServiceImpl implements NotificationService{
 	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
+
 	@Qualifier("stringRedisTemplate")
 	private final RedisTemplate<String, String> statusTemplate;
+
 	private final RedissonClient redissonClient;
 
 	@Override
@@ -112,7 +114,7 @@ public class NotificationServiceImpl implements NotificationService{
 	public void scheduledNotificationCleanup() {
 		String status = statusTemplate.opsForValue().get("status:notificationCheck");
 		if (status != null && status.equals("processing")) {
-			log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
+			//log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
 			return; // 락 시도 없이 종료
 		}
 
