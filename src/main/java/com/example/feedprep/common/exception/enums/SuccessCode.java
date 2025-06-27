@@ -62,7 +62,10 @@ public enum SuccessCode {
     REMOVE_MY_TECH_STACK(HttpStatus.OK, "관심 기술 스택을 삭제하였습니다."),
 
     // 관리자
-    APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다.")
+    APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다."),
+
+    SUCCESS_FETCH_INFO(HttpStatus.OK, "성공 했습니다."),
+    TRANSACTION_HISTORY(HttpStatus.OK, "거래 내역입니다.")
 
     ;
 
