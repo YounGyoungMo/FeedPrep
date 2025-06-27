@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/login", "/auth/signup", "/admin/signup", "/admin/login").permitAll()
+                        .requestMatchers("/auth/login", "/auth/signup", "/admin/signup", "/admin/login", "/charge", "/point/charge", "/portone-webhook").permitAll()
                         .requestMatchers("/admin/authority").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
