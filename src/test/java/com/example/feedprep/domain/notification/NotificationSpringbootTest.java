@@ -1,44 +1,39 @@
 package com.example.feedprep.domain.notification;
 
-
-import io.lettuce.core.output.DoubleListOutput;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import com.example.feedprep.domain.notification.entity.Notification;
 import com.example.feedprep.domain.notification.repository.NotificationRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 @RequiredArgsConstructor
 @Sql(scripts = {
 	"classpath:/db/init_table.sql",
 	"classpath:/db/data_init.sql"
 })
 public class NotificationSpringbootTest {
-
+	@Autowired
+	@Qualifier("stringRedisTemplate")
+	RedisTemplate<String, String> statusTemplate;
 
 	@Autowired
 	NotificationRepository notificationRepository;
+
 	@Autowired
 	NotificationServiceImpl notificationService;
 
 	@Test
 	void 알림_정리_정상_작동_삭제_및_갱신(){
-
 
 		//given
 		notificationService.scheduledNotificationCleanup();
@@ -61,7 +56,7 @@ public class NotificationSpringbootTest {
 
 	@Test
 	void 캐시_상태_검증(){
-		// String value = statusTemplate.opsForValue().get("status:notificationCheck");
-		// assertEquals("done", value);
+		String value = statusTemplate.opsForValue().get("status:notificationCheck");
+		assertEquals("done", value);
 	}
 }
