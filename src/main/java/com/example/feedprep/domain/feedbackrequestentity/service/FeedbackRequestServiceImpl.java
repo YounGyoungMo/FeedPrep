@@ -9,6 +9,7 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseAllDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
@@ -98,14 +99,32 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public FeedbackResponseDetailsDto getFeedbackRequest(Long tutorId, Long requestId) {
-		//튜터 확인.
-		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+	public FeedbackResponseAllDto getFeedbackRequest(Long userId, Long requestId) {
+		//유저 확인.
+		User user= userRepository.findByIdOrElseThrow(userId);
+
+        //요청 조회
 		FeedbackRequestEntity request =feedbackRequestEntityRepository
 			.findById(requestId)
 			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
 
-		return new FeedbackResponseDetailsDto(request);
+		Long getUserId = request.getUser().getUserId();
+		Long getTutorId = request.getTutor().getUserId();
+
+		// 작성 유저/ 작성 대상 튜터인지 확인(상세보기)
+		if (user.getRole().equals(UserRole.STUDENT)) {
+			if (!user.getUserId().equals(getUserId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else if (user.getRole().equals(UserRole.APPROVED_TUTOR)) {
+			if (!user.getUserId().equals(getTutorId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else {
+			// STUDENT도 튜터도 아닌 경우 무조건 접근 금지
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		return new FeedbackResponseAllDto(request);
 	}
 
 	@Transactional(readOnly = true)
