@@ -102,6 +102,10 @@ public enum ErrorCode {
     CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
     CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백만 거절할 수 있습니다."),
 
+    // 결제
+    ALREADY_REFUNDED(HttpStatus.BAD_REQUEST, "이미 환불된 결제입니다."),
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
+
     ;
 
     private final HttpStatus httpStatus;
