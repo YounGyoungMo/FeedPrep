@@ -3,6 +3,7 @@ package com.example.feedprep.domain.notification.service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,8 +36,10 @@ import com.example.feedprep.domain.user.repository.UserRepository;
 public class NotificationServiceImpl implements NotificationService{
 	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
+
 	@Qualifier("stringRedisTemplate")
 	private final RedisTemplate<String, String> statusTemplate;
+
 	private final RedissonClient redissonClient;
 
 	@Override
@@ -106,13 +109,30 @@ public class NotificationServiceImpl implements NotificationService{
 		return notificationRepository.getCountByReceiver(receiverId);
 	}
 
+	public List<Notification> getAllNotifications() {
+		return notificationRepository.findAll();
+	}
+
+	public void cleanupNotifications(List<Notification> list) {
+		LocalDateTime now = LocalDateTime.now();
+		for (Notification notification : list) {
+			Duration TTl = Duration.between(notification.getCreatedAt().truncatedTo(ChronoUnit.DAYS) , now);
+			long days = TTl.toDays();
+			if (days >= 30) {
+				notificationRepository.delete(notification);
+			} else if (days >= 7) {
+				notification.updateStaleState(true);
+			}
+		}
+	}
+
 
 	@Transactional
 	@Scheduled(cron = "0 0 2 * * *")
 	public void scheduledNotificationCleanup() {
 		String status = statusTemplate.opsForValue().get("status:notificationCheck");
 		if (status != null && status.equals("processing")) {
-			log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
+			//log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
 			return; // 락 시도 없이 종료
 		}
 
@@ -126,19 +146,9 @@ public class NotificationServiceImpl implements NotificationService{
 
 			if(isLocked) {
 				statusTemplate.opsForValue().set("status:notificationCheck", "processing", 10, TimeUnit.MINUTES);
-				List<Notification> getNotifications =
-					notificationRepository.findAll();
+				List<Notification> getNotifications = getAllNotifications();
 				if (!getNotifications.isEmpty()) {
-					LocalDateTime now = LocalDateTime.now();
-					for (Notification notification : getNotifications) {
-						Duration TTl = Duration.between(notification.getCreatedAt() , now);
-						long days = TTl.toDays();
-						if (days >= 30) {
-							notificationRepository.delete(notification);
-						} else if (days >= 7) {
-							notification.updateStaleState(true);
-						}
-			     	}
+					cleanupNotifications(getNotifications);
 				}
 				statusTemplate.opsForValue().set("status:notificationCheck", "done", 10, TimeUnit.MINUTES);
 				log.info("알림 정리 완료: 총 {}건 처리됨", getNotifications.size());

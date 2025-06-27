@@ -11,7 +11,7 @@ public interface DocumentService {
 
     List<DocumentListResponseDto> getMyDocumentList(Long userId);
 
-    DocumentResponseDto getMyDocument(Long documentId, Long userId);
+    String getMyDocument(Long documentId, Long userId);
 
     void deleteDocument(Long documentId, Long userId);
 }

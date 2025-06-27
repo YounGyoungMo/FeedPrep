@@ -27,6 +27,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	@Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.isRead = false AND n.isStale = true")
 	Long getCountByReceiver(@Param("receiverId") Long receiverId);
 
+	@Query("SELECT n FROM Notification n WHERE n.createdAt < :limit")
+	List<Notification> findAllOlderThan(@Param("limit") LocalDateTime limit);
 
 	default Notification findByIdOrElseThrow(Long notificationId){
 		return findById(notificationId).orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_NOTIFICATION));

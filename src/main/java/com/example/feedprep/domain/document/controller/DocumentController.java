@@ -33,7 +33,7 @@ public class DocumentController {
     public ResponseEntity<ApiResponseDto<DocumentResponseDto>> createDocument(
         @AuthUser Long userId,
         @RequestParam("file")MultipartFile file
-    ) throws IOException {
+    ) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponseDto.success(CREATE_DOCUMENT_SUCCESS,
@@ -51,7 +51,7 @@ public class DocumentController {
     }
 
     @GetMapping("/{documentId}")
-    public ResponseEntity<ApiResponseDto<DocumentResponseDto>> getMyDocument(
+    public ResponseEntity<ApiResponseDto<String>> getMyDocument(
         @AuthUser Long userId,
         @PathVariable Long documentId
     ) {

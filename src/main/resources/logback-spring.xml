@@ -23,27 +23,42 @@
     </filter>
   </appender>
 
-  <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+  <appender name="SLACK_WARN" class="com.github.maricn.logback.SlackAppender">
     <webhookUri>${SLACK_WEBHOOK}</webhookUri>
     <layout class="ch.qos.logback.classic.PatternLayout">
       <pattern>${PUBLIC_PATTERN}</pattern>
     </layout>
     <username>Logback-FeedPrep</username> <iconEmoji>:robot_face:</iconEmoji>
     <colorCoding>true</colorCoding>
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+
+  <appender name="SLACK_ERROR" class="com.github.maricn.logback.SlackAppender">
+    <webhookUri>${SLACK_WEBHOOK}</webhookUri>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>${PUBLIC_PATTERN}</pattern>
+    </layout>
+    <username>Logback-FeedPrep</username> <iconEmoji>:no_entry:</iconEmoji>
+    <colorCoding>true</colorCoding>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
     </filter>
   </appender>
 
   <root level="INFO">
     <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
   </root>
 
   <logger name="com.example" level="INFO" additivity="false">
-    <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
-    <appender-ref ref="SLACK"/>
+    <appender-ref ref="SLACK_WARN"/>
+    <appender-ref ref="SLACK_ERROR"/>
   </logger>
 
 </configuration>
