@@ -1,7 +1,10 @@
 ### 학생 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
 GET localhost:8080/oauth/authorize/kakao?role=student
 
-// 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야 함
+### 학생 소셜 로그인 (구글) - 계정없으면 회원가입후 로그인
+GET localhost:8080/oauth/authorize/google?role=student
+
+// 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야함
 
 ### 튜터 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
 GET localhost:8080/oauth/authorize/kakao?role=tutor

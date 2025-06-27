@@ -49,4 +49,5 @@ Thumbs.db
 
 test-output/
 
-**/http-client.env.json
+### properties
+**/application-local.properties
