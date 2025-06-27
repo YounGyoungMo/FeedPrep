@@ -123,12 +123,12 @@ public class S3ServiceImpl implements S3Service{
 
         Long convertedSize;
 
-        if(type.equals("kb") || type.equals("KB") || type.equals("Kb") || type.equals("kB")) {
+        if(type == null || type.isBlank()) {
+            convertedSize = size;
+        } else if(type.equals("kb") || type.equals("KB") || type.equals("Kb") || type.equals("kB")) {
             convertedSize = size * 1024;
         } else if (type.equals("mb") || type.equals("MB") || type.equals("Mb") || type.equals("mB")) {
             convertedSize = size * 1024 * 1024;
-        } else if(type.isEmpty()) {
-            convertedSize = size;
         } else {
             throw new CustomException(ErrorCode.DONT_CONVERT_FILESIZE_TYPE);
         }
