@@ -22,18 +22,19 @@ public class RedisConfig {
 		template.setConnectionFactory(connectionFactory);
 
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setHashValueSerializer(new RedisSerializer<Double>() {
+		RedisSerializer<Double> doubleSerializer = new RedisSerializer<>() {
 
 			@Override
 			public byte[] serialize(Double value) throws SerializationException {
-				return (value == null)? null: value.toString().getBytes(StandardCharsets.UTF_8);
+				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
 			}
 
 			@Override
 			public Double deserialize(byte[] bytes) throws SerializationException {
 				return (bytes == null) ? null : Double.parseDouble(new String(bytes, StandardCharsets.UTF_8));
 			}
-		});
+		};
+		template.setValueSerializer(doubleSerializer); // ✅ 이거 추가!
 		return template;
 	}
 

@@ -1,423 +1,330 @@
 // package com.example.feedprep.domain.feedbackreview;
 //
-// import java.util.List;
-// import java.util.Random;
-// import java.util.stream.IntStream;
+// import static org.junit.jupiter.api.Assertions.assertEquals;
+// import static org.junit.jupiter.api.Assertions.assertNotNull;
+// import static org.mockito.ArgumentMatchers.any;
+// import static org.mockito.ArgumentMatchers.anyLong;
+// import static org.mockito.ArgumentMatchers.anyString;
+// import static org.mockito.ArgumentMatchers.eq;
+// import static org.mockito.Mockito.atLeastOnce;
+// import static org.mockito.Mockito.doNothing;
+// import static org.mockito.Mockito.mock;
+// import static org.mockito.Mockito.times;
+// import static org.mockito.Mockito.verify;
+// import static org.mockito.Mockito.when;
 //
+// import java.time.Duration;
+// import java.time.LocalDateTime;
+// import java.util.List;
+// import java.util.Optional;
+// import java.util.concurrent.TimeUnit;
+//
+// import org.junit.jupiter.api.BeforeEach;
 // import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-// import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.extension.ExtendWith;
+// import org.mockito.InjectMocks;
+// import org.mockito.Mock;
+// import org.mockito.MockitoAnnotations;
+// import org.mockito.junit.jupiter.MockitoExtension;
+// import org.redisson.api.RLock;
+// import org.redisson.api.RedissonClient;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.PageImpl;
+// import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.Sort;
+// import org.springframework.data.redis.core.RedisTemplate;
+// import org.springframework.data.redis.core.ValueOperations;
 // import org.springframework.test.context.ActiveProfiles;
-// import org.springframework.transaction.annotation.Transactional;
-// import com.example.feedprep.common.response.ApiResponseDto;
-// import com.example.feedprep.domain.document.entity.Document;
-// import com.example.feedprep.domain.document.repository.DocumentRepository;
-// import com.example.feedprep.domain.feedback.dto.request.FeedbackWriteRequestDto;
-// import com.example.feedprep.domain.feedback.service.FeedbackService;
-// import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-// import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
-// import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
+// import com.example.feedprep.domain.feedback.entity.Feedback;
+// import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
+// import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 // import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 // import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewResponseDto;
-// import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewService;
+// import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
+// import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
+// import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
+// import com.example.feedprep.domain.notification.entity.Notification;
 // import com.example.feedprep.domain.user.entity.User;
 // import com.example.feedprep.domain.user.enums.UserRole;
 // import com.example.feedprep.domain.user.repository.UserRepository;
-// import com.fasterxml.jackson.core.JsonProcessingException;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import com.fasterxml.jackson.databind.SerializationFeature;
 //
-// @ActiveProfiles("local")
-// @SpringBootTest
-// @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-// public class FeedbackReviewTest {
-// 	@Autowired
-// 	private FeedbackRequestEntityRepository feedbackRequestEntityRepository;
-// 	@Autowired
+// import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+//
+// @ActiveProfiles("test")
+// @ExtendWith(MockitoExtension.class)
+//  public class FeedbackReviewTest {
+// 	@Mock
 // 	private UserRepository userRepository;
-// 	@Autowired
-// 	private DocumentRepository documentRepository;
-// 	@Autowired
-// 	private FeedbackRequestService feedbackRequestService;
-// 	@Autowired
-// 	private FeedbackService feedbackService;
-// 	@Autowired
-// 	private FeedbackReviewService feedbackReviewService;
 //
+// 	@Mock
+// 	private FeedBackReviewRepository feedBackReviewRepository;
 //
-// 	public List<User> userSetting (){
-// 		return List.of(
-// 			new User("Astra1", "Test1@naver.com", "tester1234", UserRole.APPROVED_TUTOR),
-// 			new User("paragon", "Test30@naver.com", "tester1234", UserRole.STUDENT),
-// 			new User("paragon1", "Test5@naver.com", "tester1234", UserRole.STUDENT),
-// 			new User("paragon2", "Test6@naver.com", "tester1234", UserRole.STUDENT),
-// 			new User("paragon3", "Test7@naver.com", "tester1234", UserRole.STUDENT),
-// 			new User("paragon4", "Test8@naver.com", "tester1234", UserRole.STUDENT)
-// 		);
-// 	}
-// 	@Transactional
+// 	@Mock
+// 	private FeedBackRepository feedBackRepository;
+//
+// 	@Mock
+// 	private RedissonClient redissonClient;
+//
+// 	@Mock
+// 	private RedisTemplate<String, Object> redisTemplate;
+// 	@Mock
+// 	private RedisTemplate<String, String> statusTemplate;
+//
+// 	@Mock
+// 	private ValueOperations<String, String> valueOperations;
+//
+// 	@InjectMocks
+// 	private FeedbackReviewServiceImpl feedbackReviewService;
+//
 // 	@Test
-// 	public void 리뷰_생성_테스트(){
+// 	public void 리뷰_생성_테스트() {
 //
-//        	List<User> users =userSetting();
-// 		userRepository.saveAll(users );
+// 		Long studentId = 1L;
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		User tutor = mock(User.class);
+// 		User student = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
+// 		when(student.getUserId()).thenReturn(studentId);
+// 		when(tutor.getUserId()).thenReturn(2L); // 적당한 ID
 //
-// 		//한 튜터에 대한 피드백 요청 신청
-// 		FeedbackRequestDto requestDto
-// 			= new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		FeedbackRequestEntity feedbackRequestEntity = mock(FeedbackRequestEntity.class);
+// 		when(feedbackRequestEntity.getUser()).thenReturn(student);
 //
-// 		feedbackRequestService.createRequest(users.get(1).getUserId(), requestDto);
+// 		Long feedbackId = 1L;
+// 		Feedback feedback = mock(Feedback.class);
+// 		when(feedback.getTutor()).thenReturn(tutor);
+// 		when(feedback.getFeedbackRequestEntity()).thenReturn(feedbackRequestEntity);
+// 		when(feedBackRepository.findWithRequestAndUserById(feedbackId)).thenReturn(Optional.of(feedback));
 //
-// 		//피드백 요청에 대한 피드백 작성
-// 		FeedbackWriteRequestDto feedbackWriteRequestDto
-// 			= new FeedbackWriteRequestDto("날먹잼");
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		when(feedbackReview.getId()).thenReturn(1L);
+// 		when(feedBackReviewRepository.save(any())).thenReturn(feedbackReview);
 //
-// 		feedbackService.createFeedback(users.get(0).getUserId(), 1L, feedbackWriteRequestDto);
+// 		FeedbackReviewRequestDto feedbackReviewRequestDto = mock(FeedbackReviewRequestDto.class);
+// 		when(feedbackReviewRequestDto.getRating()).thenReturn(5);
+// 		when(feedbackReviewRequestDto.getContent()).thenReturn("좋은 말씀 감사합니다");
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 //
-// 		//리뷰 작성 완료하기.
-//
-// 		FeedbackReviewRequestDto feedbackReviewRequestDto
-// 			=new FeedbackReviewRequestDto(5, "튜터님 좋은 조언 감사합니다." );
-//
-// 		long start = System.currentTimeMillis();
-// 		FeedbackReviewResponseDto feedbackReviewResponseDto =
-// 			feedbackReviewService. createReview( users.get(1).getUserId(),1L , feedbackReviewRequestDto);
-// 		long end= System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString( feedbackReviewResponseDto); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
+// 		verify(feedBackReviewRepository, times(1)).save(any());
 // 	}
 //
-//
-// 	@Transactional
 // 	@Test
-// 	public void 리뷰_수정_테스트(){
-// 		List<User> users =userSetting();
-// 		userRepository.saveAll(users );
+// 	public void 리뷰_수정_테스트() {
+// 		Long studentId = 1L;
+// 		Long reviewId = 1L;
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		User student = mock(User.class);
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		FeedbackReviewRequestDto feedbackReviewRequestDto = mock(FeedbackReviewRequestDto.class);
 //
-// 		//한 튜터에 대한 피드백 요청 신청
-// 		FeedbackRequestDto requestDto
-// 			= new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
 //
-// 		feedbackRequestService.createRequest(users.get(1).getUserId(), requestDto);
+// 		when(feedbackReview.getId()).thenReturn(reviewId);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedBackReviewRepository.save(any())).thenReturn(feedbackReview);
+// 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 //
-// 		//피드백 요청에 대한 피드백 작성
-// 		FeedbackWriteRequestDto feedbackWriteRequestDto
-// 			= new FeedbackWriteRequestDto("날먹잼");
-//
-// 		feedbackService.createFeedback(users.get(0).getUserId(), 1L, feedbackWriteRequestDto);
-// 		//리뷰 작성 완료하기.
-//
-// 		FeedbackReviewRequestDto feedbackReviewRequestDto
-// 			=new FeedbackReviewRequestDto( 5, "같이 좀..." );
-//
-// 		feedbackReviewService.createReview(users.get(0).getUserId(),1L , feedbackReviewRequestDto);
-//
-//
-// 		//리뷰 수정하기
-// 		FeedbackReviewRequestDto feedbackReviewUpdateRequestDto
-// 			=new FeedbackReviewRequestDto( 5, "정직하게 리뷰 하겠습니다." );
-// 		long start = System.currentTimeMillis();
-// 		FeedbackReviewResponseDto feedbackReviewUpdateResponseDto =
-// 			feedbackReviewService.updateReview( users.get(0).getUserId(),1L , feedbackReviewUpdateRequestDto);
-// 		long end= System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(  feedbackReviewUpdateResponseDto); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertDoesNotThrow(() -> feedbackReviewService.updateReview(studentId, reviewId, feedbackReviewRequestDto));
+// 		verify(feedBackReviewRepository, times(1)).save(any());
 // 	}
-// 	@Transactional
+//
 // 	@Test
-// 	public void 리뷰_삭제_테스트(){
-// 		List<User> users =userSetting();
-// 		userRepository.saveAll(users );
+// 	public void 리뷰_삭제_테스트() {
+// 		Long studentId = 1L;
+// 		Long reviewId = 1L;
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		User student = mock(User.class);
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		FeedbackReviewRequestDto feedbackReviewRequestDto = mock(FeedbackReviewRequestDto.class);
 //
-// 		//한 튜터에 대한 피드백 요청 신청
-// 		FeedbackRequestDto requestDto
-// 			= new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
 //
-// 		feedbackRequestService.createRequest(users.get(1).getUserId(), requestDto);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 //
-// 		//피드백 요청에 대한 피드백 작성
-// 		FeedbackWriteRequestDto feedbackWriteRequestDto
-// 			= new FeedbackWriteRequestDto("날먹잼");
-//
-// 		feedbackService.createFeedback(users.get(0).getUserId(), 1L, feedbackWriteRequestDto);
-// 		//리뷰 작성 완료하기.
-//
-// 		FeedbackReviewRequestDto feedbackReviewRequestDto
-// 			=new FeedbackReviewRequestDto( 5, "같이 좀..." );
-//
-// 		feedbackReviewService.createReview( users.get(0).getUserId(),1L , feedbackReviewRequestDto);
-//
-// 		//리뷰 삭제하기
-//
-// 		long start = System.currentTimeMillis();
-// 		ApiResponseDto FeedbackReviewDeleteResponse =
-// 			feedbackReviewService.deleteReview(users.get(0).getUserId(),1L);
-// 		long end= System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(FeedbackReviewDeleteResponse); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertDoesNotThrow(() -> feedbackReviewService.deleteReview(studentId, reviewId));
 // 	}
-// 	@Transactional
+//
 // 	@Test
-// 	public void 리뷰_유저_단건_조회_테스트(){
-// 		List<User> users =userSetting();
-// 		userRepository.saveAll(users );
+// 	public void 학생_기준_리뷰_유저_단건_조회_테스트() {
+// 		Long studentId = 1L;
+// 		Long tutor1Id = 2L;
+// 		User student = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
+// 		when(student.getRole()).thenReturn(UserRole.STUDENT);
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		when(feedbackReview.getId()).thenReturn(1L);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedbackReview.getTutorId()).thenReturn(tutor1Id);
+// 		when(feedbackReview.getContent()).thenReturn("학생이 리뷰를 달았습니다.");
+// 		when(feedbackReview.getRating()).thenReturn(3);
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
+// 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 //
-// 		//한 튜터에 대한 피드백 요청 신청
-// 		FeedbackRequestDto requestDto
-// 			= new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		FeedbackReviewResponseDto feedbackReviewResponseDto
+// 			= feedbackReviewService.getReview(studentId, 1L);
 //
-// 		feedbackRequestService.createRequest(users.get(1).getUserId(), requestDto);
-//
-// 		//피드백 요청에 대한 피드백 작성
-// 		FeedbackWriteRequestDto feedbackWriteRequestDto
-// 			= new FeedbackWriteRequestDto("날먹잼");
-//
-// 		feedbackService.createFeedback(users.get(0).getUserId(), 1L, feedbackWriteRequestDto);
-// 		//리뷰 작성 완료하기.
-//
-// 		FeedbackReviewRequestDto feedbackReviewRequestDto
-// 			=new FeedbackReviewRequestDto( 5, "좋은 피드백이었습니다." );
-//
-// 		feedbackReviewService.createReview( users.get(1).getUserId(),1L , feedbackReviewRequestDto);
-// 		//리뷰 조회하기
-//
-// 		long start = System.currentTimeMillis();
-// 		FeedbackReviewResponseDto feedbackReviewResponse
-// 			=  feedbackReviewService.getReview(users.get(1).getUserId() , 1L);
-// 		long end= System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(feedbackReviewResponse); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertNotNull(feedbackReviewResponseDto);
+// 		assertEquals(1L, feedbackReviewResponseDto.getId());
+// 		assertEquals(1L, feedbackReviewResponseDto.getUserId());
+// 		assertEquals(2L, feedbackReviewResponseDto.getTutorId());
 // 	}
-// 	@Transactional
+//
 // 	@Test
-// 	public void 리뷰__다건_조회_유저_기준_테스트(){
-// 		List<User> users =userSetting();
-// 		userRepository.saveAll(users );
+// 	public void 튜터_기준_리뷰_유저_단건_조회_테스트() {
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		Long tutorId = 3L;
+// 		Long studentId = 1L;
+// 		User tutor = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(tutor);
+// 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 //
-//          List<User> tutors = List.of(
-// 			 new User("아카시아", "Test65@naver.com", "tester1234", UserRole.APPROVED_TUTOR),
-// 			 new User("아카시아2", "Test66@naver.com", "tester1234", UserRole.APPROVED_TUTOR)
-// 		 ) ;
-// 		userRepository.save( tutors.get(0) );
-// 		userRepository.save( tutors.get(1) );
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		when(feedbackReview.getId()).thenReturn(1L);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedbackReview.getTutorId()).thenReturn(tutorId);
+// 		when(feedbackReview.getContent()).thenReturn("학생이 리뷰를 달았습니다.");
+// 		when(feedbackReview.getRating()).thenReturn(3);
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
+// 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 //
+// 		FeedbackReviewResponseDto feedbackReviewResponseDto
+// 			= feedbackReviewService.getReview(tutorId, 1L);
 //
-// 		//여러 튜터에게 피드백 요청 신청
-// 		FeedbackRequestDto requestDtoTutor1 = new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
-// 		FeedbackRequestDto requestDtoTutor2 = new FeedbackRequestDto(tutors.get(0).getUserId(), doc.getDocumentId(), "Text");
-// 		FeedbackRequestDto requestDtoTutor3 = new FeedbackRequestDto(tutors.get(1).getUserId(), doc.getDocumentId(), "Text");
-//
-//
-// 		feedbackRequestService.createRequest(users.get(2).getUserId(), requestDtoTutor1);
-// 		feedbackRequestService.createRequest(users.get(2).getUserId(), requestDtoTutor2);
-// 		feedbackRequestService.createRequest(users.get(2).getUserId(), requestDtoTutor3);
-//
-// 		List<FeedbackWriteRequestDto> testFedbackWriteRequestDtos = List.of(
-// 			new FeedbackWriteRequestDto( "~이런점을 수정하면 좋을것 같습니다."),
-// 			new FeedbackWriteRequestDto( "~이런점을 수정하면 좋을것 같습니다."),
-// 			new FeedbackWriteRequestDto( "~이런점을 수정하면 좋을것 같습니다.")
-// 		);
-// 		feedbackService.createFeedback(users.get(0).getUserId(), 1L, testFedbackWriteRequestDtos.get(0));
-// 		feedbackService.createFeedback(tutors.get(0).getUserId(), 2L, testFedbackWriteRequestDtos.get(1));
-// 		feedbackService.createFeedback(tutors.get(1).getUserId(), 3L, testFedbackWriteRequestDtos.get(2));
-// 		System.out.println("신청완료");
-//
-// 		//리뷰 작성
-//
-// 		//리뷰 작성 완료하기.
-//
-// 		for(Long i = 1L; i <4L; i++) {
-// 			FeedbackReviewRequestDto feedbackReviewRequestDto
-// 				= new FeedbackReviewRequestDto(5, "좋은 피드백이었습니다.");
-//
-// 			feedbackReviewService.createReview(users.get(2).getUserId(), i , feedbackReviewRequestDto);
-//
-// 		}
-// 		System.out.println("리뷰 작성");
-// 		//리뷰 조회하기
-// 		long start = System.currentTimeMillis();
-// 		List<FeedbackReviewResponseDto> feedbackReviewResponse
-// 			= feedbackReviewService.getReviews(users.get(2).getUserId(), 0, 10);
-// 		long end = System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(feedbackReviewResponse); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertNotNull(feedbackReviewResponseDto);
+// 		assertEquals(1L, feedbackReviewResponseDto.getId());
+// 		assertEquals(1L, feedbackReviewResponseDto.getUserId());
+// 		assertEquals(3L, feedbackReviewResponseDto.getTutorId());
 // 	}
 //
-// 	@Transactional
 // 	@Test
-// 	public void 리뷰_튜터_다건_조회_테스트() {
+// 	public void 학생_기준_리뷰_유저_다건_조회_테스트() {
 //
-// 		List<User> users = userSetting();
-// 		userRepository.saveAll(users);
+// 		Long studentId = 1L;
+// 		Long tutor1Id = 2L;
+// 		User student = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
+// 		when(student.getUserId()).thenReturn(studentId);
+// 		when(student.getRole()).thenReturn(UserRole.STUDENT);
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 //
-// 		//한 튜터에게 여러명이 다른 피드백 요청 신청
-// 		FeedbackRequestDto requestDto = new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		when(feedbackReview.getId()).thenReturn(1L);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedbackReview.getTutorId()).thenReturn(tutor1Id);
+// 		when(feedbackReview.getContent()).thenReturn("학생이 리뷰를 달았습니다.");
+// 		when(feedbackReview.getRating()).thenReturn(3);
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 //
-// 		IntStream.range(1, users.size())
-// 			.forEach(i -> feedbackRequestService.createRequest(users.get(i).getUserId(), requestDto));
-// 		System.out.println("신청완료");
+// 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
+// 		when(feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(studentId, pageable)).thenReturn(page);
 //
-// 		//피드백 요청에 대한 피드백 작성
-// 		for (Long i = 0L; i < users.size()-1; i++) {
-// 			FeedbackWriteRequestDto testfeedbackWriteRequestDto =
-// 				new FeedbackWriteRequestDto( "~이런점을 수정하면 좋을것 같습니다.");
+// 		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+// 			= feedbackReviewService.getReviews(studentId, 0, 10);
 //
-// 			feedbackService.createFeedback(users.get(0).getUserId(), i + 1, testfeedbackWriteRequestDto);
-// 		}
-// 		System.out.println("리뷰 작성");
-// 		//리뷰 작성 완료하기.
-//
-// 		int sid = 1;
-// 		for (Long i = 1L; i < users.size(); i++) {
-// 			FeedbackReviewRequestDto feedbackReviewRequestDto
-// 				= new FeedbackReviewRequestDto( 5, "좋은 피드백이었습니다.");
-//
-// 			feedbackReviewService.createReview( users.get(sid).getUserId(), i, feedbackReviewRequestDto);
-// 			sid++;
-// 		}
-//
-// 		//리뷰 조회하기
-// 		long start = System.currentTimeMillis();
-// 		List<FeedbackReviewResponseDto> feedbackReviewResponse
-// 			= feedbackReviewService.getReviews(users.get(0).getUserId(), 0, 10);
-// 		long end = System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(feedbackReviewResponse); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
+// 		assertNotNull(feedbackReviewResponseDto);
+// 		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
+// 		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
+// 		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
 // 	}
 //
-// 	@Transactional
 // 	@Test
-// 	public void 리뷰_평균_조회_테스트(){
-// 		List<User> users = userSetting();
-// 		userRepository.saveAll(users);
+// 	public void 튜터_기준_리뷰_유저_다건_조회_테스트() {
 //
-// 		Document doc = new Document(users.get(1), "api/ef/?");
-// 		documentRepository.save(doc);
+// 		Long studentId = 1L;
+// 		Long tutorId = 2L;
 //
-// 		//한 튜터에게 여러명이 다른 피드백 요청 신청
-// 		FeedbackRequestDto requestDto = new FeedbackRequestDto(users.get(0).getUserId(), doc.getDocumentId(), "Text");
+// 		User student = mock(User.class);
+// 		User tutor = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(eq(tutorId))).thenReturn(tutor);
+// 		when(tutor.getUserId()).thenReturn(tutorId);
+// 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 //
-// 		IntStream.range(1, users.size())
-// 			.forEach(i -> feedbackRequestService.createRequest(users.get(i).getUserId(), requestDto));
-// 		System.out.println("신청완료");
+// 		PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 //
-// 		//피드백 요청에 대한 피드백 작성
-// 		for(Long i = 1L; i < users.size(); i++) {
-// 			FeedbackWriteRequestDto testfeedbackWriteRequestDto =
-// 				new FeedbackWriteRequestDto( "~이런점을 수정하면 좋을것 같습니다.");
+// 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
+// 		when(feedbackReview.getId()).thenReturn(1L);
+// 		when(feedbackReview.getUserId()).thenReturn(studentId);
+// 		when(feedbackReview.getTutorId()).thenReturn(tutorId);
+// 		when(feedbackReview.getContent()).thenReturn("학생이 쓴 리뷰를 화인합니다.");
+// 		when(feedbackReview.getRating()).thenReturn(3);
+// 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 //
-// 			feedbackService.createFeedback(users.get(0).getUserId(), i, testfeedbackWriteRequestDto);
-// 		}
-// 		System.out.println("리뷰 작성");
-// 		Random random = new Random();
+// 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
+// 		when(feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(tutorId, pageable)).thenReturn(page);
 //
-// 		//리뷰 작성 완료하기.
-// 		int student =1;
-// 		int rat = 0;
-// 		for(Long i = 1L; i < users.size(); i++) {
-// 			rat = random.nextInt(0,5);
-// 			FeedbackReviewRequestDto feedbackReviewRequestDto
-// 				= new FeedbackReviewRequestDto(rat, "좋은 피드백이었습니다.");
+// 		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+// 			= feedbackReviewService.getReviews(tutorId, 0, 10);
 //
-// 			feedbackReviewService.createReview( users.get(student).getUserId(), i ,feedbackReviewRequestDto);
-// 			student++;
-// 			if(student == users.size()){
-// 				break;
-// 			}
-// 		}
-// 		//리뷰 조회하기
-// 		List<FeedbackReviewResponseDto> feedbackReviewResponse=
-// 			feedbackReviewService.getReviews(users.get(0).getUserId(), 0,10);
-//
-// 		long start = System.currentTimeMillis();
-//
-// 		double Rating = feedbackReviewService.getAverageRating(users.get(0).getUserId());
-//
-// 		long end= System.currentTimeMillis();
-// 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
-//
-// 		ObjectMapper mapper = new ObjectMapper();
-// 		mapper.enable(SerializationFeature.INDENT_OUTPUT); // 예쁘게 출력
-//
-// 		try {
-// 			String json = mapper.writeValueAsString(feedbackReviewResponse); // 전체 객체를 JSON 변환
-// 			System.out.println(json);
-// 		} catch (JsonProcessingException e) {
-// 			e.printStackTrace();
-// 		}
-// 		System.out.println(Rating);
+// 		assertNotNull(feedbackReviewResponseDto);
+// 		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
+// 		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
+// 		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
 // 	}
+//
+//
+// 	@Test
+// 	public void 평점_출력 () {
+// 		Long tutorId = 2L;
+// 		User tutor  = mock(User.class);
+// 		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(tutor);
+// 		when(tutor.getUserId()).thenReturn(tutorId);
+// 		when(feedBackReviewRepository.getAverageRating(tutorId)).thenReturn(null);
+//
+// 		Double avg = feedbackReviewService.getAverageRating(tutorId);
+//
+// 		assertNotNull(avg);
+// 		assertEquals(0.0, avg);
+// 	}
+//
+// 	@Test
+// 	public void 평점_자동_출력() throws Exception{
+//
+// 		// given
+// 		Long tutorId = 2L;
+// 		User tutor = mock(User.class);
+// 		when(userRepository.findAllByRole(UserRole.APPROVED_TUTOR)).thenReturn(List.of(tutor));
+// 		when(tutor.getUserId()).thenReturn(tutorId);
+//
+// 		// 평점 계산 결과
+// 		when(feedBackReviewRepository.getAverageRating(tutorId)).thenReturn(4.0);
+//
+// 		// TTL 계산을 위한 현재 시간 mocking (실제 테스트에선 clock 주입도 가능)
+// 		LocalDateTime now = LocalDateTime.now();
+// 		LocalDateTime tomorrow5am = now.toLocalDate().plusDays(1).atTime(5, 0);
+// 		long seconds = Duration.between(now, tomorrow5am).getSeconds();
+//
+// 		// Redis Lock mocking
+// 		RLock lock = mock(RLock.class);
+// 		when(redissonClient.getLock("lock:updateRatings")).thenReturn(lock);
+// 		when(lock.tryLock(anyLong(), anyLong(), any())).thenReturn(true);
+//
+// 		// Redis ValueOperations mocking
+// 		ValueOperations<String, Object> ratingOps = mock(ValueOperations.class);
+// 		ValueOperations<String, String> statusOps = mock(ValueOperations.class);
+//
+// 		when(redisTemplate.opsForValue()).thenReturn(ratingOps);
+// 		when(statusTemplate.opsForValue()).thenReturn(statusOps);
+//
+// 		when(statusOps.get("status:updateRatings")).thenReturn(null);
+//
+// 		// // doNothing mocking (optional)
+// 		// doNothing().when(ratingOps).set(anyString(), any(), anyLong(), any());
+// 		// doNothing().when(statusOps).set(anyString(), any(), anyLong(), any());
+//
+// 		// when
+// 		feedbackReviewService.updateRatings();
+//
+// 		// then
+// 		verify(feedBackReviewRepository, times(4)).getAverageRating(tutorId);
+// 		verify(ratingOps, times(1))
+// 			.set(eq("rating:" + tutorId), eq(4.0), anyLong(), eq(TimeUnit.SECONDS));
+// 		verify(statusOps, atLeastOnce()).set(eq("status:updateRatings"), eq("done"), anyLong(), eq(TimeUnit.MINUTES));
+// 	}
+//
+//
 // }

@@ -32,6 +32,10 @@ public interface FeedbackRequestService {
 	// 피드백 신청 수정
 	FeedbackRequestEntityResponseDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto);
 
+
+	// 피드백 신청 수락
+	FeedbackRequestEntityResponseDto acceptRequest(Long userId, Long feedbackRequestId);
+
 	// 피드백 신청 취소
 	FeedbackRequestEntityResponseDto cancelRequest(Long userId, Long feedbackRequestId);
 

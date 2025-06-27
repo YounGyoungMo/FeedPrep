@@ -39,8 +39,7 @@ public class FeedbackServiceImpl implements FeedbackService{
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findPendingByIdAndTutorOrElseThrow(
 			tutor.getUserId(), requestId, ErrorCode.USER_NOT_FOUND);
 
-		if(request.getRequestState().equals(RequestState.CANCELED)
-			|| request.getRequestState().equals(RequestState.COMPLETED)){
+		if(!request.getRequestState().equals(RequestState.IN_PROGRESS)){
 			throw new CustomException(ErrorCode.INVALID_REQUEST_STATE);
 		}
 		// 4. Feedback 엔티티 생성
