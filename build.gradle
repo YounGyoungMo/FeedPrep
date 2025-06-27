@@ -22,6 +22,8 @@ configurations {
 
 repositories {
     mavenCentral()
+    // 아임포트
+    maven { url 'https://jitpack.io' }
 }
 
 jacoco{
@@ -121,6 +123,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.data:spring-data-redis'
     implementation 'org.apache.commons:commons-pool2'
+
+    // 아임포트
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
+    implementation 'io.portone:server-sdk:0.19.0'
+
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
 }
 
