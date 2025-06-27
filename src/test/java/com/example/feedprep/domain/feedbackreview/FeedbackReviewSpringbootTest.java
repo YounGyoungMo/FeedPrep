@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import com.example.feedprep.domain.AbstractRedisTest;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.document.repository.DocumentRepository;
 import com.example.feedprep.domain.feedback.dto.request.FeedbackWriteRequestDto;
@@ -57,6 +54,7 @@ public class FeedbackReviewSpringbootTest  {
 
 	@BeforeEach
 	void setup(TestInfo testInfo) {
+
 		if(!testInfo.getDisplayName().equals("캐시_상태_검증()")){
 			users = List.of(
 				new User("Astra", "Test@naver.com", "tester1234", UserRole.APPROVED_TUTOR),
