@@ -107,13 +107,11 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		if(!request.getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-
 		if (request.getRequestState() != RequestState.PENDING) {
 			throw new CustomException(ErrorCode.CANNOT_EDIT_NON_EDITABLE_REQUEST);
 		}
-		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
 
-		//문서 조회
+		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
 		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
