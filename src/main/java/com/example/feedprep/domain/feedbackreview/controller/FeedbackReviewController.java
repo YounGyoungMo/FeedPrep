@@ -41,8 +41,7 @@ public class FeedbackReviewController {
 	@GetMapping("/feedback/review/{reviewId}")
 	public ResponseEntity<ApiResponseDto<FeedbackReviewDetailsDto>> getReview(
 		@AuthUser Long userId,
-		@PathVariable Long reviewId,
-		@Validated @RequestParam(defaultValue = "20") Integer size){
+		@PathVariable Long reviewId){
 		return  ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponseDto.success(
 				SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW,
