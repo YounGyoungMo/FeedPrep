@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewService;
@@ -48,7 +49,7 @@ public class FeedbackReviewController {
 				feedbackReviewService.getReview(userId,reviewId)));
 	}
 	@GetMapping("/feedback/review")
-	public ResponseEntity<ApiResponseDto<List<FeedbackReviewDetailsDto>>> getReviews(
+	public ResponseEntity<ApiResponseDto<List<FeedbackReviewListDto>>> getReviews(
 		@AuthUser Long userId,
 		@RequestParam(defaultValue= "0") Integer page,
 		@Validated @RequestParam(defaultValue = "20") Integer size){

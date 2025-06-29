@@ -3,6 +3,7 @@ package com.example.feedprep.domain.feedbackreview.service;
 import java.util.List;
 
 import com.example.feedprep.common.response.ApiResponseDto;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 
@@ -13,7 +14,7 @@ public interface FeedbackReviewService {
 	//리뷰 단건 조회
 	FeedbackReviewDetailsDto getReview(Long userId, Long reviewId);
 
-	List<FeedbackReviewDetailsDto> getReviews(Long userId, Integer page, Integer size);
+	List<FeedbackReviewListDto> getReviews(Long userId, Integer page, Integer size);
 
 	//튜터 평점 조회
 	Double getAverageRating(Long tutorId);
