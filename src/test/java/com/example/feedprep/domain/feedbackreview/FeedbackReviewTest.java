@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
@@ -199,7 +200,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(studentId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewDetailsDto> feedbackReviewDetailsDto
+		List<FeedbackReviewListDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(studentId, 0, 10);
 
 		assertNotNull(feedbackReviewDetailsDto);
@@ -233,7 +234,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(tutorId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewDetailsDto> feedbackReviewDetailsDto
+		List<FeedbackReviewListDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(tutorId, 0, 10);
 
 		assertNotNull(feedbackReviewDetailsDto);

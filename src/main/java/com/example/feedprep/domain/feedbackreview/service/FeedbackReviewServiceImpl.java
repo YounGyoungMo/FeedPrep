@@ -26,6 +26,7 @@ import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
@@ -85,7 +86,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	}
 	@Transactional(readOnly = true)
 	@Override
-	public List<FeedbackReviewDetailsDto> getReviews(Long userId, Integer page, Integer size) {
+	public List<FeedbackReviewListDto> getReviews(Long userId, Integer page, Integer size) {
 
 		User user = userRepository.findByIdOrElseThrow(userId);
 
@@ -99,7 +100,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 			reviews =  feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(user.getUserId(),pageable);
 		}
 		return reviews.stream()
-			.map(FeedbackReviewDetailsDto::new)
+			.map(FeedbackReviewListDto::new)
 			.collect(Collectors.toList());
 	}
 
