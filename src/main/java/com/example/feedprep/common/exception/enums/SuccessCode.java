@@ -54,10 +54,10 @@ public enum SuccessCode {
     OK_SUCCESS_FEEDBACK_REQUEST_CANCELED(HttpStatus.OK, "정상적으로 요청이 취소 되었습니다."),
 
     //피드백 리뷰
-    OK_SUCCESS_FEEDBACK_REVIEW_CREATED(HttpStatus.CREATED, "작성한 피드백 리뷰가 작성 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW(HttpStatus.CREATED, "작성한 피드백 리뷰가 조회 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "작성한 피드백 리뷰가 작성 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "작성한 피드백 리뷰가 정상적으로 삭제되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_CREATED(HttpStatus.CREATED, "피드백 리뷰가 작성 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW(HttpStatus.CREATED, "피드백 리뷰가 조회 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "피드백 리뷰가 수정 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "피드백 리뷰가 정상적으로 삭제되었습니다."),
     //알림
     OK_SUCCESS_Notification(HttpStatus.OK, "알림을 정상적으로 조회 했습니다."),
     OK_SUCCESS_Notification_DELETED(HttpStatus.OK, "알림을 정상적으로 삭제 되었습니다."),
