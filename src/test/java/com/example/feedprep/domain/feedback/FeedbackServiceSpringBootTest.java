@@ -77,6 +77,7 @@ public class FeedbackServiceSpringBootTest {
 
 	}
 
+	@Transactional
 	@Test
 	public void 피드백_작성(){
 		feedbackRequestService.acceptRequest(1L, 1L);
