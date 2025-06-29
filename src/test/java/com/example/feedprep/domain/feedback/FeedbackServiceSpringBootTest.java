@@ -17,7 +17,7 @@ import com.example.feedprep.domain.feedback.dto.request.FeedbackWriteRequestDto;
 import com.example.feedprep.domain.feedback.dto.response.FeedbackResponseDto;
 import com.example.feedprep.domain.feedback.service.FeedbackService;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
@@ -57,7 +57,7 @@ public class FeedbackServiceSpringBootTest {
 			throw new RuntimeException(e);
 		}
 	}
-	FeedbackRequestEntityResponseDto newRequest;
+	UserFeedbackRequestDetailsDto newRequest;
 	@BeforeEach
 	void setup(){
 

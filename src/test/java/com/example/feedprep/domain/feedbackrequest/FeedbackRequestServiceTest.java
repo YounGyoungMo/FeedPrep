@@ -23,9 +23,9 @@ import com.example.feedprep.domain.document.repository.DocumentRepository;
 import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.TutorFeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
@@ -109,15 +109,15 @@ public class FeedbackRequestServiceTest {
 
 
 		long start = System.currentTimeMillis();
-		FeedbackRequestEntityResponseDto feedbackRequestEntityResponseDto =
+		UserFeedbackRequestDetailsDto userFeedbackRequestDetailsDto =
 			feedbackRequestService.createRequest(users.get(4).getUserId(), requestDtos.get(0));
 		long end= System.currentTimeMillis();
 		System.out.println("첫 실행 시간: " + (end - start) + "ms"); // DB 조회
 
-		assertNotNull(feedbackRequestEntityResponseDto);
-		assertEquals("paragon", feedbackRequestEntityResponseDto.getContent());
+		assertNotNull(userFeedbackRequestDetailsDto);
+		assertEquals("paragon", userFeedbackRequestDetailsDto.getContent());
 
-		showResult(feedbackRequestEntityResponseDto);
+		showResult(userFeedbackRequestDetailsDto);
 
 
 	}
@@ -131,7 +131,7 @@ public class FeedbackRequestServiceTest {
 		}
 		RequestState requestState = RequestState.fromNumber(0);
 		long start = System.currentTimeMillis();
-		List<FeedbackRequestEntityResponseDto> getRequests
+		List<UserFeedbackRequestDetailsDto> getRequests
 			= feedbackRequestService.getRequests(users.get(4).getUserId(), null, null, null, requestState ,0, 20);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
@@ -150,7 +150,7 @@ public class FeedbackRequestServiceTest {
 			feedbackRequestService.createRequest(users.get(4).getUserId(), requestDtos.get(i));
 		}
 		long start = System.currentTimeMillis();
-		List<FeedbackRequestEntityResponseDto> getRequests =
+		List<UserFeedbackRequestDetailsDto> getRequests =
 		feedbackRequestService.getRequests(users.get(4).getUserId(), 2L, null, null, null, 0,20);
 		long end= System.currentTimeMillis();
 
@@ -172,7 +172,7 @@ public class FeedbackRequestServiceTest {
 		RequestState requestState = RequestState.fromNumber(0);
 
 		long start = System.currentTimeMillis();
-		List<FeedbackRequestEntityResponseDto> getRequests =
+		List<UserFeedbackRequestDetailsDto> getRequests =
 		feedbackRequestService.getRequests(users.get(4).getUserId(), null, 1L, null, requestState, 0, 20);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
@@ -204,7 +204,7 @@ public class FeedbackRequestServiceTest {
 
 		//when
 		long start = System.currentTimeMillis();
-		List<FeedbackRequestEntityResponseDto> getRequests =
+		List<UserFeedbackRequestDetailsDto> getRequests =
 			feedbackRequestService.getRequests(users.get(4).getUserId(), null, 1L, null,requestState, 0, 20);
 
 		long end= System.currentTimeMillis();
@@ -242,7 +242,7 @@ public class FeedbackRequestServiceTest {
 		month = ym.atDay(1).atStartOfDay();  // LocalDateTime으로 변환
 
 		long start = System.currentTimeMillis();
-		List<FeedbackRequestEntityResponseDto> getRequests =
+		List<UserFeedbackRequestDetailsDto> getRequests =
 			feedbackRequestService.getRequests(users.get(4).getUserId(), null, 1L, month ,requestState, 0, 20);
 
 		long end= System.currentTimeMillis();
@@ -262,15 +262,15 @@ public class FeedbackRequestServiceTest {
 
 		FeedbackRequestDto UpdateRequestDto = new FeedbackRequestDto(1L, 1L, "수정된 피드백 요청 내용");
 		long start = System.currentTimeMillis();
-		FeedbackRequestEntityResponseDto UpdateFeedbackRequestEntityResponseDto =
+		UserFeedbackRequestDetailsDto updateUserFeedbackRequestDetailsDto =
 			feedbackRequestService.updateRequest( users.get(4).getUserId() ,1L, UpdateRequestDto);
 
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
 		//then
-		assertNotNull(UpdateFeedbackRequestEntityResponseDto);
-		assertEquals("수정된 피드백 요청 내용", UpdateFeedbackRequestEntityResponseDto.getContent());
-		showResult(UpdateFeedbackRequestEntityResponseDto);
+		assertNotNull(updateUserFeedbackRequestDetailsDto);
+		assertEquals("수정된 피드백 요청 내용", updateUserFeedbackRequestDetailsDto.getContent());
+		showResult(updateUserFeedbackRequestDetailsDto);
 
 	}
 
@@ -281,15 +281,15 @@ public class FeedbackRequestServiceTest {
 		feedbackRequestService.createRequest(users.get(4).getUserId(), requestDtos.get(0));
 
 		long start = System.currentTimeMillis();
-		FeedbackRequestEntityResponseDto feedbackRequestEntityResponseDto
+		UserFeedbackRequestDetailsDto userFeedbackRequestDetailsDto
 			=  feedbackRequestService.cancelRequest(users.get(4).getUserId(),1L);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
 
 		//then
-		assertNotNull(feedbackRequestEntityResponseDto);
-		assertEquals(RequestState.CANCELED, feedbackRequestEntityResponseDto.getRequestState());
-		showResult(feedbackRequestEntityResponseDto);
+		assertNotNull(userFeedbackRequestDetailsDto);
+		assertEquals(RequestState.CANCELED, userFeedbackRequestDetailsDto.getRequestState());
+		showResult(userFeedbackRequestDetailsDto);
 	}
 
 
@@ -341,7 +341,7 @@ public class FeedbackRequestServiceTest {
 		feedbackRequestService.createRequest( users.get(3).getUserId(), requestDtos.get(3));
 
 		long start = System.currentTimeMillis();
-		List<FeedbackResponseDetailsDto> getRequests =  feedbackRequestService.getFeedbackRequests(tutors.get(3).getUserId(),0, 20);
+		List<TutorFeedbackResponseDetailsDto> getRequests =  feedbackRequestService.getFeedbackRequests(tutors.get(3).getUserId(),0, 20);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
 
@@ -364,7 +364,7 @@ public class FeedbackRequestServiceTest {
 			new FeedbackRejectRequestDto("OO 사유로 거절함.");
 
 		long start = System.currentTimeMillis();
-		FeedbackRequestEntityResponseDto response =
+		UserFeedbackRequestDetailsDto response =
 			feedbackRequestService.rejectFeedbackRequest(tutors.get(2).getUserId(),1L,5, feedbackRejectRequestDto);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
@@ -377,11 +377,11 @@ public class FeedbackRequestServiceTest {
 	@Test
 	public void 피드백_수락(){
 
-		 FeedbackRequestEntityResponseDto entityResponseDto =
+		 UserFeedbackRequestDetailsDto entityResponseDto =
 			 feedbackRequestService.createRequest( users.get(4).getUserId(), requestDtos.get(0));
 
 		long start = System.currentTimeMillis();
-		FeedbackRequestEntityResponseDto response =
+		UserFeedbackRequestDetailsDto response =
 			feedbackRequestService.acceptRequest(tutors.get(0).getUserId(), entityResponseDto.getId());
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회

@@ -8,9 +8,9 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RejectReason;
 import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.TutorFeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
@@ -43,7 +43,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
     //private final NotificationPushService notificationPushService;
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
+	public UserFeedbackRequestDetailsDto createRequest(Long userId, FeedbackRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId(), ErrorCode.NOT_FOUND_TUTOR);
         if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
@@ -70,12 +70,12 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
 		// notificationPushService.sendToUser(tutor.getUserId());
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<FeedbackRequestEntityResponseDto> getRequests(
+	public List<UserFeedbackRequestDetailsDto> getRequests(
 		Long userId,         // 신청자
 		Long tutorId,        // 피드백 받을 대상
 		Long documentId,     // 문서
@@ -95,12 +95,12 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		Page<FeedbackRequestEntity> pages =
 			feedbackRequestEntityRepository.findByRequest(userId, tutorId, documentId,month, requestState, pageRequest);
 
-		return pages.stream().map(FeedbackRequestEntityResponseDto::new).toList();
+		return pages.stream().map(UserFeedbackRequestDetailsDto::new).toList();
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto) {
+	public UserFeedbackRequestDetailsDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto) {
 
 		//요청이 존재하는 가?
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
@@ -116,12 +116,12 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto cancelRequest(Long userId, Long feedbackRequestId) {
+	public UserFeedbackRequestDetailsDto cancelRequest(Long userId, Long feedbackRequestId) {
 		//요청이 존재하는 가?
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
 		if(!request.getUser().getUserId().equals(userId))
@@ -136,7 +136,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto( getInfoRequest);
+		return new UserFeedbackRequestDetailsDto( getInfoRequest);
 	}
 
 
@@ -169,7 +169,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<FeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size){
+	public List<TutorFeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size){
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
@@ -181,14 +181,14 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 			pageable
 		);
 		return requests.stream()
-			.map(FeedbackResponseDetailsDto:: new)
+			.map(TutorFeedbackResponseDetailsDto:: new)
 			.collect(Collectors.toList());
 
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto acceptRequest(Long tutorId, Long feedbackRequestId) {
+	public UserFeedbackRequestDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId) {
 		// 1. 튜터 본인 확인
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
@@ -207,14 +207,14 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
 
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto  rejectFeedbackRequest(
+	public UserFeedbackRequestDetailsDto rejectFeedbackRequest(
 		Long tutorId,
 		Long feedbackRequestId,
 		Integer rejectNumber,
@@ -242,6 +242,6 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
-		return new FeedbackRequestEntityResponseDto(request);
+		return new UserFeedbackRequestDetailsDto(request);
 	}
 }
