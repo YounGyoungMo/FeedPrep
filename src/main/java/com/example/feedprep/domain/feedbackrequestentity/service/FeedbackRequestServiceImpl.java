@@ -187,6 +187,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	}
 
+	@Transactional
 	@Override
 	public FeedbackRequestEntityResponseDto acceptRequest(Long tutorId, Long feedbackRequestId) {
 		// 1. 튜터 본인 확인
