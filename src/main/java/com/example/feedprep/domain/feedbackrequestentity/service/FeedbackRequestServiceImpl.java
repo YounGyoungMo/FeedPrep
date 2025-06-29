@@ -109,7 +109,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		if (request.getRequestState() != RequestState.PENDING) {
-			throw new CustomException(ErrorCode.CANNOT_EDIT_COMPLETED_REQUEST);
+			throw new CustomException(ErrorCode.CANNOT_EDIT_NON_EDITABLE_REQUEST);
 		}
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
 
