@@ -36,10 +36,10 @@ public interface FeedbackRequestService {
 	List<TutorFeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size);
 
 	// 피드백 신청 수락(튜터)
-	UserFeedbackRequestDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId);
+	TutorFeedbackResponseDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId);
 
 	// 피드백 요청 거절(튜터)
-	UserFeedbackRequestDetailsDto rejectFeedbackRequest(
+	TutorFeedbackResponseDetailsDto rejectFeedbackRequest(
 		Long tutorId,
 		Long feedbackRequestId,
 		Integer rejectNumber,

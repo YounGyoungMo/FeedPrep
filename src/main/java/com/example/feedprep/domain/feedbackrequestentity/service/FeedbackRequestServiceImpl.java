@@ -188,7 +188,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 	@Transactional
 	@Override
-	public UserFeedbackRequestDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId) {
+	public TutorFeedbackResponseDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId) {
 		// 1. 튜터 본인 확인
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
@@ -207,14 +207,14 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new UserFeedbackRequestDetailsDto(getInfoRequest);
+		return new TutorFeedbackResponseDetailsDto(getInfoRequest);
 	}
 
 
 
 	@Transactional
 	@Override
-	public UserFeedbackRequestDetailsDto rejectFeedbackRequest(
+	public TutorFeedbackResponseDetailsDto rejectFeedbackRequest(
 		Long tutorId,
 		Long feedbackRequestId,
 		Integer rejectNumber,
@@ -242,6 +242,6 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
-		return new UserFeedbackRequestDetailsDto(request);
+		return new TutorFeedbackResponseDetailsDto(request);
 	}
 }

@@ -364,7 +364,7 @@ public class FeedbackRequestServiceTest {
 			new FeedbackRejectRequestDto("OO 사유로 거절함.");
 
 		long start = System.currentTimeMillis();
-		UserFeedbackRequestDetailsDto response =
+		TutorFeedbackResponseDetailsDto response =
 			feedbackRequestService.rejectFeedbackRequest(tutors.get(2).getUserId(),1L,5, feedbackRejectRequestDto);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
@@ -381,7 +381,7 @@ public class FeedbackRequestServiceTest {
 			 feedbackRequestService.createRequest( users.get(4).getUserId(), requestDtos.get(0));
 
 		long start = System.currentTimeMillis();
-		UserFeedbackRequestDetailsDto response =
+		TutorFeedbackResponseDetailsDto response =
 			feedbackRequestService.acceptRequest(tutors.get(0).getUserId(), entityResponseDto.getId());
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
