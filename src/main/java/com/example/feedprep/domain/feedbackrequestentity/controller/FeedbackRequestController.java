@@ -127,7 +127,7 @@ public class FeedbackRequestController {
 			feedbackRequestService.getFeedbackRequests(tutorId, page, size)));
 	}
 	@PatchMapping("/{requestId}/accept")
-	public ResponseEntity<ApiResponseDto<UserFeedbackRequestDetailsDto>> acceptFeedbackRequest(
+	public ResponseEntity<ApiResponseDto<TutorFeedbackResponseDetailsDto>> acceptFeedbackRequest(
 		@AuthUser Long tutorId,
 		@PathVariable Long requestId){
 		return ResponseEntity.status( HttpStatus.OK)
@@ -136,7 +136,7 @@ public class FeedbackRequestController {
 	}
 
 	@PatchMapping("/{requestId}/reject")
-	public ResponseEntity<ApiResponseDto<UserFeedbackRequestDetailsDto>> rejectFeedbackRequest(
+	public ResponseEntity<ApiResponseDto<TutorFeedbackResponseDetailsDto>> rejectFeedbackRequest(
 		@AuthUser Long tutorId,
 		@PathVariable Long requestId,
 		@RequestParam Integer rejectNumber,
