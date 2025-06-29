@@ -49,8 +49,9 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
         if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.PENDING_TUTOR);
 		}
-		Document document = documentRepository.findById(dto.getDocumentId())
-			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
+
+		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
+
         FeedbackRequestEntity feedbackRequestEntity =
 			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
 				 userId,
@@ -96,6 +97,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		return pages.stream().map(FeedbackRequestEntityResponseDto::new).toList();
 	}
+
 	@Transactional
 	@Override
 	public FeedbackRequestEntityResponseDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto) {
@@ -112,8 +114,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
 
 		//문서 조회
-		Document document = documentRepository.findById(dto.getDocumentId())
-			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
+		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
