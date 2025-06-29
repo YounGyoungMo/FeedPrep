@@ -27,7 +27,7 @@ import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
-import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewResponseDto;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
@@ -140,13 +140,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 
-		FeedbackReviewResponseDto feedbackReviewResponseDto
+		FeedbackReviewDetailsDto feedbackReviewDetailsDto
 			= feedbackReviewService.getReview(studentId, 1L);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.getId());
-		assertEquals(1L, feedbackReviewResponseDto.getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.getId());
+		assertEquals(1L, feedbackReviewDetailsDto.getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.getTutorId());
 	}
 
 	@Test
@@ -167,13 +167,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 
-		FeedbackReviewResponseDto feedbackReviewResponseDto
+		FeedbackReviewDetailsDto feedbackReviewDetailsDto
 			= feedbackReviewService.getReview(tutorId, 1L);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.getId());
-		assertEquals(1L, feedbackReviewResponseDto.getUserId());
-		assertEquals(3L, feedbackReviewResponseDto.getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.getId());
+		assertEquals(1L, feedbackReviewDetailsDto.getUserId());
+		assertEquals(3L, feedbackReviewDetailsDto.getTutorId());
 	}
 
 	@Test
@@ -199,13 +199,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(studentId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+		List<FeedbackReviewDetailsDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(studentId, 0, 10);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getId());
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.get(0).getTutorId());
 	}
 
 	@Test
@@ -233,13 +233,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(tutorId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+		List<FeedbackReviewDetailsDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(tutorId, 0, 10);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getId());
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.get(0).getTutorId());
 	}
 
 
