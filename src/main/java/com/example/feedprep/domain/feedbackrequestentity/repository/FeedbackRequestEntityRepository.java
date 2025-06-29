@@ -25,7 +25,7 @@ public interface FeedbackRequestEntityRepository extends JpaRepository<FeedbackR
 		+ "AND f.tutor.userId = :tutorId "
 		+ "AND f.requestState = :state"
 	)
-	Optional<FeedbackRequestEntity> findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
+	Optional<FeedbackRequestEntity> findTop1ByUser_UserIdAndTutor_UserIdAndRequestState(
 		@Param("userId")Long userId
 		,@Param("tutorId")Long tutorId
 		,@Param("state") RequestState state);

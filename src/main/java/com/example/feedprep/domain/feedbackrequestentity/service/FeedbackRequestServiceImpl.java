@@ -53,7 +53,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
 
         FeedbackRequestEntity feedbackRequestEntity =
-			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
+			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndRequestState(
 				 userId,
 				 tutor.getUserId(),
 				 RequestState.PENDING)
