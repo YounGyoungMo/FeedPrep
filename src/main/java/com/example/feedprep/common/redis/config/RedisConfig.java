@@ -17,10 +17,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
 	@Bean
-	public RedisTemplate<String, Double> ratingTemplate(RedisConnectionFactory connectionFactory) {
-		RedisTemplate<String, Double> template = new RedisTemplate<>();
+	public RedisTemplate<String, String> stringTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, String> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(new StringRedisSerializer());
 
 		template.setValueSerializer(new RedisSerializer<Double>() {
 			@Override

@@ -3,6 +3,7 @@ package com.example.feedprep.domain.board.service;
 import com.example.feedprep.domain.board.dto.BoardRequestDto;
 import com.example.feedprep.domain.board.dto.BoardResponseDto;
 import com.example.feedprep.domain.board.dto.BoardSearchCondition;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface BoardService {
 
     List<BoardResponseDto> getBoards(BoardSearchCondition condition);
 
-    BoardResponseDto getBoard(Long boardId);
+    BoardResponseDto getBoard(Long boardId, HttpServletRequest request);
 
     void updateBoard(Long boardId, BoardRequestDto requestDto);
 

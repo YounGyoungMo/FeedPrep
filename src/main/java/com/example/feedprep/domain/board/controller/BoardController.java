@@ -4,6 +4,7 @@ import com.example.feedprep.domain.board.dto.BoardRequestDto;
 import com.example.feedprep.domain.board.dto.BoardResponseDto;
 import com.example.feedprep.domain.board.dto.BoardSearchCondition;
 import com.example.feedprep.domain.board.service.BoardService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +70,8 @@ public class BoardController {
 
     // 게시글 단건 조회
     @GetMapping("/{boardId}")
-    public ResponseEntity<BoardResponseDto> getBoard(@PathVariable Long boardId) {
-        BoardResponseDto board = boardService.getBoard(boardId);
+    public ResponseEntity<BoardResponseDto> getBoard(@PathVariable Long boardId, HttpServletRequest request) {
+        BoardResponseDto board = boardService.getBoard(boardId, request);
         return ResponseEntity.ok(board);
     }
 

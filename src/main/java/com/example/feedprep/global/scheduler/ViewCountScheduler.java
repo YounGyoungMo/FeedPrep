@@ -20,7 +20,7 @@ public class ViewCountScheduler {
 
     private static final String VIEW_COUNT_PREFIX = "post:viewcount:";
 
-    @Scheduled(fixedDelay = 300000) // ✅ 5분마다 실행
+    @Scheduled(fixedDelay = 60000) //  1분마다 실행
     public void syncViewCountToDatabase() {
         log.info("▶ Redis 조회수를 DB에 반영합니다.");
 
@@ -28,6 +28,9 @@ public class ViewCountScheduler {
         if (keys == null || keys.isEmpty()) return;
 
         for (String key : keys) {
+            // 실수로 viewed 키가 걸리는 걸 방지
+            if (!key.startsWith(VIEW_COUNT_PREFIX)) continue;
+
             try {
                 String boardIdStr = key.replace(VIEW_COUNT_PREFIX, "");
                 Long boardId = Long.parseLong(boardIdStr);

@@ -1,28 +1,35 @@
 package com.example.feedprep.domain.board.service;
 
 import com.example.feedprep.common.security.util.SecurityUtil;
+import com.example.feedprep.common.util.IpUtil;
 import com.example.feedprep.domain.board.dto.BoardRequestDto;
 import com.example.feedprep.domain.board.dto.BoardResponseDto;
 import com.example.feedprep.domain.board.dto.BoardSearchCondition;
 import com.example.feedprep.domain.board.entity.Board;
 import com.example.feedprep.domain.board.repository.BoardRepository;
 import com.example.feedprep.domain.recommend.entity.Recommend;
+import com.example.feedprep.domain.recommend.repository.RecommendRepository;
 import com.example.feedprep.domain.scrap.entity.Scrap;
 import com.example.feedprep.domain.scrap.repository.ScrapRepository;
 import com.example.feedprep.domain.user.entity.User;
-import com.example.feedprep.domain.user.repository.UserRepository;
 import com.example.feedprep.domain.user.enums.UserRole;
+import com.example.feedprep.domain.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
-import com.example.feedprep.domain.recommend.repository.RecommendRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
@@ -36,6 +43,8 @@ public class BoardServiceImpl implements BoardService {
     private final RedisTemplate<String, Long> redisTemplate;
 
     private static final String VIEW_COUNT_KEY_PREFIX = "post:viewcount:";
+    private static final String VIEWED_MARKER_PREFIX = "post:viewed:";
+    private static final long TTL_HOURS = 12L;
 
     @Override
     @Transactional
@@ -56,7 +65,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponseDto getBoard(Long boardId) {
+    public BoardResponseDto getBoard(Long boardId, HttpServletRequest request) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다."));
         User currentUser = userRepository.findByIdOrElseThrow(SecurityUtil.getCurrentUserId());
@@ -69,7 +78,7 @@ public class BoardServiceImpl implements BoardService {
             throw new AccessDeniedException("비밀글은 작성자, 튜터 또는 관리자만 조회할 수 있습니다.");
         }
         // 조회수 증가
-        increaseViewCount(boardId);
+        increaseViewCountIfAllowed(boardId, request);
 
         // Redis에서 조회수 가져와서 응답에 포함
         Long viewCount = getViewCount(boardId);
@@ -77,6 +86,31 @@ public class BoardServiceImpl implements BoardService {
         dto.setViewCount(viewCount);
         return dto;
     }
+
+    private void increaseViewCountIfAllowed(Long boardId, HttpServletRequest request) {
+        String identifier;
+
+        try {
+            Long userId = SecurityUtil.getCurrentUserId();
+            identifier = String.valueOf(userId);
+        } catch (Exception e) {
+            identifier = IpUtil.getClientIp(request);
+        }
+
+        String viewedKey = VIEWED_MARKER_PREFIX + boardId + ":" + identifier;
+        Boolean alreadyViewed = redisTemplate.hasKey(viewedKey);
+
+        if (Boolean.FALSE.equals(alreadyViewed)) {
+            redisTemplate.opsForValue().increment(VIEW_COUNT_KEY_PREFIX + boardId);
+            redisTemplate.opsForValue().set(viewedKey, 1L, TTL_HOURS, TimeUnit.HOURS);
+        }
+    }
+
+    private Long getViewCount(Long boardId) {
+        Long value = redisTemplate.opsForValue().get(VIEW_COUNT_KEY_PREFIX + boardId);
+        return (value != null) ? value : 0L;
+    }
+
 
     @Override
     @Transactional
@@ -197,11 +231,5 @@ public class BoardServiceImpl implements BoardService {
     // 조회수 증가 (Redis INCR)
     private void increaseViewCount(Long boardId) {
         redisTemplate.opsForValue().increment(VIEW_COUNT_KEY_PREFIX + boardId);
-    }
-
-    // Redis에서 현재 조회수 가져오기
-    private Long getViewCount(Long boardId) {
-        Long value = redisTemplate.opsForValue().get(VIEW_COUNT_KEY_PREFIX + boardId);
-        return (value != null) ? value : 0L;
     }
 }
