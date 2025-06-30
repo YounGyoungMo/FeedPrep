@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "messages")
-public class ToturMessage {
+public class TutorMessage {
 
     // 메세지의 기록 목적을 위해 연관 관계 설정 x, 사용 되는 다른 서비스 로직에서 연관관계를 확인할 것.
 

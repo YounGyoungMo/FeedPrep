@@ -1,6 +1,6 @@
 package com.example.feedprep.common.message.dto.response;
 
-import com.example.feedprep.common.message.entity.ToturMessage;
+import com.example.feedprep.common.message.entity.TutorMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,7 +16,7 @@ public class TutorMessageResponseDdo {
 
     private String fileName;
 
-    public TutorMessageResponseDdo(ToturMessage toturMessage) {
+    public TutorMessageResponseDdo(TutorMessage toturMessage) {
         this.messageId = toturMessage.getMessageId();
         this.userId = toturMessage.getUserId();
         this.documentId = toturMessage.getDocumentId();

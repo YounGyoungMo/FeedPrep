@@ -3,7 +3,7 @@ package com.example.feedprep.common.message.service;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
-import com.example.feedprep.common.message.entity.ToturMessage;
+import com.example.feedprep.common.message.entity.TutorMessage;
 import com.example.feedprep.common.message.repository.MessageRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,33 +18,33 @@ public class TutorMessageServiceImpl implements TutorMessageService {
     @Override
     public void createdMessageTuter(Long userId, Long documentId, String fileUrl) {
 
-        ToturMessage toturMessage = ToturMessage.builder()
+        TutorMessage tutorMessage = TutorMessage.builder()
             .userId(userId)
             .documentId(documentId)
             .fileName(fileUrl)
             .build();
 
-        messageRepository.save(toturMessage);
+        messageRepository.save(tutorMessage);
     }
 
     @Override
     public TutorMessageResponseDdo getMessageTuter(Long messageId) {
 
-        ToturMessage tuterToturMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
+        TutorMessage tutorMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
 
-        return new TutorMessageResponseDdo(tuterToturMessage);
+        return new TutorMessageResponseDdo(tutorMessage);
     }
 
     @Override
     public List<TutorMessageResponseDdo> getMessageTuterList(Long userId) {
 
-        List<ToturMessage> tuterToturMessageList = messageRepository.findAllByUserId(userId);
+        List<TutorMessage> TutorMessageList = messageRepository.findAllByUserId(userId);
 
-        if(tuterToturMessageList.isEmpty()) {
+        if(TutorMessageList.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_SEND_MESSAGE);
         }
 
-        List<TutorMessageResponseDdo> responseDdoList = tuterToturMessageList.stream()
+        List<TutorMessageResponseDdo> responseDdoList = TutorMessageList.stream()
             .map(message -> new TutorMessageResponseDdo(
                 message.getMessageId(),
                 message.getUserId(),
@@ -57,8 +57,8 @@ public class TutorMessageServiceImpl implements TutorMessageService {
 
     @Override
     public void deleteMessageTuter(Long messageId) {
-        ToturMessage toturMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
+        TutorMessage tutorMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
 
-        messageRepository.delete(toturMessage);
+        messageRepository.delete(tutorMessage);
     }
 }
