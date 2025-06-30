@@ -17,12 +17,15 @@ import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestE
 public interface FeedbackRequestEntityRepository extends JpaRepository<FeedbackRequestEntity, Long>
 	, FeedbackRequestEntityRepositoryCustom{
 
+
+	Optional<FeedbackRequestEntity> findById(Long feedbackRequestId);
+
 	@Query("SELECT f FROM FeedbackRequestEntity f "
 		+ "WHERE f.user.userId = :userId "
 		+ "AND f.tutor.userId = :tutorId "
 		+ "AND f.requestState = :state"
 	)
-	Optional<FeedbackRequestEntity> findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
+	Optional<FeedbackRequestEntity> findTop1ByUser_UserIdAndTutor_UserIdAndRequestState(
 		@Param("userId")Long userId
 		,@Param("tutorId")Long tutorId
 		,@Param("state") RequestState state);
@@ -33,6 +36,10 @@ public interface FeedbackRequestEntityRepository extends JpaRepository<FeedbackR
 	@Query("SELECT f FROM FeedbackRequestEntity f WHERE  f.tutor.userId = :tutorId AND f.id = :requestId")
 	Optional<FeedbackRequestEntity> findPendingByIdAndTutor(@Param("tutorId") Long tutorId, @Param("requestId")Long requestId);
 
+
+	default FeedbackRequestEntity findByIdOrElseThrow(Long feedbackRequestId){
+		return findById(feedbackRequestId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+	}
 	default FeedbackRequestEntity findPendingByIdAndTutorOrElseThrow(Long tutorId, Long requestId, ErrorCode errorCode){
 		return findPendingByIdAndTutor(tutorId, requestId).orElseThrow(() -> new CustomException(errorCode));
 	}

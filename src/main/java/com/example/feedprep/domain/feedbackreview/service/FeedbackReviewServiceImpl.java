@@ -26,8 +26,9 @@ import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
-import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewResponseDto;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
 import com.example.feedprep.domain.user.entity.User;
@@ -52,7 +53,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 
 	@Transactional
 	@Override
-	public FeedbackReviewResponseDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
+	public FeedbackReviewDetailsDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		Feedback feedback = feedBackRepository. findWithRequestAndUserById(feedbackId)
 			.orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
@@ -62,13 +63,13 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-	    return new FeedbackReviewResponseDto(saveReview);
+	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 
 
 	@Transactional(readOnly = true)
 	@Override
-	public FeedbackReviewResponseDto getReview( Long userId, Long reviewId) {
+	public FeedbackReviewDetailsDto getReview( Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(user.getRole().equals(UserRole.STUDENT)){
@@ -81,11 +82,11 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 				throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
 			}
 		}
-		return  new FeedbackReviewResponseDto(feedbackReview);
+		return  new FeedbackReviewDetailsDto(feedbackReview);
 	}
 	@Transactional(readOnly = true)
 	@Override
-	public List<FeedbackReviewResponseDto> getReviews(Long userId, Integer page, Integer size) {
+	public List<FeedbackReviewListDto> getReviews(Long userId, Integer page, Integer size) {
 
 		User user = userRepository.findByIdOrElseThrow(userId);
 
@@ -99,7 +100,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 			reviews =  feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(user.getUserId(),pageable);
 		}
 		return reviews.stream()
-			.map(FeedbackReviewResponseDto ::new)
+			.map(FeedbackReviewListDto::new)
 			.collect(Collectors.toList());
 	}
 
@@ -163,7 +164,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	}
 	@Transactional
 	@Override
-	public FeedbackReviewResponseDto updateReview(Long userId, Long reviewId, FeedbackReviewRequestDto dto) {
+	public FeedbackReviewDetailsDto updateReview(Long userId, Long reviewId, FeedbackReviewRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
         if(!feedbackReview.getUserId().equals(userId)){
@@ -171,7 +172,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		}
 		feedbackReview.updateFeedbackReview(dto);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		return new FeedbackReviewResponseDto(saveReview);
+		return new FeedbackReviewDetailsDto(saveReview);
 	}
 
 	@Transactional
