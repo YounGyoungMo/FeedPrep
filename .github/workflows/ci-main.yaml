@@ -22,7 +22,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: jacocoTestReport
+      - name: Run tests and generate coverage
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -32,3 +32,33 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PORTONE_STOREID: ${{ secrets.PORTONE_STOREID }}
+          PORTONE_APISECRET: ${{ secrets.PORTONE_APISECRET }}
+          PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
+          PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}
+
+      - name: Parse coverage report
+        id: coverage
+        run: |
+          COVERAGE=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml)
+          MISSED=$(echo $COVERAGE | cut -d'"' -f1)
+          TOTAL=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
+          HIT=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" covered=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
+          PERCENT=$(echo "scale=2; 100 * $HIT / ($HIT + $MISSED)" | bc)
+          echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with coverage
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const coverage = `${{ steps.coverage.outputs.coverage }}`
+            const comment = `🧪 **Jacoco Coverage Report**: ${coverage}%`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            })
