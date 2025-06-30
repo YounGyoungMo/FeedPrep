@@ -33,6 +33,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.response.ApiResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.repository.NotificationRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
@@ -176,10 +177,10 @@ public class NotificationServiceTest {
 		when(notificationRepository.getCountByReceiver(receiverId)).thenReturn(1L);
 
 		// when
-		Long count = notificationService.getNotificationCount(receiverId);
+		NotificationGetCountDto count = notificationService.getNotificationCount(receiverId);
 
 		// then
-		assertEquals(1L, count);
+		assertEquals(1L, count.getCount());
 	}
 
 
