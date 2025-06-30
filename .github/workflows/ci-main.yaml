@@ -55,6 +55,12 @@ jobs:
           PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
           PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}
 
+      - name: Check Jacoco report file
+        run: ls -l build/reports/jacoco/test/
+
+      - name: Show part of Jacoco report
+        run: head -20 build/reports/jacoco/test/jacocoTestReport.xml
+
       - name: Parse coverage report
         id: coverage
         run: |
