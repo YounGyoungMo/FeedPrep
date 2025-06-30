@@ -11,25 +11,34 @@ permissions:
   issues: write
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v2
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-
-      - name: Run tests and generate Jacoco coverage report
-        run: ./gradlew test jacocoTestReport
+      - name: Run tests and generate coverage
+        run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -46,28 +55,48 @@ jobs:
           PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
           PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}
 
-      - name: Check Jacoco report exists
-        run: ls -l ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Check Jacoco report file
+        run: ls -l build/reports/jacoco/test/
 
-      - name: Parse coverage report and extract coverage %
+      - name: Show part of Jacoco report
+        run: head -20 build/reports/jacoco/test/jacocoTestReport.xml
+
+      - name: Parse coverage report
         id: coverage
         run: |
-          MISSED=$(grep -oE 'missed="[0-9]+"' ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml | head -1 | grep -oE '[0-9]+')
-          HIT=$(grep -oE 'covered="[0-9]+"' ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml | head -1 | grep -oE '[0-9]+')
-          if [ -z "$MISSED" ]; then MISSED=0; fi
-          if [ -z "$HIT" ]; then HIT=0; fi
-          PERCENT=$(echo "scale=2; 100 * $HIT / ($HIT + $MISSED)" | bc)
+          LINE_COUNTER=$(grep '<counter type="LINE"' build/reports/jacoco/test/jacocoTestReport.xml | head -1)
+          
+          MISSED=$(echo $LINE_COUNTER | grep -o 'missed="[0-9]\+"' | grep -o '[0-9]\+')
+          COVERED=$(echo $LINE_COUNTER | grep -o 'covered="[0-9]\+"' | grep -o '[0-9]\+')
+          
+          echo "MISSED=$MISSED"
+          echo "COVERED=$COVERED"
+          
+          if [ -z "$MISSED" ]; then
+            MISSED=0
+          fi
+          if [ -z "$COVERED" ]; then
+            COVERED=0
+          fi
+          
+          TOTAL=$((MISSED + COVERED))
+          if [ "$TOTAL" -eq 0 ]; then
+            PERCENT=0
+          else
+            PERCENT=$(echo "scale=2; 100 * $COVERED / ($COVERED + $MISSED)" | bc)
+          fi
+          
           echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
 
-      - name: Comment coverage on PR
+      - name: Comment PR with coverage
         uses: actions/github-script@v7
         with:
           script: |
             const coverage = `${{ steps.coverage.outputs.coverage }}`
-            const body = `🧪 **Jacoco Coverage Report**: ${coverage}%`
-            await github.rest.issues.createComment({
+            const comment = `🧪 **Jacoco Coverage Report**: ${coverage}%`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: body,
+              body: comment
             })
