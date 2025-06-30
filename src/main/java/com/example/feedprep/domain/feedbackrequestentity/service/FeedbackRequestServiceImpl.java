@@ -40,7 +40,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
 	private final NotificationServiceImpl notificationService;
-    //private final NotificationPushService notificationPushService;
+
 	@Transactional
 	@Override
 	public UserFeedbackRequestDetailsDto createRequest(Long userId, FeedbackRequestDto dto) {
@@ -69,7 +69,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
-		// notificationPushService.sendToUser(tutor.getUserId());
+
 		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
