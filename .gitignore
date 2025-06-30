@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+**/*.log
 
 ### STS ###
 .apt_generated
@@ -47,3 +48,5 @@ Thumbs.db
 *.mv.db
 
 test-output/
+
+**/http-client.env.json

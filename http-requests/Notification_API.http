@@ -1,0 +1,7 @@
+### GET request to example server
+GET localhost:8080/notifications/subscribe
+Authorization: Bearer {{tutorAccessToken}}
+
+GET localhost:8080/notifications
+Authorization: Bearer {{tutorAccessToken}}
+###

@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceImplTest {
@@ -152,6 +153,7 @@ class DocumentServiceImplTest {
         // given
         Long documentId = 1L;
         Long userId = 1L;
+        String presignedUrl ="https://s3.aws.com/presignedUrl/file.pdf";
 
         User user = User.builder().userId(userId).name("name").role(UserRole.STUDENT).build();
 
@@ -163,23 +165,12 @@ class DocumentServiceImplTest {
 
         // when
         when(documentRepository.findByIdOrElseThrow(documentId)).thenReturn(document);
+        when(s3Service.createFileUrl(document.getFileUrl())).thenReturn(presignedUrl);
 
-        DocumentResponseDto response = documentServiceImpl.getMyDocument(documentId, userId);
+        String response = documentServiceImpl.getMyDocument(documentId, userId);
 
         // then
-        assertThat(response)
-            .extracting(
-                DocumentResponseDto::getDocumentId,
-                DocumentResponseDto::getName,
-                DocumentResponseDto::getRole,
-                DocumentResponseDto::getFileUrl
-            )
-            .containsExactly(
-                documentId,
-                "name",
-                UserRole.STUDENT,
-                "https://s3.aws.com/file.pdf"
-            );
+        assertEquals(presignedUrl, response);
     }
 
     @Test
@@ -254,7 +245,7 @@ class DocumentServiceImplTest {
         when(documentRepository.findByIdOrElseThrow(documentId)).thenReturn(document);
 
         CustomException exception = assertThrows(CustomException.class, () ->
-            documentServiceImpl.getMyDocument(documentId,otherUserId)
+            documentServiceImpl.deleteDocument(documentId,otherUserId)
         );
 
         // then

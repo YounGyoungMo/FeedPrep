@@ -26,8 +26,9 @@ import com.example.feedprep.common.security.annotation.AuthUser;
 import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.TutorFeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
 
 @RestController
@@ -36,8 +37,10 @@ import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequest
 public class FeedbackRequestController {
     private final FeedbackRequestService feedbackRequestService;
 
+
+	//유저
 	@PostMapping
-	public ResponseEntity<ApiResponseDto<FeedbackRequestEntityResponseDto>> createRequest(
+	public ResponseEntity<ApiResponseDto<UserFeedbackRequestDetailsDto>> createRequest(
 		@AuthUser Long userId,
 		@Validated @RequestBody FeedbackRequestDto dto){
 
@@ -47,7 +50,7 @@ public class FeedbackRequestController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponseDto<List<FeedbackRequestEntityResponseDto>>> getRequest(
+	public ResponseEntity<ApiResponseDto<List<UserFeedbackRequestDetailsDto>>> getRequest(
 		@AuthUser Long userId,
 		@RequestParam(required = false) Long tutorId,
 		@RequestParam(required = false) Long documentId,
@@ -79,7 +82,7 @@ public class FeedbackRequestController {
 	}
 
 	@PutMapping("/{requestId}")
-	public ResponseEntity<ApiResponseDto<FeedbackRequestEntityResponseDto>> updateRequest(
+	public ResponseEntity<ApiResponseDto<UserFeedbackRequestDetailsDto>> updateRequest(
 		@AuthUser Long userId,
 		@PathVariable Long requestId,
 		@Validated @RequestBody FeedbackRequestDto dto
@@ -88,8 +91,9 @@ public class FeedbackRequestController {
 			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REQUEST_UPDATE,
 				feedbackRequestService.updateRequest(userId,requestId, dto)));
 	}
+
 	@DeleteMapping("/{requestId}")
-	public ResponseEntity<ApiResponseDto<FeedbackRequestEntityResponseDto>> cancelRequest(
+	public ResponseEntity<ApiResponseDto<UserFeedbackRequestDetailsDto>> cancelRequest(
 		@AuthUser Long userId,
 		@Validated @PathVariable Long requestId
 	){
@@ -97,18 +101,23 @@ public class FeedbackRequestController {
 			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REQUEST_CANCELED,
 				feedbackRequestService.cancelRequest(userId,requestId)));
 	}
+
+
+
+	// 유저/ 튜터
 	@GetMapping("{requestId}")
-	public ResponseEntity<ApiResponseDto<FeedbackResponseDetailsDto>>  getFeedbackRequest(
-		@AuthUser Long tutorId,
+	public ResponseEntity<ApiResponseDto<FeedbackRequestDetailsDto>>  getFeedbackRequest(
+		@AuthUser Long userId,
 		@PathVariable  Long requestId
 	){
 		return ResponseEntity.status( HttpStatus.OK)
 			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REQUEST,
-				feedbackRequestService.getFeedbackRequest(tutorId, requestId)));
+				feedbackRequestService.getFeedbackRequest(userId, requestId)));
 	}
+
 	//튜터
 	@GetMapping("/tutor")
-	public ResponseEntity<ApiResponseDto<List<FeedbackResponseDetailsDto>>> getFeedbackRequests(
+	public ResponseEntity<ApiResponseDto<List<TutorFeedbackResponseDetailsDto>>> getFeedbackRequests(
 		@AuthUser Long tutorId,
 		@RequestParam(defaultValue = "0") Integer page,
 		@RequestParam(defaultValue = "20") Integer size
@@ -117,9 +126,17 @@ public class FeedbackRequestController {
 			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REQUEST,
 			feedbackRequestService.getFeedbackRequests(tutorId, page, size)));
 	}
+	@PatchMapping("/{requestId}/accept")
+	public ResponseEntity<ApiResponseDto<TutorFeedbackResponseDetailsDto>> acceptFeedbackRequest(
+		@AuthUser Long tutorId,
+		@PathVariable Long requestId){
+		return ResponseEntity.status( HttpStatus.OK)
+			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REQUEST_ACCEPT,
+				feedbackRequestService.acceptRequest(tutorId, requestId)));
+	}
 
-	@PatchMapping("/{requestId}")
-	public ResponseEntity<ApiResponseDto<FeedbackRequestEntityResponseDto>> rejectFeedbackRequest(
+	@PatchMapping("/{requestId}/reject")
+	public ResponseEntity<ApiResponseDto<TutorFeedbackResponseDetailsDto>> rejectFeedbackRequest(
 		@AuthUser Long tutorId,
 		@PathVariable Long requestId,
 		@RequestParam Integer rejectNumber,

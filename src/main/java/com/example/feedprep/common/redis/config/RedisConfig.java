@@ -17,13 +17,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
 	@Bean
-	public RedisTemplate<String, String> stringTemplate(RedisConnectionFactory connectionFactory) {
-		RedisTemplate<String, String> template = new RedisTemplate<>();
+	public RedisTemplate<String, Double> ratingTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, Double> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
+
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new StringRedisSerializer());
+		RedisSerializer<Double> doubleSerializer = new RedisSerializer<>() {
 
-		template.setValueSerializer(new RedisSerializer<Double>() {
 			@Override
 			public byte[] serialize(Double value) throws SerializationException {
 				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
@@ -33,20 +33,8 @@ public class RedisConfig {
 			public Double deserialize(byte[] bytes) throws SerializationException {
 				return (bytes == null) ? null : Double.parseDouble(new String(bytes, StandardCharsets.UTF_8));
 			}
-		});
-
-		template.setHashValueSerializer(new RedisSerializer<Double>() {
-			@Override
-			public byte[] serialize(Double value) throws SerializationException {
-				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
-			}
-
-			@Override
-			public Double deserialize(byte[] bytes) throws SerializationException {
-				return (bytes == null) ? null : Double.parseDouble(new String(bytes, StandardCharsets.UTF_8));
-			}
-		});
-
+		};
+		template.setValueSerializer(doubleSerializer); // ✅ 이거 추가!
 		return template;
 	}
 
@@ -59,23 +47,20 @@ public class RedisConfig {
 	public RedisTemplate<String, Long> template(RedisConnectionFactory connectionFactory) {
 		RedisTemplate<String, Long> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
-		template.setKeySerializer(new StringRedisSerializer());
 
-		RedisSerializer<Long> longSerializer = new RedisSerializer<Long>() {
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashValueSerializer(new RedisSerializer<Long>() {
 			@Override
 			public byte[] serialize(Long value) throws SerializationException {
-				return (value == null) ? null : value.toString().getBytes(StandardCharsets.UTF_8);
+				return (value == null)? null: value.toString().getBytes(StandardCharsets.UTF_8);
 			}
 
 			@Override
 			public Long deserialize(byte[] bytes) throws SerializationException {
 				return (bytes == null) ? null : Long.parseLong(new String(bytes, StandardCharsets.UTF_8));
 			}
-		};
 
-		template.setValueSerializer(longSerializer);
-		template.setHashValueSerializer(longSerializer);
-
+		});
 		return template;
 	}
 
@@ -85,9 +70,7 @@ public class RedisConfig {
 		template.setConnectionFactory(connectionFactory);
 
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 		template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-
 		return template;
 	}
 

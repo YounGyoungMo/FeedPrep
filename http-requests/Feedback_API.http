@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "tutorId": 2,
-  "documentId": 2,
+  "documentId": 1,
   "content":"이력서 검토를 받고 싶습니다."
 }
 
@@ -41,8 +41,13 @@ Authorization: Bearer {{tutorAccessToken}}
 GET localhost:8080/feedback-requests/tutor?page=0&size=20
 Authorization: Bearer {{tutorAccessToken}}
 
+###피드백 신청 수락 (튜터)
+PATCH localhost:8080/feedback-requests/1/accept?rejectNumber=1
+Authorization: Bearer {{tutorAccessToken}}
+Content-Type: application/json
+
 ###피드백 신청 거절 (튜터)
-PATCH localhost:8080/feedback-requests/2?rejectNumber=1
+PATCH localhost:8080/feedback-requests/2/reject?rejectNumber=1
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 

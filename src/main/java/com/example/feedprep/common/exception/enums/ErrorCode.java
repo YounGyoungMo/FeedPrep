@@ -2,14 +2,19 @@ package com.example.feedprep.common.exception.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+    // 서버 오류
+    SOCIAL_LOGIN_REDIRECT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 중 리다이렉트 요청이 실패했습니다."),
+    SOCIAL_LOGIN_TOKEN_REQUEST_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 토큰 요청에 실패했습니다."),
+    SOCIAL_LOGIN_INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜 로그인 제공자입니다."),
+    SOCIAL_LOGIN_AUTH_CODE_MISSING(HttpStatus.BAD_REQUEST, "인가 코드가 없습니다."),
 
     // 잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다." ),
+    UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "해당 소셜 로그인 방식은 지원하지 않습니다."),
 
     // @Column(unique = true) 값이 중복되는 오류
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 존재하는 값입니다. 중복된 입력을 확인해주세요."),
@@ -47,13 +52,16 @@ public enum ErrorCode {
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "잘못된 역할입니다. STUDENT, PENDING_TUTOR, ADMIN 중 하나를 선택해 주세요"),
     NOT_FOUND_TUTOR(HttpStatus.BAD_REQUEST,"검색 된 튜터가 없습니다."),
 
-    // 문서 및 S3 파일 업로드
+    // 문서 및 S3 파일
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND,"해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_FILE(HttpStatus.NOT_FOUND, "업로드 할 이력서를 넣어 주세요."),
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
     DONT_CREATE_MORE(HttpStatus.BAD_REQUEST, "이력서 저장은 최대 5개까지 입니다."),
     FOREIGN_DOCUMENT_ACCESS(HttpStatus.FORBIDDEN, "자신의 문서만 조회 할 수 있습니다."),
     DONT_DELETE_S3FILE(HttpStatus.INTERNAL_SERVER_ERROR,"저장된 이력서 삭제에 실패하였습니다."),
+    NOT_CREATED_S3FILE_URL(HttpStatus.INTERNAL_SERVER_ERROR, "조회 예정인 S3 파일의 URL 생성이 실패하였습니다."),
+    OVER_LIMIT_FILESIZE(HttpStatus.BAD_REQUEST, "업로드 할 파일 크기가 지정된 크기보다 큽니다."),
+    DONT_CONVERT_FILESIZE_TYPE(HttpStatus.BAD_REQUEST, "파일 크기 변환에 실패 하였습니다."),
 
 
     // 구독
@@ -88,20 +96,31 @@ public enum ErrorCode {
     NOT_FOUND_FEEDBACK(HttpStatus.NOT_FOUND, "해당 피드백을 찾을 수 없습니다."),
     NOT_FOUND_FEEDBACK_REVIEW(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
     UNAUTHORIZED_REQUESTER_ACCESS(HttpStatus.FORBIDDEN, "해당 요청을 수행할 권한이 없습니다."),
-    BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다"),
-    FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않는 리뷰에 접근할수 없습니다.."),
 
-    SELF_FEEDBACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신에게는 피드백을 요청할 수 없습니다."),
-    CANNOT_EDIT_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 수정할 수 없습니다."),
-    CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
+    FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않은 리뷰에 접근할 수 없습니다."),
     DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
 
-    //피드백 작성  에러코드
-    INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 취소되었거나 완료된 상태입니다."),
-    CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
-    CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백만 거절할 수 있습니다."),
+    BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다."),
+    SELF_FEEDBACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신에게는 피드백을 요청할 수 없습니다."),
+    CANNOT_EDIT_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 수정할 수 없습니다."),
+    CANNOT_CANCEL_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
+    CANNOT_EDIT_NON_EDITABLE_REQUEST(HttpStatus.BAD_REQUEST, "해당 상태의 피드백은 수정할 수 없습니다."),
 
+    INVALID_REQUEST_STATE_FOR_FEEDBACK(HttpStatus.BAD_REQUEST, "요청이 진행 중인 경우에만 피드백 작성이 가능합니다."),
+    CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기 중인 피드백만 거절할 수 있습니다."),
+
+    CANNOT_EDIT_PENDING_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
+    CANNOT_EDIT_IN_PROCESS_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
+    CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
+
+    //피드백 작성  에러코드
+    INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 진행중인 것만 작성 가능합니다."),
+    CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
+
+
+    //알림
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;
