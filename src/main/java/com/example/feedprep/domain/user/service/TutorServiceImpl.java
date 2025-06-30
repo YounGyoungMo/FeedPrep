@@ -3,7 +3,7 @@ package com.example.feedprep.domain.user.service;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
-import com.example.feedprep.common.message.service.ToturMessageService;
+import com.example.feedprep.common.message.service.TutorMessageService;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.document.repository.DocumentRepository;
 import com.example.feedprep.domain.notification.service.NotificationService;
@@ -22,7 +22,7 @@ public class TutorServiceImpl implements TutorService {
     private final DocumentRepository documentRepository;
 
     private final NotificationService notificationService;
-    private final ToturMessageService toturMessageService;
+    private final TutorMessageService tutorMessageService;
 
     @Override
     public void sendRequestActivity(Long userId, Long adminId, Long documentId) {
@@ -45,7 +45,7 @@ public class TutorServiceImpl implements TutorService {
         Document document = documentRepository.findByIdOrElseThrow(documentId);
 
         // 메세지 기록 하기
-        toturMessageService.createdMessageTuter(userId,document.getDocumentId(),document.getFileUrl());
+        tutorMessageService.createdMessageTuter(userId,document.getDocumentId(),document.getFileUrl());
 
         // 요청 알림 보내기
         notificationService.sendNotification(userId, adminId, 201);
@@ -54,6 +54,6 @@ public class TutorServiceImpl implements TutorService {
     @Override
     public List<TutorMessageResponseDdo> getRequestList(Long userId) {
 
-        return toturMessageService.getMessageTuterList(userId);
+        return tutorMessageService.getMessageTuterList(userId);
     }
 }

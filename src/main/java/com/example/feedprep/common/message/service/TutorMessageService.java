@@ -3,7 +3,7 @@ package com.example.feedprep.common.message.service;
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
 import java.util.List;
 
-public interface ToturMessageService {
+public interface TutorMessageService {
 
     void createdMessageTuter(Long userId, Long documentId, String fileUrl);
 

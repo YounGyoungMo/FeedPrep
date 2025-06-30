@@ -40,12 +40,12 @@ public class AdminController {
 
     @PutMapping("/tutor/{tutorId}")
     public ResponseEntity<ApiResponseDto<ApproveTutorResponseDto>> approveTutor(
-        @AuthUser Long amdinId,
+        @AuthUser Long adminId,
         @PathVariable Long tutorId,
         @RequestParam(required = false) Long messageId
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(ApiResponseDto.success(APPROVE_TUTOR,adminService.approveTutor(amdinId, tutorId, messageId)));
+            .body(ApiResponseDto.success(APPROVE_TUTOR,adminService.approveTutor(adminId, tutorId, messageId)));
     }
 
     @PostMapping("/tech-stacks")

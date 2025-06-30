@@ -3,7 +3,7 @@ package com.example.feedprep.domain.user.service;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
-import com.example.feedprep.common.message.service.ToturMessageService;
+import com.example.feedprep.common.message.service.TutorMessageService;
 import com.example.feedprep.domain.notification.service.NotificationService;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
 import com.example.feedprep.domain.techstack.entity.TechStack;
@@ -25,12 +25,12 @@ public class AdminServiceImpl implements AdminService{
     private final TechStackRepository techStackRepository;
 
     private final NotificationService notificationService;
-    private final ToturMessageService toturMessageService;
+    private final TutorMessageService tutorMessageService;
 
     @Override
     public TutorMessageResponseDdo getMessageTutor(Long messageId) {
 
-        return toturMessageService.getMessageTuter(messageId);
+        return tutorMessageService.getMessageTuter(messageId);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AdminServiceImpl implements AdminService{
 
         // 받은 메세지 지우기
         if(messageId != null) {
-            toturMessageService.deleteMessageTuter(tutorId);
+            tutorMessageService.deleteMessageTuter(tutorId);
         }
 
         // 튜터에게 알림 보내기

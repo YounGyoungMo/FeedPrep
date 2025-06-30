@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ToturMessageServiceImpl implements ToturMessageService {
+public class TutorMessageServiceImpl implements TutorMessageService {
 
     private final MessageRepository messageRepository;
 
