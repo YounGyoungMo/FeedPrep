@@ -58,15 +58,12 @@ jobs:
       - name: Parse coverage report
         id: coverage
         run: |
-          MISSED=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[0-9]+" build/reports/jacoco/test/jacocoTestReport.xml)
-          HIT=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" covered=\")[0-9]+" build/reports/jacoco/test/jacocoTestReport.xml)
-          if [ -z "$HIT" ] || [ -z "$MISSED" ]; then
-            echo "Jacoco data not found"
-            echo "coverage=0.00" >> $GITHUB_OUTPUT
-          else
-            PERCENT=$(echo "scale=2; 100 * $HIT / ($HIT + $MISSED)" | bc)
-            echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
-          fi
+          COVERAGE=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml)
+          MISSED=$(echo $COVERAGE | cut -d'"' -f1)
+          TOTAL=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
+          HIT=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" covered=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
+          PERCENT=$(echo "scale=2; 100 * $HIT / ($HIT + $MISSED)" | bc)
+          echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
 
       - name: Comment PR with coverage
         uses: actions/github-script@v7
