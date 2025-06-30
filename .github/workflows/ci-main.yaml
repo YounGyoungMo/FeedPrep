@@ -64,10 +64,19 @@ jobs:
       - name: Parse coverage report
         id: coverage
         run: |
-          COVERAGE=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml)
-          MISSED=$(echo $COVERAGE | cut -d'"' -f1)
-          TOTAL=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" missed=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
-          HIT=$(grep -oPm1 "(?<=<counter type=\"INSTRUCTION\" covered=\")[^\"]+" build/reports/jacoco/test/jacocoTestReport.xml | cut -d'"' -f1)
+          MISSED=$(grep -oE 'missed="[0-9]+"' build/reports/jacoco/test/jacocoTestReport.xml | head -1 | grep -oE '[0-9]+')
+          HIT=$(grep -oE 'covered="[0-9]+"' build/reports/jacoco/test/jacocoTestReport.xml | head -1 | grep -oE '[0-9]+')
+          
+          echo "MISSED=$MISSED"
+          echo "HIT=$HIT"
+
+          if [ -z "$MISSED" ]; then
+          MISSED=0
+          fi
+          if [ -z "$HIT" ]; then
+          HIT=0
+          fi
+          
           PERCENT=$(echo "scale=2; 100 * $HIT / ($HIT + $MISSED)" | bc)
           echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
 
