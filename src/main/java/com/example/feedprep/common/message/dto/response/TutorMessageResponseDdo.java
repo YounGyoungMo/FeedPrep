@@ -2,10 +2,12 @@ package com.example.feedprep.common.message.dto.response;
 
 import com.example.feedprep.common.message.entity.TutorMessage;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class TutorMessageResponseDdo {
 
     private Long messageId;
@@ -16,11 +18,11 @@ public class TutorMessageResponseDdo {
 
     private String fileName;
 
-    public TutorMessageResponseDdo(TutorMessage toturMessage) {
-        this.messageId = toturMessage.getMessageId();
-        this.userId = toturMessage.getUserId();
-        this.documentId = toturMessage.getDocumentId();
-        this.fileName = toturMessage.getFileName();
+    public TutorMessageResponseDdo(TutorMessage tutorMessage) {
+        this.messageId = tutorMessage.getMessageId();
+        this.userId = tutorMessage.getUserId();
+        this.documentId = tutorMessage.getDocumentId();
+        this.fileName = tutorMessage.getFileName();
     }
 
 }

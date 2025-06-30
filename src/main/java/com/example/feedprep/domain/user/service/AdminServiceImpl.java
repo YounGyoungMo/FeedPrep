@@ -30,7 +30,7 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public TutorMessageResponseDdo getMessageTutor(Long messageId) {
 
-        return tutorMessageService.getMessageTuter(messageId);
+        return tutorMessageService.getMessageTutor(messageId);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AdminServiceImpl implements AdminService{
 
         // 받은 메세지 지우기
         if(messageId != null) {
-            tutorMessageService.deleteMessageTuter(tutorId);
+            tutorMessageService.deleteMessageTutor(tutorId);
         }
 
         // 튜터에게 알림 보내기

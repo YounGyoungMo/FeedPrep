@@ -37,7 +37,7 @@ public class TutorServiceImpl implements TutorService {
         // 관리자가 맞는지 확인
         User admin = userRepository.findByIdOrElseThrow(adminId);
 
-        if(admin.getRole().equals(UserRole.ADMIN)) {
+        if(!admin.getRole().equals(UserRole.ADMIN)) {
             throw new CustomException(ErrorCode.NOT_EQUALS_ADMIN);
         }
 
@@ -45,7 +45,7 @@ public class TutorServiceImpl implements TutorService {
         Document document = documentRepository.findByIdOrElseThrow(documentId);
 
         // 메세지 기록 하기
-        tutorMessageService.createdMessageTuter(userId,document.getDocumentId(),document.getFileUrl());
+        tutorMessageService.createdMessageTutor(userId,document.getDocumentId(),document.getFileUrl());
 
         // 요청 알림 보내기
         notificationService.sendNotification(userId, adminId, 201);
@@ -54,6 +54,6 @@ public class TutorServiceImpl implements TutorService {
     @Override
     public List<TutorMessageResponseDdo> getRequestList(Long userId) {
 
-        return tutorMessageService.getMessageTuterList(userId);
+        return tutorMessageService.getMessageTutorList(userId);
     }
 }

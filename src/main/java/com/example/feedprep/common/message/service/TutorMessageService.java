@@ -5,11 +5,11 @@ import java.util.List;
 
 public interface TutorMessageService {
 
-    void createdMessageTuter(Long userId, Long documentId, String fileUrl);
+    void createdMessageTutor(Long userId, Long documentId, String fileUrl);
 
-    TutorMessageResponseDdo getMessageTuter(Long messageId);
+    TutorMessageResponseDdo getMessageTutor(Long messageId);
 
-    List<TutorMessageResponseDdo> getMessageTuterList(Long userId);
+    List<TutorMessageResponseDdo> getMessageTutorList(Long userId);
 
-    void deleteMessageTuter(Long messageId);
+    void deleteMessageTutor(Long messageId);
 }

@@ -16,10 +16,10 @@ public class TutorMessageServiceImpl implements TutorMessageService {
     private final MessageRepository messageRepository;
 
     @Override
-    public void createdMessageTuter(Long userId, Long documentId, String fileUrl) {
+    public void createdMessageTutor(Long tutorId, Long documentId, String fileUrl) {
 
         TutorMessage tutorMessage = TutorMessage.builder()
-            .userId(userId)
+            .userId(tutorId)
             .documentId(documentId)
             .fileName(fileUrl)
             .build();
@@ -28,7 +28,7 @@ public class TutorMessageServiceImpl implements TutorMessageService {
     }
 
     @Override
-    public TutorMessageResponseDdo getMessageTuter(Long messageId) {
+    public TutorMessageResponseDdo getMessageTutor(Long messageId) {
 
         TutorMessage tutorMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
 
@@ -36,27 +36,25 @@ public class TutorMessageServiceImpl implements TutorMessageService {
     }
 
     @Override
-    public List<TutorMessageResponseDdo> getMessageTuterList(Long userId) {
+    public List<TutorMessageResponseDdo> getMessageTutorList(Long tutorId) {
 
-        List<TutorMessage> TutorMessageList = messageRepository.findAllByUserId(userId);
+        List<TutorMessage> TutorMessageList = messageRepository.findAllByUserId(tutorId);
 
         if(TutorMessageList.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_SEND_MESSAGE);
         }
 
-        List<TutorMessageResponseDdo> responseDdoList = TutorMessageList.stream()
+        return TutorMessageList.stream()
             .map(message -> new TutorMessageResponseDdo(
                 message.getMessageId(),
                 message.getUserId(),
                 message.getDocumentId(),
                 message.getFileName()
             )).toList();
-
-        return responseDdoList;
     }
 
     @Override
-    public void deleteMessageTuter(Long messageId) {
+    public void deleteMessageTutor(Long messageId) {
         TutorMessage tutorMessage = messageRepository.findByMessageIdOrElseThrow(messageId);
 
         messageRepository.delete(tutorMessage);
