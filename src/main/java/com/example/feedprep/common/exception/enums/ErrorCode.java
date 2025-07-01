@@ -46,6 +46,7 @@ public enum ErrorCode {
     PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터입니다."),
     NOT_PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터가 아닙니다."),
     ALREADY_REGISTERED_TECHSTACK(HttpStatus.BAD_REQUEST, "이미 등록된 기술스택 입니다."),
+    NOT_EQUALS_ADMIN(HttpStatus.BAD_REQUEST, "해당 유저는 관리자가 아닙니다."),
 
 
     //유저
@@ -118,9 +119,12 @@ public enum ErrorCode {
     INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 진행중인 것만 작성 가능합니다."),
     CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
 
-
     //알림
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다."),
+
+    // 메세지
+    NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND, "해당 메세지를 찾을 수 없습니다."),
+    NOT_FOUND_SEND_MESSAGE(HttpStatus.NOT_FOUND, "보낸 메세지가 없습니다."),
 
     // 결제
     ALREADY_REFUNDED(HttpStatus.BAD_REQUEST, "이미 환불된 결제입니다."),
