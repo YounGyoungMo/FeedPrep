@@ -25,5 +25,7 @@ public interface PointService {
 	// 포인트 확인
 	boolean hasEnoughPoint(Long userId);
 
-	List<Point> getPoint(Long userId);
+	List<Point> getPointHistory(Long userId);
+
+	Integer getPoint(Long userId);
 }

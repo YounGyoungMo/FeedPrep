@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
+import com.example.feedprep.domain.point.dto.PointResponseDto;
 import com.example.feedprep.domain.point.entity.Point;
 import com.example.feedprep.domain.point.service.PointService;
 
@@ -55,12 +56,14 @@ public class PointController {
 	}
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<ApiResponseDto<List<Point>>> getPoint(
+	public ResponseEntity<ApiResponseDto<PointResponseDto>> getPoint(
 		@PathVariable Long userId
 	){
-		List<Point> pointList = pointService.getPoint(userId);
+		List<Point> pointList = pointService.getPointHistory(userId);
+		Integer totalPoint = pointService.getPoint(userId);
+		PointResponseDto pointResponseDto = new PointResponseDto(pointList, totalPoint);
 
 		return ResponseEntity.status(SuccessCode.TRANSACTION_HISTORY.getHttpStatus())
-			.body(ApiResponseDto.success(SuccessCode.TRANSACTION_HISTORY, pointList));
+			.body(ApiResponseDto.success(SuccessCode.TRANSACTION_HISTORY, pointResponseDto));
 	}
 }

@@ -139,8 +139,13 @@ public class PointServiceImpl implements PointService{
 	}
 
 	@Override
-	public List<Point> getPoint(Long userId) {
+	public List<Point> getPointHistory(Long userId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		return pointRepository.findAllByUser(user);
+	}
+
+	@Override
+	public Integer getPoint(Long userId) {
+		return pointRepository.findTotalPointByUserId(userId);
 	}
 }
