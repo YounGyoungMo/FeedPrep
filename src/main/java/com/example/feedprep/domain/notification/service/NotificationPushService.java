@@ -3,12 +3,11 @@ package com.example.feedprep.domain.notification.service;
 import io.jsonwebtoken.Claims;
 
 import java.io.IOException;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.redisson.api.RedissonClient;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.example.feedprep.common.security.jwt.JwtUtil;
@@ -38,28 +37,33 @@ public class NotificationPushService {
 		emitterRepository.save(userId, emitter);
 		log.info("userId: {}", userId);
 
-		emitter.onCompletion(() -> emitterRepository.delete(userId));
-		emitter.onTimeout(() -> emitterRepository.delete(userId));
-		emitter.onError((e) -> emitterRepository.delete(userId));
+		emitter.onCompletion(() -> emitterRepository.delete(userId, emitter));
+		emitter.onTimeout(() -> emitterRepository.delete(userId, emitter));
+		emitter.onError((e) -> emitterRepository.delete(userId, emitter));
 		sendToUser(userId);
 		return emitter;
 	}
 
 
 	public void sendToUser(Long userId){
-		emitterRepository.get(userId).ifPresent(emitter -> {
-			log.info("emitter: {}", emitter);
-			try{
-		    	long unreadCount = notificationRepository.getCountByReceiver(userId);
-				emitter.send(SseEmitter.event()
-					.name("count")
-					.data(unreadCount));
-			}catch (IOException e){
-				log.error("SSE 전송 실패", e);
-				emitter.completeWithError(e);
-				emitterRepository.delete(userId);
+		List<SseEmitter> emitters = emitterRepository.get(userId);
+		if(emitters != null){
+			for(SseEmitter emitter : emitters){
+				try{
+
+					long unreadCount = notificationRepository.getCountByReceiver(userId);
+					emitter.send(SseEmitter.event()
+						.name("count")
+						.data(unreadCount));
+
+				}catch (IOException e){
+					log.error("SSE 전송 실패", e);
+					emitter.completeWithError(e);
+					emitterRepository.delete(userId, emitter);
+				}
+
 			}
-		});
+		}
 	}
 
 }
