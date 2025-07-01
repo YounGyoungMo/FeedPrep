@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.common.message.service.TutorMessageService;
+import com.example.feedprep.domain.notification.service.NotificationService;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
 import com.example.feedprep.domain.techstack.entity.TechStack;
 import com.example.feedprep.domain.techstack.repository.TechStackRepository;
@@ -14,7 +16,6 @@ import com.example.feedprep.domain.user.dto.response.ApproveTutorResponseDto;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Empty;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,35 +36,59 @@ class AdminServiceImplTest {
     @Mock
     private TechStackRepository techStackRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private TutorMessageService tutorMessageService;
+
     @InjectMocks
     private AdminServiceImpl adminServiceImpl;
+
+    @Test
+    @DisplayName("메세지 조회")
+    void getMessageTutor() {
+        Long messageId = 1L;
+
+        adminServiceImpl.getMessageTutor(messageId);
+
+        verify(tutorMessageService, times(1)).getMessageTutor(messageId);
+    }
 
     @Test
     @DisplayName("튜터 활동 승인")
     void approveTutor_success() {
         // given
-        User user = User.builder().userId(1L).role(UserRole.PENDING_TUTOR).build();
+        User tutorUser = User.builder().userId(1L).role(UserRole.PENDING_TUTOR).build();
+        Long adminId = 2L;
+        Long messageId = 3L;
 
         // when
-        when(userRepository.findByIdOrElseThrow(1L)).thenReturn(user);
+        when(userRepository.findByIdOrElseThrow(1L)).thenReturn(tutorUser);
 
-        ApproveTutorResponseDto result = adminServiceImpl.approveTutor(1L);
+        ApproveTutorResponseDto result =
+            adminServiceImpl.approveTutor(adminId, tutorUser.getUserId(), messageId);
 
         // then
         assertThat(result.getRole()).isEqualTo(UserRole.APPROVED_TUTOR);
+        verify(tutorMessageService, times(1))
+            .deleteMessageTutor(tutorUser.getUserId());
+        verify(notificationService, times(1))
+            .sendNotification(adminId, tutorUser.getUserId(), 202);
     }
 
     @Test
     @DisplayName("승인 대기중인 튜터가 아닙니다")
     void approveTutor_NOT_PENDING_TUTOR() {
         // given
-        User user = User.builder().userId(1L).role(UserRole.APPROVED_TUTOR).build();
+        User tutorUser = User.builder().userId(1L).role(UserRole.APPROVED_TUTOR).build();
+        Long adminId = 2L;
 
         // when
-        when(userRepository.findByIdOrElseThrow(1L)).thenReturn(user);
+        when(userRepository.findByIdOrElseThrow(1L)).thenReturn(tutorUser);
 
         CustomException customException = assertThrows(CustomException.class, () -> {
-            adminServiceImpl.approveTutor(1L);
+            adminServiceImpl.approveTutor(adminId, tutorUser.getUserId(), null);
         });
 
         // then

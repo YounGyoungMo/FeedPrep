@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,6 +67,15 @@ public class NotificationController {
 			.body(ApiResponseDto.success(
 				SuccessCode.OK_SUCCESS_Notification,
 				notificationService.getNotifications(userId, page, size)));
+	}
+
+	@PatchMapping("/{notificationId}")
+	public ResponseEntity<ApiResponseDto<NotificationResponseDto>> isReadNotification(
+		@AuthUser Long userId,
+		@PathVariable Long notificationId){
+		return  ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_Notification_IS_READ,
+				notificationService.isRead(userId,notificationId)));
 	}
 
 	@DeleteMapping("/{notificationId}")

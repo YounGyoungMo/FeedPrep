@@ -2,6 +2,7 @@ package com.example.feedprep.domain.feedbackreview;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -23,11 +24,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+import com.example.feedprep.common.exception.base.CustomException;
+import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
-import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewResponseDto;
+import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
@@ -84,7 +88,64 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
+	@Test
+	void 리뷰생성_실패_존재하지않는유저() {
+		Long userId = 1L;
+		Long feedbackId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
 
+		when(userRepository.findByIdOrElseThrow(userId))
+			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.createReview(userId, feedbackId, dto)
+		);
+
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰생성_실패_존재하지않는피드백() {
+		Long userId = 1L;
+		Long feedbackId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
+
+		User user = mock(User.class);
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+
+		when(feedBackRepository.findWithRequestAndUserById(feedbackId))
+			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.createReview(userId, feedbackId, dto)
+		);
+
+		assertEquals(ErrorCode.NOT_FOUND_FEEDBACK, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰생성_실패_작성자가아님() {
+		Long userId = 1L;
+		Long feedbackId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
+
+		User user = mock(User.class);
+		User otherUser = mock(User.class);
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+
+		Feedback feedback = mock(Feedback.class);
+		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
+		when(feedBackRepository.findWithRequestAndUserById(feedbackId)).thenReturn(Optional.of(feedback));
+		when(feedback.getFeedbackRequestEntity()).thenReturn(requestEntity);
+		when(requestEntity.getUser()).thenReturn(otherUser);
+		when(otherUser.getUserId()).thenReturn(999L);
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.createReview(userId, feedbackId, dto)
+		);
+
+		assertEquals(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS, exception.getErrorCode());
+	}
 	@Test
 	public void 리뷰_수정_테스트() {
 		Long studentId = 1L;
@@ -105,7 +166,60 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		assertDoesNotThrow(() -> feedbackReviewService.updateReview(studentId, reviewId, feedbackReviewRequestDto));
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
+	@Test
+	void 리뷰수정_실패_존재하지않는유저() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
 
+		when(userRepository.findByIdOrElseThrow(userId))
+			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.updateReview(userId, reviewId, dto)
+		);
+
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰수정_실패_존재하지않는리뷰() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
+
+		User user = mock(User.class);
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
+			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.updateReview(userId, reviewId, dto)
+		);
+
+		assertEquals(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰수정_실패_작성자가아님() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
+
+		User user = mock(User.class);
+		FeedbackReview review = mock(FeedbackReview.class);
+
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId)).thenReturn(review);
+		when(review.getUserId()).thenReturn(999L);
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.updateReview(userId, reviewId, dto)
+		);
+
+		assertEquals(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS, exception.getErrorCode());
+	}
 	@Test
 	public void 리뷰_삭제_테스트() {
 		Long studentId = 1L;
@@ -122,7 +236,57 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		assertDoesNotThrow(() -> feedbackReviewService.deleteReview(studentId, reviewId));
 	}
+	@Test
+	void 리뷰삭제_실패_존재하지않는유저() {
+		Long userId = 1L;
+		Long reviewId = 2L;
 
+		when(userRepository.findByIdOrElseThrow(userId))
+			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.deleteReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰삭제_실패_존재하지않는리뷰() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+
+		User user = mock(User.class);
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
+			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.deleteReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰삭제_실패_작성자가아님() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+
+		User user = mock(User.class);
+		FeedbackReview review = mock(FeedbackReview.class);
+
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId)).thenReturn(review);
+		when(review.getUserId()).thenReturn(999L);
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.deleteReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS, exception.getErrorCode());
+	}
 	@Test
 	public void 학생_기준_리뷰_유저_단건_조회_테스트() {
 		Long studentId = 1L;
@@ -140,13 +304,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 
-		FeedbackReviewResponseDto feedbackReviewResponseDto
+		FeedbackReviewDetailsDto feedbackReviewDetailsDto
 			= feedbackReviewService.getReview(studentId, 1L);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.getId());
-		assertEquals(1L, feedbackReviewResponseDto.getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.getId());
+		assertEquals(1L, feedbackReviewDetailsDto.getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.getTutorId());
 	}
 
 	@Test
@@ -167,13 +331,65 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 
-		FeedbackReviewResponseDto feedbackReviewResponseDto
+		FeedbackReviewDetailsDto feedbackReviewDetailsDto
 			= feedbackReviewService.getReview(tutorId, 1L);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.getId());
-		assertEquals(1L, feedbackReviewResponseDto.getUserId());
-		assertEquals(3L, feedbackReviewResponseDto.getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.getId());
+		assertEquals(1L, feedbackReviewDetailsDto.getUserId());
+		assertEquals(3L, feedbackReviewDetailsDto.getTutorId());
+	}
+	@Test
+	void 리뷰단건조회_실패_존재하지않는유저() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+
+		when(userRepository.findByIdOrElseThrow(userId))
+			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.getReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰단건조회_실패_존재하지않는리뷰() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+
+		User user = mock(User.class);
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
+			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.getReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW, exception.getErrorCode());
+	}
+
+	@Test
+	void 리뷰단건조회_실패_권한없음() {
+		Long userId = 1L;
+		Long reviewId = 2L;
+
+		User user = mock(User.class);
+		FeedbackReview review = mock(FeedbackReview.class);
+
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId)).thenReturn(review);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
+		when(review.getUserId()).thenReturn(999L);
+
+		CustomException exception = assertThrows(CustomException.class, () ->
+			feedbackReviewService.getReview(userId, reviewId)
+		);
+
+		assertEquals(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS, exception.getErrorCode());
 	}
 
 	@Test
@@ -192,20 +408,19 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getId()).thenReturn(1L);
 		when(feedbackReview.getUserId()).thenReturn(studentId);
 		when(feedbackReview.getTutorId()).thenReturn(tutor1Id);
-		when(feedbackReview.getContent()).thenReturn("학생이 리뷰를 달았습니다.");
 		when(feedbackReview.getRating()).thenReturn(3);
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByUserIdAndDeletedAtIsNull(studentId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+		List<FeedbackReviewListDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(studentId, 0, 10);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getId());
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.get(0).getTutorId());
 	}
 
 	@Test
@@ -226,20 +441,19 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getId()).thenReturn(1L);
 		when(feedbackReview.getUserId()).thenReturn(studentId);
 		when(feedbackReview.getTutorId()).thenReturn(tutorId);
-		when(feedbackReview.getContent()).thenReturn("학생이 쓴 리뷰를 화인합니다.");
 		when(feedbackReview.getRating()).thenReturn(3);
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 
 		Page<FeedbackReview> page = new PageImpl<>(List.of(feedbackReview));
 		when(feedBackReviewRepository.findByTutorIdAndDeletedAtIsNull(tutorId, pageable)).thenReturn(page);
 
-		List<FeedbackReviewResponseDto> feedbackReviewResponseDto
+		List<FeedbackReviewListDto> feedbackReviewDetailsDto
 			= feedbackReviewService.getReviews(tutorId, 0, 10);
 
-		assertNotNull(feedbackReviewResponseDto);
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getId());
-		assertEquals(1L, feedbackReviewResponseDto.get(0).getUserId());
-		assertEquals(2L, feedbackReviewResponseDto.get(0).getTutorId());
+		assertNotNull(feedbackReviewDetailsDto);
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getId());
+		assertEquals(1L, feedbackReviewDetailsDto.get(0).getUserId());
+		assertEquals(2L, feedbackReviewDetailsDto.get(0).getTutorId());
 	}
 
 

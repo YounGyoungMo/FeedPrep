@@ -1,9 +1,7 @@
 package com.example.feedprep.domain.feedbackrequestentity.dto.response;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @RequiredArgsConstructor
-public class FeedbackRequestEntityResponseDto {
+public class UserFeedbackRequestDetailsDto {
 	private Long id;
 	private Long tutorId;
 	private Long documentId;
@@ -23,7 +21,7 @@ public class FeedbackRequestEntityResponseDto {
 	private String state;
 	private String modifiedAt;
 
-	public FeedbackRequestEntityResponseDto(FeedbackRequestEntity entity){
+	public UserFeedbackRequestDetailsDto(FeedbackRequestEntity entity){
 		this.id = entity.getId();
 		this.tutorId = entity.getTutor().getUserId();
 		this.documentId = entity.getDocument().getDocumentId();

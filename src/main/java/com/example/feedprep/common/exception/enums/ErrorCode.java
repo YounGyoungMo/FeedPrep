@@ -47,6 +47,7 @@ public enum ErrorCode {
     PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터입니다."),
     NOT_PENDING_TUTOR(HttpStatus.BAD_REQUEST, "해당 유저는 승인 대기중인 튜터가 아닙니다."),
     ALREADY_REGISTERED_TECHSTACK(HttpStatus.BAD_REQUEST, "이미 등록된 기술스택 입니다."),
+    NOT_EQUALS_ADMIN(HttpStatus.BAD_REQUEST, "해당 유저는 관리자가 아닙니다."),
 
 
     //유저
@@ -97,25 +98,38 @@ public enum ErrorCode {
     NOT_FOUND_FEEDBACK(HttpStatus.NOT_FOUND, "해당 피드백을 찾을 수 없습니다."),
     NOT_FOUND_FEEDBACK_REVIEW(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
     UNAUTHORIZED_REQUESTER_ACCESS(HttpStatus.FORBIDDEN, "해당 요청을 수행할 권한이 없습니다."),
-    BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다"),
-    FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않는 리뷰에 접근할수 없습니다.."),
 
+    FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않은 리뷰에 접근할 수 없습니다."),
+    DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
+
+    BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다."),
     SELF_FEEDBACK_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자신에게는 피드백을 요청할 수 없습니다."),
     CANNOT_EDIT_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 수정할 수 없습니다."),
+    CANNOT_CANCEL_COMPLETED_REQUEST(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
+    CANNOT_EDIT_NON_EDITABLE_REQUEST(HttpStatus.BAD_REQUEST, "해당 상태의 피드백은 수정할 수 없습니다."),
+
+    INVALID_REQUEST_STATE_FOR_FEEDBACK(HttpStatus.BAD_REQUEST, "요청이 진행 중인 경우에만 피드백 작성이 가능합니다."),
+    CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기 중인 피드백만 거절할 수 있습니다."),
+
     CANNOT_EDIT_PENDING_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
     CANNOT_EDIT_IN_PROCESS_REQUEST(HttpStatus.BAD_REQUEST, "이미 진행중인 피드백은 수정할 수 없습니다."),
     CANNOT_CANCEL_COMPLETED(HttpStatus.BAD_REQUEST, "이미 완료된 피드백은 취소할 수 없습니다."),
-    DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
-    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
 
     //피드백 작성  에러코드
     INVALID_REQUEST_STATE(HttpStatus.BAD_REQUEST, "요청이 진행중인 것만 작성 가능합니다."),
     CANNOT_EDIT_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백은 수정이 불가합니다."),
-    CANNOT_REJECT_NON_PENDING_FEEDBACK(HttpStatus.CONFLICT, "작성 대기중인 피드백만 거절할 수 있습니다."),
 
     //알림
-    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다.")
+    NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"요청하신 알림은 존재 하지 않습니다."),
 
+    // 메세지
+    NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND, "해당 메세지를 찾을 수 없습니다."),
+    NOT_FOUND_SEND_MESSAGE(HttpStatus.NOT_FOUND, "보낸 메세지가 없습니다."),
+
+    // 결제
+    ALREADY_REFUNDED(HttpStatus.BAD_REQUEST, "이미 환불된 결제입니다."),
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
     ;
 
     private final HttpStatus httpStatus;
