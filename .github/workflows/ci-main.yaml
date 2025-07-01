@@ -64,10 +64,13 @@ jobs:
       - name: Parse coverage report
         id: coverage
         run: |
-          LINE_COUNTER=$(tac build/reports/jacoco/test/jacocoTestReport.xml | grep '<counter type="LINE"' | head -n 1 | tr -d '\r\n')
-
-          MISSED=$(echo "$LINE_COUNTER" | grep -o 'missed="[0-9]\+"' | head -n 1 | grep -o '[0-9]\+')
-          COVERED=$(echo "$LINE_COUNTER" | grep -o 'covered="[0-9]\+"' | head -n 1 | grep -o '[0-9]\+')
+          LINE_COUNTER=$(awk '
+            /<\/package>/ { in_summary=1 }
+            in_summary && /<counter type="LINE"/ { print; exit }
+          ' build/reports/jacoco/test/jacocoTestReport.xml | tr -d '\r\n')
+      
+          MISSED=$(echo "$LINE_COUNTER" | grep -o 'missed="[0-9]\+"' | grep -o '[0-9]\+')
+          COVERED=$(echo "$LINE_COUNTER" | grep -o 'covered="[0-9]\+"' | grep -o '[0-9]\+')
       
           echo "MISSED=$MISSED"
           echo "COVERED=$COVERED"
