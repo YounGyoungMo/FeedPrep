@@ -27,6 +27,8 @@ public enum SuccessCode {
     UPDATE_MYINFO_SUCCESS(HttpStatus.OK,"내 정보 수정이 완료 되었습니다."),
     CHANGE_PASSWORD_SUCCESS(HttpStatus.OK,"비밀번호 수정을 성공하였습니다."),
     SEND_MAIL_SUCCESS(HttpStatus.OK, "메일 발송을 성공하였습니다."),
+    SEND_REQUEST_ACTIVITY_SUCCESS(HttpStatus.OK,"튜터 활동 승인 요청을 보냈습니다."),
+    GET_REQUEST_LIST_SUCCESS(HttpStatus.OK,"보낸 메세지 목록을 조회 성공하였습니다."),
 
     // 문서
     CREATE_DOCUMENT_SUCCESS(HttpStatus.CREATED, "문서 작성에 성공하였습니다."),
@@ -71,7 +73,10 @@ public enum SuccessCode {
     REMOVE_MY_TECH_STACK(HttpStatus.OK, "관심 기술 스택을 삭제하였습니다."),
 
     // 관리자
-    APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다.")
+    APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다."),
+
+    SUCCESS_FETCH_INFO(HttpStatus.OK, "성공 했습니다."),
+    TRANSACTION_HISTORY(HttpStatus.OK, "거래 내역입니다.")
 
     ;
 

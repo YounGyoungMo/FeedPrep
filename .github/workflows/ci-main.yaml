@@ -5,9 +5,24 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -22,7 +37,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: jacocoTestReport
+      - name: Run tests and generate coverage
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -32,3 +47,44 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PORTONE_STOREID: ${{ secrets.PORTONE_STOREID }}
+          PORTONE_APISECRET: ${{ secrets.PORTONE_APISECRET }}
+          PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
+          PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}
+
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Parse overall line coverage
+        id: coverage
+        run: |
+          MISSED=$(xmllint --xpath "string(/report/counter[@type='LINE']/@missed)" build/reports/jacoco/test/jacocoTestReport.xml)
+          COVERED=$(xmllint --xpath "string(/report/counter[@type='LINE']/@covered)" build/reports/jacoco/test/jacocoTestReport.xml)
+
+          echo "MISSED=$MISSED"
+          echo "COVERED=$COVERED"
+
+          TOTAL=$((MISSED + COVERED))
+          if [ "$TOTAL" -eq 0 ]; then
+            PERCENT=0
+          else
+            PERCENT=$(echo "scale=2; 100 * $COVERED / $TOTAL" | bc)
+          fi
+
+          echo "coverage=$PERCENT" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with coverage
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const coverage = `${{ steps.coverage.outputs.coverage }}`
+            const comment = `🧪 **Jacoco Coverage Report**: ${coverage}%`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            })

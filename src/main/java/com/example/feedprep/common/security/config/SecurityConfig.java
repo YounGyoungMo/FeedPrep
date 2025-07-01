@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final TokenBlacklistService tokenBlacklistService;
 
     @Bean
-
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
@@ -47,6 +46,11 @@ public class SecurityConfig {
                         .requestMatchers( "/notifications/subscribe").permitAll()
                         .requestMatchers("/admin/authority").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .anyRequest().authenticated()
+                    .requestMatchers("/auth/login", "/auth/signup", "/admin/signup", "/admin/login", "/authorize/**", "/oauth/**", "/charge", "/point/charge", "/portone-webhook").permitAll()
+                    .requestMatchers("/users/admin/authority").hasRole("ADMIN")
+                    .requestMatchers("/users/tutor").hasAnyRole("PENDING_TUTOR","APPROVED_TUTOR","ADMIN")
+
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
