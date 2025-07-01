@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin/authority")
+@RequestMapping("/users/admin/authority")
 @RequiredArgsConstructor
 public class AdminController {
 
