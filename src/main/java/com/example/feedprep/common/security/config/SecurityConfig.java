@@ -42,12 +42,13 @@ public class SecurityConfig {
                             "/admin/signup",
                             "/admin/login",
                             "/authorize/**",
-                            "/oauth/**").permitAll()
+                            "/oauth/**",
+                            "/charge",
+                            "/point/charge",
+                            "/portone-webhook").permitAll()
                         .requestMatchers( "/notifications/subscribe").permitAll()
-                        .requestMatchers("/admin/authority").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .anyRequest().authenticated()
-                    .requestMatchers("/auth/login", "/auth/signup", "/admin/signup", "/admin/login", "/authorize/**", "/oauth/**", "/charge", "/point/charge", "/portone-webhook").permitAll()
+
                     .requestMatchers("/users/admin/authority").hasRole("ADMIN")
                     .requestMatchers("/users/tutor").hasAnyRole("PENDING_TUTOR","APPROVED_TUTOR","ADMIN")
 
