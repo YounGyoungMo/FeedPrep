@@ -66,8 +66,8 @@ jobs:
         run: |
           LINE_COUNTER=$(grep '<counter type="LINE"' build/reports/jacoco/test/jacocoTestReport.xml | tail -n 1)
 
-          MISSED=$(echo "$LINE_COUNTER" | grep -o 'missed="[0-9]\+"' | grep -o '[0-9]\+')
-          COVERED=$(echo "$LINE_COUNTER" | grep -o 'covered="[0-9]\+"' | grep -o '[0-9]\+')
+          MISSED=$(echo "$LINE_COUNTER" | grep -o 'missed="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
+          COVERED=$(echo "$LINE_COUNTER" | grep -o 'covered="[0-9]\+"' | head -1 | grep -o '[0-9]\+')
 
           echo "MISSED=$MISSED"
           echo "COVERED=$COVERED"
