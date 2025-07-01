@@ -6,15 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
-import com.example.feedprep.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeedbackReviewResponseDto {
+public class FeedbackReviewDetailsDto {
 
 	private Long id;
 
@@ -29,7 +27,7 @@ public class FeedbackReviewResponseDto {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private String modifiedAt;
 
-	public FeedbackReviewResponseDto(FeedbackReview feedbackReview) {
+	public FeedbackReviewDetailsDto(FeedbackReview feedbackReview) {
 		this.id = feedbackReview.getId();
 		this.userId = feedbackReview.getUserId();
 		this.tutorId =feedbackReview.getTutorId();
