@@ -2,33 +2,45 @@ package com.example.feedprep.common.s3.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.UUID;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service{
 
+    private static final Logger slackLogger = LoggerFactory.getLogger(S3ServiceImpl.class);
+
     private final S3Client s3Client;
     private final Environment env;
+    private final S3Presigner s3Presigner;
 
+    // 파일 저장소 명시
     private String getBucketName() {
         return env.getProperty("aws.s3.bucket");
     }
 
     @Override
+    @Transactional
     public String uploadFile(MultipartFile file, String directory) {
 
         if(file.isEmpty()) {
@@ -54,6 +66,30 @@ public class S3ServiceImpl implements S3Service{
     }
 
     @Override
+    @Transactional
+    public String createFileUrl(String key) {
+
+        String bucket = getBucketName();
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            .bucket(bucket)
+            .key(key)
+            .build();
+
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(5))
+            .getObjectRequest(getObjectRequest)
+            .build();
+
+        try {
+            return s3Presigner.presignGetObject(getObjectPresignRequest).url().toString();
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.NOT_CREATED_S3FILE_URL);
+        }
+    }
+
+    @Override
+    @Transactional
     @Async // 비동기 어노테이션
     public void deleteFile(String fileKey) {
         String bucket = getBucketName();
@@ -65,10 +101,38 @@ public class S3ServiceImpl implements S3Service{
 
         try {
             s3Client.deleteObject(deleteObjectRequest);
-            log.info("S3 파일 삭제 성공 (비동기): {}", fileKey);
+            slackLogger.info("S3 파일 삭제 성공 (비동기): {}", fileKey);
         } catch (Exception e) {
-            log.error("S3 파일 삭제 실패 (비동기): {} - {}", fileKey, e.getMessage(), e);
+            slackLogger.warn("S3 파일 삭제 실패 (비동기): {} - {}", fileKey, e.getMessage(), e);
             throw new CustomException(ErrorCode.DONT_DELETE_S3FILE);
         }
+    }
+
+    @Override
+    @Transactional
+    public void limitedFileSize(MultipartFile file, Long size) {
+
+        if(file.getSize() > size) {
+            throw new CustomException(ErrorCode.OVER_LIMIT_FILESIZE);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Long convertFileSizeType(Long size, String type) {
+
+        Long convertedSize;
+
+        if(type == null || type.isBlank()) {
+            convertedSize = size;
+        } else {
+            switch (type.toLowerCase()) {
+                case "kb" -> convertedSize = size * 1024;
+                case "mb" -> convertedSize = size * 1024 * 1024;
+                default -> throw new CustomException(ErrorCode.DONT_CONVERT_FILESIZE_TYPE);
+            }
+        }
+
+        return convertedSize;
     }
 }

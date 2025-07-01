@@ -1,10 +1,18 @@
+### 학생 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
+GET localhost:8080/oauth/authorize/kakao?role=student
+
+// 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야 함
+
+### 튜터 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
+GET localhost:8080/oauth/authorize/kakao?role=tutor
+
 ### 학생 회원가입
 POST localhost:8080/auth/signup
 Content-Type: application/json
 
 {
   "name": "윤경모",
-  "email": "user1234@naver.com",
+  "email": "user123@naver.com",
   "password": "asdasdjkDF23",
   "role": "STUDENT"
 }
@@ -14,7 +22,7 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "user1234@naver.com",
+  "email": "user123@naver.com",
   "password": "asdasdjkDF23"
 }
 
@@ -23,13 +31,38 @@ Content-Type: application/json
     client.global.set("studentRefreshToken", response.body.data.refreshToken)
 %}
 
+### 다른 학생
+POST localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "윤경모",
+  "email": "anotherUser1234@naver.com",
+  "password": "asdasdjkDF23",
+  "role": "STUDENT"
+}
+
+### 다른 학생 로그인
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "anotherUser1234@naver.com",
+  "password": "asdasdjkDF23"
+}
+
+> {%
+    client.global.set("anotherStudentAccessToken", response.body.data.accessToken)
+    client.global.set("anotherStudentRefreshToken", response.body.data.refreshToken)
+%}
+
 ### 튜터 회원가입
 POST localhost:8080/auth/signup
 Content-Type: application/json
 
 {
   "name": "윤경모",
-  "email": "tutor123@naver.com",
+  "email": "tutor12345@naver.com",
   "password": "asdasdjkDF23",
   "role": "TUTOR"
 }
@@ -39,7 +72,7 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "tutor123@naver.com",
+  "email": "tutor12345@naver.com",
   "password": "asdasdjkDF23"
 }
 
@@ -49,7 +82,6 @@ Content-Type: application/json
 
 
 ### 관리자 회원가입
-
 POST localhost:8080/admin/signup
 Content-Type: application/json
 
@@ -62,7 +94,6 @@ Content-Type: application/json
 }
 
 ### 관리자 로그인
-
 POST localhost:8080/admin/login
 Content-Type: application/json
 
@@ -74,4 +105,31 @@ Content-Type: application/json
 > {%
     client.global.set("adminAccessToken", response.body.data.accessToken)
 %}
+
+### 포트원 웹훅 테스트 예시
+POST http://localhost:8080/portone-webhook
+Content-Type: application/json
+x-portone-signature: "cEbXuvfiTAkJiT2XPg8RasgfAVHkSQrY0pX0pO42xEC3YPFttZSWDaN7TRazZGLrAgEydMAt82xeE1Xu"
+x-portone-timestamp: 1698199200
+
+{
+  "type": "Transaction.Paid",
+  "data": {
+    "paymentId": "pid_20250625185355_1",
+    "merchantUid": "order_1234",
+    "status": "paid",
+    "amount": 50000,
+    "currency": "KRW",
+    "buyer": {
+      "name": "홍길동",
+      "email": "user@example.com"
+    },
+    "method": {
+      "type": "card",
+      "card": {
+        "cardNumber": "xxxx-xxxx-xxxx-1234"
+      }
+    }
+  }
+}
 

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>로그인 및 포인트 충전</title>
+    <style>
+        #chargeSection {
+            display: none;
+            margin-top: 20px;
+        }
+        #errorMsg {
+            color: red;
+        }
+        #chargeResultMsg {
+            margin-top: 10px;
+            color: green;
+        }
+        #tokenDisplay {
+            word-break: break-all;
+            margin-top: 10px;
+            background: #eee;
+            padding: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+</head>
+<body>
+
+<h2>로그인</h2>
+<form id="loginForm">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" required /><br />
+    <label for="password">비밀번호:</label>
+    <input type="password" id="password" name="password" required /><br />
+    <button type="submit">로그인</button>
+</form>
+<p id="errorMsg"></p>
+
+<!-- 충전 영역 -->
+<div id="chargeSection">
+    <h2>포인트 충전</h2>
+    <label for="amount">충전 금액:</label>
+    <input type="number" id="amount" min="1" /><br />
+    <button id="chargeBtn">충전하기</button>
+    <p id="chargeResultMsg"></p>
+</div>
+
+<p id="tokenDisplay"></p>
+
+<script th:inline="javascript">
+    const storeId = /*[[${storeId}]]*/ 'default-store-id';
+    const channelKey = /*[[${channelKey}]]*/ 'default-channel-key';
+    const loginForm = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const chargeSection = document.getElementById('chargeSection');
+    const chargeBtn = document.getElementById('chargeBtn');
+    const chargeResultMsg = document.getElementById('chargeResultMsg');
+
+    console.log("storeId:", storeId);
+    console.log("channelKey:", channelKey);
+
+    // 로그인 상태일 경우 바로 충전 영역 보이기
+    const savedToken = localStorage.getItem('accessToken');
+    if (savedToken) {
+        loginForm.style.display = 'none';
+        chargeSection.style.display = 'block';
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const result = await res.json();
+            const token = result.data?.accessToken;
+
+            if (!res.ok || !token) {
+                errorMsg.textContent = result.message || '로그인 실패';
+                return;
+            }
+
+            localStorage.setItem('accessToken', token);
+            loginForm.style.display = 'none';
+            chargeSection.style.display = 'block';
+            tokenDisplay.textContent = `내 액세스 토큰: ${token}`;
+            tokenDisplay.style.display = 'block';
+
+        } catch (err) {
+            errorMsg.textContent = '네트워크 오류';
+        }
+    });
+
+    chargeBtn.addEventListener('click', async () => {
+        chargeResultMsg.textContent = '';
+
+        const amount = parseInt(document.getElementById('amount').value);
+        if (isNaN(amount) || amount <= 0) {
+            chargeResultMsg.style.color = 'red';
+            chargeResultMsg.textContent = '유효한 금액을 입력하세요.';
+            return;
+        }
+
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            location.reload();
+            return;
+        }
+
+        try {
+            // 1. 유저 정보 조회
+            const userRes = await fetch('/users/me', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const userResult = await userRes.json();
+            const userId = userResult.data?.userId;
+
+            if (!userId) {
+                chargeResultMsg.style.color = 'red';
+                chargeResultMsg.textContent = '유저 정보를 불러오지 못했습니다.';
+                return;
+            }
+
+            // 2. paymentId 생성
+            function generatePaymentId(userId) {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const MM = String(now.getMonth() + 1).padStart(2, '0');
+                const dd = String(now.getDate()).padStart(2, '0');
+                const HH = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                const timestamp = `${yyyy}${MM}${dd}${HH}${mm}${ss}`;
+                return `pid_${timestamp}_${userId}`;
+            }
+
+            const paymentId = generatePaymentId(userId);
+
+
+            // 3. PortOne 요청
+            const data = {
+                storeId: storeId,
+                channelKey: channelKey,
+                paymentId: paymentId,
+                orderName: '포인트 충전',
+                totalAmount: amount,
+                currency: 'KRW',
+                payMethod: 'EASY_PAY',
+            };
+
+            const response = await PortOne.requestPayment(data);
+
+            const params = new URLSearchParams();
+            params.append('paymentId', paymentId);
+            params.append('amount', amount);
+
+            const charge = await fetch('/point/charge', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: params
+            });
+
+            startPolling(paymentId);
+
+
+            function startPolling(paymentId, maxAttempts = 10, interval = 60000) { // ⬅️ 60초(1분)
+                let attempts = 0;
+                let pollingTimer = null;
+
+                const poll = async () => {
+                    try {
+                        const response = await fetch(`/point/check?paymentId=${paymentId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.data === true) {
+                            console.log('✅ 포인트 충전 완료! ' + result.data);
+                            clearInterval(pollingTimer);
+                            document.getElementById("chargeResultMsg").textContent = '포인트 충전이 완료되었습니다!';
+                            return;
+                        }
+
+                        attempts++;
+                        console.log(`⏳ 아직 미완료... (${attempts}/${maxAttempts})`);
+
+                        if (attempts >= maxAttempts) {
+                            console.warn('❌ 최대 시도 횟수 초과. 폴링 중지');
+                            clearInterval(pollingTimer);
+                        }
+
+                    } catch (err) {
+                        console.error('❌ 폴링 중 오류 발생:', err);
+                        clearInterval(pollingTimer);
+                    }
+                };
+
+                pollingTimer = setInterval(poll, interval); // ⬅️ 이제 정확하게 clear 가능
+            }
+
+            console.log('결제 응답:', response);
+            chargeResultMsg.style.color = 'green';
+            chargeResultMsg.textContent = '결제가 완료되었습니다. 응답 확인: ' + charge.body;
+
+        } catch (err) {
+            chargeResultMsg.style.color = 'red';
+            chargeResultMsg.textContent = '충전 중 오류가 발생했습니다.';
+            console.error(err);
+        }
+    });
+</script>
+
+</body>
+</html>
