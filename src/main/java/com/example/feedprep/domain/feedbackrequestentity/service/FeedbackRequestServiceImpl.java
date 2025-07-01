@@ -14,6 +14,7 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRe
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
+import com.example.feedprep.domain.point.service.PointServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -40,6 +41,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
 	private final NotificationServiceImpl notificationService;
+	private final PointServiceImpl pointService;
 
 	@Transactional
 	@Override
@@ -67,8 +69,9 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		request.updateRequestState(RequestState.PENDING);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 
-		notificationService.sendNotification(userId, tutor.getUserId(), 101);
+		pointService.makePayment(getInfoRequest);
 
+		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
 		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
@@ -134,6 +137,8 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.CANCELED);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+		pointService.refundPoint(getInfoRequest);
+
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 		return new UserFeedbackRequestDetailsDto( getInfoRequest);
@@ -204,7 +209,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.IN_PROGRESS);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-
+		pointService. makeIncome(request);
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 		return new TutorFeedbackResponseDetailsDto(getInfoRequest);
@@ -237,11 +242,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		if(!request.getTutor().getUserId().equals(tutor.getUserId())){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-
 		RejectReason rejectReason = RejectReason.fromNumber(rejectNumber);
-
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
+		pointService.refundPoint(request);
 		return new TutorFeedbackResponseDetailsDto(request);
 	}
 }
