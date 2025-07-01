@@ -8,8 +8,9 @@ import com.example.feedprep.domain.feedbackrequestentity.common.RejectReason;
 import com.example.feedprep.domain.feedbackrequestentity.common.RequestState;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRejectRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestEntityResponseDto;
-import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.TutorFeedbackResponseDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
@@ -42,16 +43,17 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
     //private final NotificationPushService notificationPushService;
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto createRequest(Long userId, FeedbackRequestDto dto) {
+	public UserFeedbackRequestDetailsDto createRequest(Long userId, FeedbackRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId(), ErrorCode.NOT_FOUND_TUTOR);
         if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.PENDING_TUTOR);
 		}
-		Document document = documentRepository.findById(dto.getDocumentId())
-			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
+
+		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
+
         FeedbackRequestEntity feedbackRequestEntity =
-			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndContentAndRequestState(
+			 feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndRequestState(
 				 userId,
 				 tutor.getUserId(),
 				 RequestState.PENDING)
@@ -68,12 +70,12 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
 		// notificationPushService.sendToUser(tutor.getUserId());
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<FeedbackRequestEntityResponseDto> getRequests(
+	public List<UserFeedbackRequestDetailsDto> getRequests(
 		Long userId,         // 신청자
 		Long tutorId,        // 피드백 받을 대상
 		Long documentId,     // 문서
@@ -93,91 +95,35 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		Page<FeedbackRequestEntity> pages =
 			feedbackRequestEntityRepository.findByRequest(userId, tutorId, documentId,month, requestState, pageRequest);
 
-		return pages.stream().map(FeedbackRequestEntityResponseDto::new).toList();
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public FeedbackResponseDetailsDto getFeedbackRequest(Long tutorId, Long requestId) {
-		//튜터 확인.
-		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
-		FeedbackRequestEntity request =feedbackRequestEntityRepository
-			.findById(requestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
-
-		return new FeedbackResponseDetailsDto(request);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<FeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size){
-		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
-		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
-		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-		Page<FeedbackRequestEntity> requests = feedbackRequestEntityRepository.getPagedRequestsForTutor(
-			tutor.getUserId(),
-			RequestState.PENDING,
-			pageable
-		);
-		return requests.stream()
-			.map(FeedbackResponseDetailsDto:: new)
-			.collect(Collectors.toList());
-
+		return pages.stream().map(UserFeedbackRequestDetailsDto::new).toList();
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto) {
+	public UserFeedbackRequestDetailsDto updateRequest(Long userId, Long feedbackRequestId, FeedbackRequestDto dto) {
 
 		//요청이 존재하는 가?
-		FeedbackRequestEntity request = feedbackRequestEntityRepository.findById(feedbackRequestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
 		if(!request.getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-
 		if (request.getRequestState() != RequestState.PENDING) {
-			throw new CustomException(ErrorCode.CANNOT_EDIT_COMPLETED_REQUEST);
+			throw new CustomException(ErrorCode.CANNOT_EDIT_NON_EDITABLE_REQUEST);
 		}
-		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
 
-		//문서 조회
-		Document document = documentRepository.findById(dto.getDocumentId())
-			.orElseThrow(()-> new CustomException(ErrorCode.INVALID_DOCUMENT));
+		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId());
+		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
 
 		request.updateFeedbackRequestEntity(dto, tutor, document);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
-	}
-
-	@Override
-	public FeedbackRequestEntityResponseDto acceptRequest(Long userId, Long feedbackRequestId) {
-		//요청이 존재하는 가?
-		FeedbackRequestEntity request = feedbackRequestEntityRepository.findById(feedbackRequestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
-		if(!request.getUser().getUserId().equals(userId))
-		{
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
-		if (request.getRequestState() != RequestState.PENDING){
-			throw new CustomException(ErrorCode.CANNOT_EDIT_PENDING_REQUEST);
-		}
-
-		request.updateRequestState(RequestState.IN_PROGRESS);
-		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-		Map<String, Object> data =  new LinkedHashMap<>();
-		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto(getInfoRequest);
+		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto cancelRequest(Long userId, Long feedbackRequestId) {
+	public UserFeedbackRequestDetailsDto cancelRequest(Long userId, Long feedbackRequestId) {
 		//요청이 존재하는 가?
-		FeedbackRequestEntity request = feedbackRequestEntityRepository.findById(feedbackRequestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
 		if(!request.getUser().getUserId().equals(userId))
 		{
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
@@ -190,14 +136,87 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		Map<String, Object> data =  new LinkedHashMap<>();
 		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		return new FeedbackRequestEntityResponseDto( getInfoRequest);
+		return new UserFeedbackRequestDetailsDto( getInfoRequest);
+	}
+
+
+	@Transactional(readOnly = true)
+	@Override
+	public FeedbackRequestDetailsDto getFeedbackRequest(Long userId, Long feedbackRequestId) {
+		//유저 확인.
+		User user= userRepository.findByIdOrElseThrow(userId);
+
+        //요청 조회
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
+		Long getUserId = request.getUser().getUserId();
+		Long getTutorId = request.getTutor().getUserId();
+
+		// 작성 유저/ 작성 대상 튜터인지 확인(상세보기)
+		if (user.getRole().equals(UserRole.STUDENT)) {
+			if (!user.getUserId().equals(getUserId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else if (user.getRole().equals(UserRole.APPROVED_TUTOR)) {
+			if (!user.getUserId().equals(getTutorId)) {
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+			}
+		} else {
+			// STUDENT도 튜터도 아닌 경우 무조건 접근 금지
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		return new FeedbackRequestDetailsDto(request);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<TutorFeedbackResponseDetailsDto> getFeedbackRequests(Long tutorId, Integer page, Integer size){
+		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+		Page<FeedbackRequestEntity> requests = feedbackRequestEntityRepository.getPagedRequestsForTutor(
+			tutor.getUserId(),
+			RequestState.PENDING,
+			pageable
+		);
+		return requests.stream()
+			.map(TutorFeedbackResponseDetailsDto:: new)
+			.collect(Collectors.toList());
+
 	}
 
 	@Transactional
 	@Override
-	public FeedbackRequestEntityResponseDto  rejectFeedbackRequest(
+	public TutorFeedbackResponseDetailsDto acceptRequest(Long tutorId, Long feedbackRequestId) {
+		// 1. 튜터 본인 확인
+		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
+
+		// 2. 피드백 상태 확인 (Pending)
+		if(!request.getRequestState().equals(RequestState.PENDING)){
+			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
+		}
+
+		request.updateRequestState(RequestState.IN_PROGRESS);
+		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
+
+		Map<String, Object> data =  new LinkedHashMap<>();
+		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		return new TutorFeedbackResponseDetailsDto(getInfoRequest);
+	}
+
+
+
+	@Transactional
+	@Override
+	public TutorFeedbackResponseDetailsDto rejectFeedbackRequest(
 		Long tutorId,
-		Long requestId,
+		Long feedbackRequestId,
 		Integer rejectNumber,
 		FeedbackRejectRequestDto dto){
 
@@ -208,9 +227,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		// 2. 피드백 요청 존재 여부 확인
-		FeedbackRequestEntity request =feedbackRequestEntityRepository
-			.findById(requestId)
-			.orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REQUEST));
+		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
 
 		// 2. 피드백 존재 여부 확인(Pendding 상태 거절)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
@@ -225,6 +242,6 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
-		return new FeedbackRequestEntityResponseDto(request);
+		return new TutorFeedbackResponseDetailsDto(request);
 	}
 }

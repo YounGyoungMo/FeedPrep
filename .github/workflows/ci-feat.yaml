@@ -43,3 +43,10 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           DB_URL: ${{ secrets.DB_URL }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_AUTH: ${{ secrets.TEST_AUTH }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PORTONE_STOREID: ${{ secrets.PORTONE_STOREID }}
+          PORTONE_APISECRET: ${{ secrets.PORTONE_APISECRET }}
+          PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
+          PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}

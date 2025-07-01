@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @RequiredArgsConstructor
-public class FeedbackResponseDetailsDto {
+public class TutorFeedbackResponseDetailsDto {
 	private Long id;
 	private Long userId;
 	private Long documentId;
@@ -24,7 +24,7 @@ public class FeedbackResponseDetailsDto {
 	private String etcContent;
 	private String modifiedAt;
 
-	public FeedbackResponseDetailsDto(FeedbackRequestEntity entity){
+	public TutorFeedbackResponseDetailsDto(FeedbackRequestEntity entity){
 		this.id = entity.getId();
 		this.userId = entity.getUser().getUserId();
 		this.documentId = entity.getDocument().getDocumentId();

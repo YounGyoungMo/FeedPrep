@@ -51,16 +51,18 @@ public enum SuccessCode {
     OK_SUCCESS_FEEDBACK_REQUEST_CREATED(HttpStatus.CREATED,"정상적으로 요청 신청이 완료 되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST(HttpStatus.CREATED,"정상적으로 조회 되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_UPDATE(HttpStatus.CREATED,"정상적으로 요청이 수정 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REQUEST_ACCEPT(HttpStatus.OK, "피드백 요청이 수락되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_REJECTED(HttpStatus.OK, "피드백 요청이 거절되었습니다."),
     OK_SUCCESS_FEEDBACK_REQUEST_CANCELED(HttpStatus.OK, "정상적으로 요청이 취소 되었습니다."),
 
     //피드백 리뷰
-    OK_SUCCESS_FEEDBACK_REVIEW_CREATED(HttpStatus.CREATED, "작성한 피드백 리뷰가 작성 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW(HttpStatus.CREATED, "작성한 피드백 리뷰가 조회 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "작성한 피드백 리뷰가 작성 되었습니다."),
-    OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "작성한 피드백 리뷰가 정상적으로 삭제되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_CREATED(HttpStatus.CREATED, "피드백 리뷰가 작성 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW(HttpStatus.CREATED, "피드백 리뷰가 조회 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "피드백 리뷰가 수정 되었습니다."),
+    OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "피드백 리뷰가 정상적으로 삭제되었습니다."),
     //알림
     OK_SUCCESS_Notification(HttpStatus.OK, "알림을 정상적으로 조회 했습니다."),
+    OK_SUCCESS_Notification_IS_READ(HttpStatus.OK, "알림이 정상적으로 읽기 완료로 변경되었습니다."),
     OK_SUCCESS_Notification_DELETED(HttpStatus.OK, "알림을 정상적으로 삭제 되었습니다."),
 
     // 기술스택
