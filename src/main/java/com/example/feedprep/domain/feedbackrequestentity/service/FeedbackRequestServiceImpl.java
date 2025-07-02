@@ -138,9 +138,6 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		request.updateRequestState(RequestState.CANCELED);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		pointService.refundPoint(getInfoRequest);
-
-		Map<String, Object> data =  new LinkedHashMap<>();
-		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 		return new UserFeedbackRequestDetailsDto( getInfoRequest);
 	}
 
