@@ -2,7 +2,10 @@ package com.example.feedprep.domain.feedbackreview.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -177,17 +180,15 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 
 	@Transactional
 	@Override
-	public ApiResponseDto deleteReview(Long userId, Long reviewId) {
+	public Map<String, Object> deleteReview(Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
 		}
 		feedbackReview.updateDeletedAt(LocalDateTime.now());
-		return new ApiResponseDto(
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getHttpStatus().value(),
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getMessage(),
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getHttpStatus()
-			);
+		Map<String, Object> data = new HashMap<>();
+		data.put("date", feedbackReview.getDeletedAt());
+		return data;
 	}
 }
