@@ -1,11 +1,10 @@
 package com.example.feedprep.domain.notification;
 
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,8 +32,11 @@ import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.response.ApiResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
+import com.example.feedprep.domain.notification.enums.NotificationType;
 import com.example.feedprep.domain.notification.repository.NotificationRepository;
+import com.example.feedprep.domain.notification.service.NotificationPushService;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -54,43 +56,57 @@ public class NotificationServiceTest {
 	@Mock
 	private RedissonClient redissonClient;
 
-
 	@Mock
 	private RedisTemplate<String, String> statusTemplate;
 
 	@Mock
 	private ValueOperations<String, String> valueOperations;
 
-
+	@Mock
+	private NotificationPushService notificationPushService;
 	@InjectMocks
 	private NotificationServiceImpl notificationService;
 
 
 
 	@Test
-	void createNotification() {
-
+	void sendNotification_성공적으로_알림_전송() {
 		// given
-		Long senderId = 2L;
-		Long receiverId = 1L;
+		Long senderId = 1L;
+		Long receiverId = 2L;
+		Integer type = 101;
 
-		User sender = mock(User.class);
-		User receiver = mock(User.class);
-
+		User sender =mock(User.class);
 		when(sender.getUserId()).thenReturn(senderId);
-		when(receiver.getUserId()).thenReturn(receiverId);
+		when(sender.getName()).thenReturn("sender");
+
+		User receiver = mock(User.class);
+		when(sender.getUserId()).thenReturn(receiverId);
+		when(sender.getName()).thenReturn( "receiver");
+		NotificationType notificationType = NotificationType.fromNumber(type);
+		String expectedMessage = notificationType.buildMessage(sender.getName()).orElseThrow();
+
+		Notification notification = new Notification(notificationType, senderId, receiverId, expectedMessage, notificationType.getUrlTemplate());
 
 		when(userRepository.findByIdOrElseThrow(senderId)).thenReturn(sender);
 		when(userRepository.findByIdOrElseThrow(receiverId)).thenReturn(receiver);
+		when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
-		Notification notification = mock(Notification.class);
-		when(notificationRepository.save(any())).thenReturn(notification);
+		// when
+		NotificationResponseDto responseDto = notificationService.sendNotification(senderId, receiverId, type);
 
-		// when & then
-		assertDoesNotThrow(() -> notificationService.sendNotification(senderId, receiverId, 101));
-		verify(notificationRepository, times(1)).save(any());
+		// then
+		assertThat(responseDto).isNotNull();
+		assertThat(responseDto.getNotificationType()).isEqualTo(notificationType);
+		assertThat(responseDto.getContent()).isEqualTo(expectedMessage);
+		assertThat(responseDto.getReceiverId()).isEqualTo(receiverId);
 
+		verify(userRepository).findByIdOrElseThrow(senderId);
+		verify(userRepository).findByIdOrElseThrow(receiverId);
+		verify(notificationRepository).save(any(Notification.class));
+		verify(notificationPushService).sendToUser(receiverId);
 	}
+
 
 	@Test
 	void getNotification() {
@@ -176,10 +192,10 @@ public class NotificationServiceTest {
 		when(notificationRepository.getCountByReceiver(receiverId)).thenReturn(1L);
 
 		// when
-		Long count = notificationService.getNotificationCount(receiverId);
+		NotificationGetCountDto count = notificationService.getNotificationCount(receiverId);
 
 		// then
-		assertEquals(1L, count);
+		assertEquals(1L, count.getCount());
 	}
 
 
