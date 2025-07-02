@@ -15,7 +15,7 @@ public enum NotificationType {
 	//피드백
 	FeedbackRequest(101, "%s 님께 피드백을 요청했습니다.", "null"),
 	FeedbackComplete(102, "%s 님이 피드백을 작성했습니다.", "null"),
-	FeedbackReject(103, "%s 님의 피드백 신청이 거절되었습니다.", "null"),
+	FeedbackReject(103, "%s 님의 피드백 신청이 수락되었습니다.", "null"),
 	FeedbackAccept(104, "%s 님의 피드백 신청이 거절되었습니다.", "null"),
 	FeedbackReview(105, "%s 님의 피드백 리뷰가 등록되었습니다.", "null"),
 
