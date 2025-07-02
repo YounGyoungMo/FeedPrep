@@ -15,9 +15,10 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${ec2.url}")
+    @Value("${EC2_URL:http://localhost}")
     private String webHost;
-    @Value("${ec2.port}")
+
+    @Value("${EC2_PORT:8080}")
     private String webPort;
 
     private final AuthUserArgumentResolver authUserArgumentResolver;
