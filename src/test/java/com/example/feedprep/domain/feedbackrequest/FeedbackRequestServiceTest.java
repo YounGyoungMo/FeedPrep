@@ -381,11 +381,13 @@ public class FeedbackRequestServiceTest {
 	@Test
 	void 피드백신청_수락_실패_진행중아님() {
 		Long tutorId = 1L;
+		Long userId =330L;
 		Long requestId = 2L;
 
 		User tutor = mock(User.class);
+		User user = mock(User.class);
 		FeedbackRequestEntity entity = mock(FeedbackRequestEntity.class);
-
+		when(entity.getUser()).thenReturn(user);
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 		when(feedbackRequestEntityRepository.findByIdOrElseThrow(requestId)).thenReturn(entity);
@@ -433,17 +435,19 @@ public class FeedbackRequestServiceTest {
 	@Test
 	void 피드백신청_거절_실패_진행중아님() {
 		Long tutorId = 1L;
+		Long userId = 2L;
 		Long requestId = 2L;
 		FeedbackRejectRequestDto dto = new FeedbackRejectRequestDto("기타");
 
 		User tutor = mock(User.class);
+		User user = mock(User.class);
 		FeedbackRequestEntity entity = mock(FeedbackRequestEntity.class);
 
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 		when(feedbackRequestEntityRepository.findByIdOrElseThrow(requestId)).thenReturn(entity);
 		when(entity.getRequestState()).thenReturn(RequestState.COMPLETED);
-
+		when(entity.getUser()).thenReturn(user);
 		CustomException exception = assertThrows(CustomException.class, () ->
 			feedbackRequestService.rejectFeedbackRequest(tutorId, requestId, 1, dto)
 		);
@@ -454,10 +458,12 @@ public class FeedbackRequestServiceTest {
 	@Test
 	void 피드백신청_거절_실패_본인에게신청아님() {
 		Long tutorId = 1L;
+		Long userId = 2L;
 		Long requestId = 2L;
 		FeedbackRejectRequestDto dto = new FeedbackRejectRequestDto("기타");
 
 		User tutor = mock(User.class);
+		User user = mock(User.class);
 		FeedbackRequestEntity entity = mock(FeedbackRequestEntity.class);
 		User otherTutor = mock(User.class);
 
@@ -466,6 +472,7 @@ public class FeedbackRequestServiceTest {
 		when(feedbackRequestEntityRepository.findByIdOrElseThrow(requestId)).thenReturn(entity);
 		when(entity.getRequestState()).thenReturn(RequestState.PENDING);
 		when(entity.getTutor()).thenReturn(otherTutor);
+		when(entity.getUser()).thenReturn(user);
 		when(otherTutor.getUserId()).thenReturn(999L);
 
 		CustomException exception = assertThrows(CustomException.class, () ->
