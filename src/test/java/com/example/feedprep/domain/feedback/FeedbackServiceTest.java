@@ -98,15 +98,23 @@ public class FeedbackServiceTest {
 	@Test
 	void 피드백_작성_추가_피드백_요청_상태가_진행중이_아닐_경우_예외_발생() {
 		Long tutorId = 1L;
+		Long userId = 2L;
 		Long requestId = 1L;
 		FeedbackWriteRequestDto dto = new FeedbackWriteRequestDto("내용");
 
 		User tutor = mock(User.class);
-		when(userRepository.findByIdOrElseThrow(eq(tutorId), any())).thenReturn(tutor);
+		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
+		when(tutor.getUserId()).thenReturn(tutorId);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
+		User user = mock(User.class);
+		when(user.getUserId()).thenReturn(tutorId);
 
 		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
-		when(feedbackRequestEntityRepository.findPendingByIdAndTutorOrElseThrow(anyLong(), anyLong(), any()))
+		when(requestEntity.getUser()).thenReturn(user);
+		when(feedbackRequestEntityRepository.findPendingByIdAndTutorOrElseThrow(
+			eq(tutorId),
+			eq(requestId),
+			eq(ErrorCode.USER_NOT_FOUND)))
 			.thenReturn(requestEntity);
 		when(requestEntity.getRequestState()).thenReturn(RequestState.COMPLETED);
 
