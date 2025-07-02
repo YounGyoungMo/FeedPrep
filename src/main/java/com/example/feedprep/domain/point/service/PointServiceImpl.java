@@ -151,7 +151,7 @@ public class PointServiceImpl implements PointService{
 		return pointRepository.findTotalPointByUserId(userId);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	@Scheduled(cron = "0 0 4 * * *")
 	@Override
 	public void verifyPaymentRecords() {
