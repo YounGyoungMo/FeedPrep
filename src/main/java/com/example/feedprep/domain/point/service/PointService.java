@@ -28,4 +28,6 @@ public interface PointService {
 	List<Point> getPointHistory(Long userId);
 
 	Integer getPoint(Long userId);
+
+	void verifyPaymentRecords();
 }

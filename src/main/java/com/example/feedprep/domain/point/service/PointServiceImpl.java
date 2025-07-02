@@ -1,5 +1,6 @@
 package com.example.feedprep.domain.point.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -147,5 +149,30 @@ public class PointServiceImpl implements PointService{
 	@Override
 	public Integer getPoint(Long userId) {
 		return pointRepository.findTotalPointByUserId(userId);
+	}
+
+	@Transactional(readOnly = true)
+	@Scheduled(cron = "0 0 4 * * *")
+	@Override
+	public void verifyPaymentRecords() {
+		LocalDateTime endTime = LocalDateTime.now();
+		LocalDateTime startTime = endTime.minusDays(1);
+		List<PointType> allowedTypes = List.of(PointType.CHARGE);
+
+		List<Point> points = pointRepository.findByCreatedAtBetweenAndDeletedFalseAndTypeIn(
+			startTime,
+			endTime,
+			allowedTypes
+		);
+
+		for(Point p : points){
+			Integer amount = p.getAmount();
+			String paymentId = p.getPaymentId();
+
+			PaymentResponseDto payment = paymentService.getPayment(paymentId);
+			if(!amount.equals(payment.getAmount().getTotal())){
+				p.setAmount(payment.getAmount().getTotal());
+			}
+		}
 	}
 }

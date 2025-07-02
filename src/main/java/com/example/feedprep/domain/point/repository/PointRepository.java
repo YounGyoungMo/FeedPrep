@@ -1,5 +1,6 @@
 package com.example.feedprep.domain.point.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,4 +37,10 @@ public interface PointRepository extends JpaRepository<Point, Long> {
 	Integer findTotalPointByUserId(@Param("userId") Long userId);
 
 	List<Point> findAllByUser(User user);
+
+	List<Point> findByCreatedAtBetweenAndDeletedFalseAndTypeIn(
+		LocalDateTime start,
+		LocalDateTime end,
+		List<PointType> types
+	);
 }
