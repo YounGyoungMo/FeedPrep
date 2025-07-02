@@ -16,12 +16,13 @@ public class RedissonConfig {
 	@Value("${spring.data.redis.port}")
 	private String redisPort;
 
-	private  String setAdress = redisHost + ":" + redisPort;
+	private  String setAddress;
 	@Bean
 	public RedissonClient redissonClient(){
+		setAddress = redisHost + ":" + redisPort;
 		Config config = new Config();
 		config.useSingleServer()
-			.setAddress(setAdress)
+			.setAddress(setAddress)
 			.setConnectionMinimumIdleSize(1)
 			.setConnectionPoolSize(10);
 		return Redisson.create(config);
