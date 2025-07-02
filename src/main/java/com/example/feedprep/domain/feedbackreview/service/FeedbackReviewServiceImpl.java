@@ -31,6 +31,7 @@ import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
+import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -43,7 +44,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	private final FeedBackRepository feedBackRepository;
     private final UserRepository userRepository;
 	private final RedissonClient redissonClient;
-
+    private final NotificationServiceImpl notificationService;
 	@Autowired
 	@Qualifier("ratingTemplate")
 	private final RedisTemplate<String, Double> redisTemplate;
@@ -57,12 +58,13 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		Feedback feedback = feedBackRepository. findWithRequestAndUserById(feedbackId)
 			.orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
-
+		Long tutorId = feedback.getTutor().getUserId();
 		if(!feedback.getFeedbackRequestEntity().getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
+		notificationService.sendNotification(userId, tutorId,102 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 

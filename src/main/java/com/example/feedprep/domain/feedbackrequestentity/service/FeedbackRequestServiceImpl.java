@@ -198,7 +198,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
-
+		Long userId = request.getUser().getUserId();
 		// 2. 피드백 상태 확인 (Pending)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
 			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
@@ -207,8 +207,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		request.updateRequestState(RequestState.IN_PROGRESS);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 		pointService. makeIncome(request);
-		Map<String, Object> data =  new LinkedHashMap<>();
-		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		notificationService.sendNotification(tutorId,  userId, 103);
 		return new TutorFeedbackResponseDetailsDto(getInfoRequest);
 	}
 
@@ -230,7 +229,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		// 2. 피드백 요청 존재 여부 확인
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
-
+		Long userId = request.getUser().getUserId();
 		// 2. 피드백 존재 여부 확인(Pendding 상태 거절)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
 			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
@@ -242,6 +241,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		RejectReason rejectReason = RejectReason.fromNumber(rejectNumber);
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
+		notificationService.sendNotification(tutorId,  userId, 104);
 		pointService.refundPoint(request);
 		return new TutorFeedbackResponseDetailsDto(request);
 	}
