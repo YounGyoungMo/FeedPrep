@@ -11,15 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.data.redis.host}")
+    @Value("${REDIS_URL:localhost}")
 	private String redisHost;
-	@Value("${spring.data.redis.port}")
-	private String redisPort;
 
 	private  String setAddress;
 	@Bean
 	public RedissonClient redissonClient(){
-		setAddress ="redis://" + redisHost + ":" + redisPort;
+		setAddress ="rediss://" + redisHost + ":" + 6379;
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress(setAddress)
