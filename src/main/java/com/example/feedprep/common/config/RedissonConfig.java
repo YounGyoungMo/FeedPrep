@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 public class RedissonConfig {
 
@@ -17,7 +20,8 @@ public class RedissonConfig {
 	private  String setAddress;
 	@Bean
 	public RedissonClient redissonClient(){
-		setAddress ="redis://" + redisHost + ":6379";
+		setAddress =redisHost + ":6379";
+		log.info(setAddress);
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress(setAddress)
