@@ -1,0 +1,28 @@
+# application-test.yml
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+jwt:
+  secret:
+    key: test-jwt-secret
+
+EC2_URL: http://localhost
+EC2_PORT: 8080
+
+portone:
+  webhook:
+    secret: test-webhook-secret
+  storeId: test-store-id
+  channelKey: test-channel-key
+
+PORTONE_APISECRET: test-api-secret
+PORTONE_STOREID: test-store-id

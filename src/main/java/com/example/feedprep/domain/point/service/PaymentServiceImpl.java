@@ -32,10 +32,10 @@ import lombok.RequiredArgsConstructor;
 public class PaymentServiceImpl implements PaymentService{
 	private final RestTemplate restTemplate;
 
-	@Value("${portone.apiSecret}")
+	@Value("${PORTONE_APISECRET}")
 	private String apiSecret;
 
-	@Value("${portone.storeId}")
+	@Value("${PORTONE_STOREID}")
 	private String storeId;
 
 	@Override

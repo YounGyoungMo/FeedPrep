@@ -1,6 +1,7 @@
 package com.example.feedprep.domain.feedbackreview.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 
@@ -69,10 +70,13 @@ public class FeedbackReviewController {
 				feedbackReviewService.updateReview(userId, reviewId, dto)));
 	}
 	@DeleteMapping("/feedback/{feedbackId}/review/{reviewId}")
-	public ResponseEntity<ApiResponseDto> deleteReview(
+	public ResponseEntity<ApiResponseDto<Map<String, Object>>> deleteReview(
 		@AuthUser Long userId,
 		@PathVariable Long reviewId
 	){
-	return new ResponseEntity<>(feedbackReviewService.deleteReview(userId, reviewId), HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponseDto.success(
+				SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED,
+				feedbackReviewService.deleteReview(userId, reviewId)));
 	}
 }

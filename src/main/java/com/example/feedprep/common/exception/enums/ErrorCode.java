@@ -11,6 +11,7 @@ public enum ErrorCode {
     SOCIAL_LOGIN_TOKEN_REQUEST_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 토큰 요청에 실패했습니다."),
     SOCIAL_LOGIN_INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜 로그인 제공자입니다."),
     SOCIAL_LOGIN_AUTH_CODE_MISSING(HttpStatus.BAD_REQUEST, "인가 코드가 없습니다."),
+    SOCIAL_LOGIN_USERINFO_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 사용자 정보 조회에 실패했습니다."),
 
     // 잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다." ),

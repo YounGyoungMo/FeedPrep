@@ -8,6 +8,7 @@ import com.example.feedprep.domain.auth.dto.OAuthUserResponseDto;
 import com.example.feedprep.domain.auth.oauth.client.OAuthClient;
 import com.example.feedprep.domain.auth.oauth.enums.OAuthProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.Map;
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class KakaoOAuthClient implements OAuthClient {
     private final OAuthProperties oAuthProperties;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -33,6 +35,7 @@ public class KakaoOAuthClient implements OAuthClient {
     // ex : https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}
     public String getAuthorizationUrl(String role) {
         ProviderConfig prop = oAuthProperties.getProviders().get(OAuthProvider.KAKAO);
+        log.info(prop.getRedirectUri());
         DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(prop.getAuthorizeUri());
         return factory.builder()
                 .queryParam("response_type", "code")
@@ -55,6 +58,7 @@ public class KakaoOAuthClient implements OAuthClient {
         params.add("code", code);
         params.add("redirect_uri", prop.getRedirectUri());
         params.add("client_id", prop.getClientId());
+        params.add("client_secret", prop.getClientSecret());
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
@@ -87,6 +91,10 @@ public class KakaoOAuthClient implements OAuthClient {
 
         // 응답 body에서 필요한 정보 추출
         Map<String, Object> body = response.getBody();
+        if (body == null) {
+            throw new CustomException(ErrorCode.SOCIAL_LOGIN_USERINFO_FAIL);
+        }
+
         Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
