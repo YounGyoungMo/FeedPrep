@@ -33,17 +33,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Verify REDIS_URL is passed
-        run: |
-          if [ -z "$REDIS_URL" ]; then
-            echo "DB_URL is not set"
-            exit 1
-          else
-            echo "DB_URL is set (masked): ${REDIS_URL}"
-          fi
-        env:
-          DB_URL: ${{ secrets.REDIS_URL }}
-
       - name: Build with Gradle
         run: ./gradlew build
         env:
