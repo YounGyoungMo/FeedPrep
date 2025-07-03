@@ -12,5 +12,5 @@ public interface MailService {
     MimeMessage createMail(String mail, Long AuthNumber) throws MessagingException;
 
     // 메세지 전송
-    Void sendMail(MimeMessage message);
+    void sendMail(MimeMessage message);
 }
