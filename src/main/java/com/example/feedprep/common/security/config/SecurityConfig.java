@@ -4,10 +4,10 @@ import com.example.feedprep.common.security.jwt.JwtFilter;
 import com.example.feedprep.common.security.jwt.JwtUtil;
 import com.example.feedprep.common.security.jwt.TokenBlacklistService;
 import com.example.feedprep.common.security.service.CustomUserDetailsService;
-import com.example.feedprep.common.security.jwt.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -28,16 +28,27 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
     private final TokenBlacklistService tokenBlacklistService;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
+        http .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
 
-                    .requestMatchers("/auth/login", "/auth/signup", "/admin/signup", "/admin/login", "/authorize/**", "/oauth/**", "/charge", "/point/charge", "/portone-webhook").permitAll()
+                        .requestMatchers(
+                            "/auth/login",
+                            "/auth/signup",
+                            "/admin/signup",
+                            "/admin/login",
+                            "/authorize/**",
+                            "/oauth/**",
+                            "/charge",
+                            "/point/charge",
+                            "/portone-webhook").permitAll()
+                        .requestMatchers( "/notifications/subscribe").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                     .requestMatchers("/users/admin/authority").hasRole("ADMIN")
                     .requestMatchers("/users/tutor").hasAnyRole("PENDING_TUTOR","APPROVED_TUTOR","ADMIN")
 

@@ -3,6 +3,7 @@ package com.example.feedprep.domain.notification.service;
 import java.util.List;
 
 import com.example.feedprep.common.response.ApiResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 
 public interface NotificationService {
@@ -15,5 +16,5 @@ public interface NotificationService {
 
 	 ApiResponseDto deleteNotification(Long userId, Long notificationId );
 
-	Long getNotificationCount(Long receiverId);
+	NotificationGetCountDto getNotificationCount(Long receiverId);
 }

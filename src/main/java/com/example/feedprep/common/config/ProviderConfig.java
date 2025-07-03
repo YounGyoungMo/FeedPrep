@@ -9,9 +9,12 @@ import java.util.Map;
 public class ProviderConfig {
     private OAuthProvider provider;
     private String clientId;
+    private String clientSecret;
     private String authorizeUri;
     private String tokenUri;
     private String userInfoUri;
     private String redirectUri;
+    private String scope;
     private Map<String, String> fields;
+
 }

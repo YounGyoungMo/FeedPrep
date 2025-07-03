@@ -14,6 +14,7 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRe
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
+import com.example.feedprep.domain.point.service.PointServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -40,7 +41,8 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	private final UserRepository userRepository;
 	private final DocumentRepository documentRepository;
 	private final NotificationServiceImpl notificationService;
-    //private final NotificationPushService notificationPushService;
+	private final PointServiceImpl pointService;
+
 	@Transactional
 	@Override
 	public UserFeedbackRequestDetailsDto createRequest(Long userId, FeedbackRequestDto dto) {
@@ -67,9 +69,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		request.updateRequestState(RequestState.PENDING);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
 
+		pointService.makePayment(getInfoRequest);
+
 		notificationService.sendNotification(userId, tutor.getUserId(), 101);
 
-		// notificationPushService.sendToUser(tutor.getUserId());
 		return new UserFeedbackRequestDetailsDto(getInfoRequest);
 	}
 
@@ -134,8 +137,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.CANCELED);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-		Map<String, Object> data =  new LinkedHashMap<>();
-		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		pointService.refundPoint(getInfoRequest);
 		return new UserFeedbackRequestDetailsDto( getInfoRequest);
 	}
 
@@ -196,7 +198,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		}
 
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
-
+		Long userId = request.getUser().getUserId();
 		// 2. 피드백 상태 확인 (Pending)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
 			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
@@ -204,9 +206,8 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		request.updateRequestState(RequestState.IN_PROGRESS);
 		FeedbackRequestEntity getInfoRequest =feedbackRequestEntityRepository.save(request);
-
-		Map<String, Object> data =  new LinkedHashMap<>();
-		data.put("modifiedAt ", request.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		pointService. makeIncome(request);
+		notificationService.sendNotification(tutorId,  userId, 103);
 		return new TutorFeedbackResponseDetailsDto(getInfoRequest);
 	}
 
@@ -228,7 +229,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 
 		// 2. 피드백 요청 존재 여부 확인
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
-
+		Long userId = request.getUser().getUserId();
 		// 2. 피드백 존재 여부 확인(Pendding 상태 거절)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
 			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
@@ -237,11 +238,11 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		if(!request.getTutor().getUserId().equals(tutor.getUserId())){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-
 		RejectReason rejectReason = RejectReason.fromNumber(rejectNumber);
-
 		request.updateRequestState(RequestState.REJECTED);
 		request.updateFeedbackRequestRejectDto(rejectReason, dto.getEtcReason());
+		notificationService.sendNotification(tutorId,  userId, 104);
+		pointService.refundPoint(request);
 		return new TutorFeedbackResponseDetailsDto(request);
 	}
 }

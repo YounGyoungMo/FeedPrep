@@ -23,6 +23,7 @@ import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
+import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.entity.Notification;
 import com.example.feedprep.domain.notification.enums.NotificationType;
@@ -42,6 +43,8 @@ public class NotificationServiceImpl implements NotificationService{
 
 	private final RedissonClient redissonClient;
 
+	private final NotificationPushService notificationPushService;
+
 	@Override
 	public NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type) {
 
@@ -59,6 +62,7 @@ public class NotificationServiceImpl implements NotificationService{
 		);
 
 		Notification saveNotification = notificationRepository.save(notification);
+		notificationPushService.sendToUser(receiverId);
 		return new NotificationResponseDto(saveNotification);
 	}
 
@@ -105,8 +109,10 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 
 	@Override
-	public Long getNotificationCount(Long receiverId) {
-		return notificationRepository.getCountByReceiver(receiverId);
+	public NotificationGetCountDto getNotificationCount(Long receiverId) {
+		Long count =  notificationRepository.getCountByReceiver(receiverId);
+		NotificationGetCountDto notificationGetCountDto = new NotificationGetCountDto(count);
+		return notificationGetCountDto;
 	}
 
 	public List<Notification> getAllNotifications() {

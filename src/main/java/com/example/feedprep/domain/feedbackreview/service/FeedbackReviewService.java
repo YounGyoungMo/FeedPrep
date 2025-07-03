@@ -1,6 +1,7 @@
 package com.example.feedprep.domain.feedbackreview.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
@@ -21,5 +22,5 @@ public interface FeedbackReviewService {
 	//리뷰 수정
 	FeedbackReviewDetailsDto updateReview( Long userId, Long reviewId, FeedbackReviewRequestDto dto);
 	//리뷰의 삭제
-	ApiResponseDto deleteReview(Long userId, Long reviewId);
+	Map<String, Object> deleteReview(Long userId, Long reviewId);
 }

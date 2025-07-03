@@ -24,7 +24,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	@Query("SELECT n FROM Notification n where n.receiverId =:receiverId")
 	Page<Notification> findNotificationByReceiverId(@Param("receiverId") Long receiverId, PageRequest pageRequest);
 
-	@Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.isRead = false AND n.isStale = true")
+	@Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.isRead = false")
 	Long getCountByReceiver(@Param("receiverId") Long receiverId);
 
 	@Query("SELECT n FROM Notification n WHERE n.createdAt < :limit")

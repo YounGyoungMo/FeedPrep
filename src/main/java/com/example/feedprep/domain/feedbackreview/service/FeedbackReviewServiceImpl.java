@@ -2,7 +2,9 @@ package com.example.feedprep.domain.feedbackreview.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -22,8 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.exception.enums.SuccessCode;
-import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
@@ -31,6 +31,7 @@ import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
+import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -43,7 +44,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	private final FeedBackRepository feedBackRepository;
     private final UserRepository userRepository;
 	private final RedissonClient redissonClient;
-
+    private final NotificationServiceImpl notificationService;
 	@Autowired
 	@Qualifier("ratingTemplate")
 	private final RedisTemplate<String, Double> redisTemplate;
@@ -57,12 +58,13 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		Feedback feedback = feedBackRepository. findWithRequestAndUserById(feedbackId)
 			.orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
-
+		Long tutorId = feedback.getTutor().getUserId();
 		if(!feedback.getFeedbackRequestEntity().getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
+		notificationService.sendNotification(userId, tutorId,102 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 
@@ -177,17 +179,15 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 
 	@Transactional
 	@Override
-	public ApiResponseDto deleteReview(Long userId, Long reviewId) {
+	public Map<String, Object> deleteReview(Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
 		}
 		feedbackReview.updateDeletedAt(LocalDateTime.now());
-		return new ApiResponseDto(
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getHttpStatus().value(),
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getMessage(),
-			SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED.getHttpStatus()
-			);
+		Map<String, Object> data = new HashMap<>();
+		data.put("date", feedbackReview.getDeletedAt());
+		return data;
 	}
 }

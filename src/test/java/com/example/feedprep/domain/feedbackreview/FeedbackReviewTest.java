@@ -35,6 +35,8 @@ import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
+import com.example.feedprep.domain.notification.service.NotificationService;
+import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -52,7 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 	@Mock
 	private FeedBackRepository feedBackRepository;
-
+	@Mock
+	private NotificationServiceImpl notificationService;
 	@InjectMocks
 	private FeedbackReviewServiceImpl feedbackReviewService;
 
@@ -60,7 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 	public void 리뷰_생성_테스트() {
 
 		Long studentId = 1L;
-
+		Long tutorId = 2L;
 		User tutor = mock(User.class);
 		User student = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
@@ -86,6 +89,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		when(feedbackReview.getModifiedAt()).thenReturn(LocalDateTime.now());
 
 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
+		verify(notificationService, times(1))
+			.sendNotification(studentId, tutorId, 102);
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
 	@Test
@@ -126,10 +131,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 	@Test
 	void 리뷰생성_실패_작성자가아님() {
 		Long userId = 1L;
+		Long tutorId = 2L;
 		Long feedbackId = 2L;
 		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
 
 		User user = mock(User.class);
+		User tutor = mock(User.class);
 		User otherUser = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
 
@@ -137,6 +144,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
 		when(feedBackRepository.findWithRequestAndUserById(feedbackId)).thenReturn(Optional.of(feedback));
 		when(feedback.getFeedbackRequestEntity()).thenReturn(requestEntity);
+		when(feedback.getTutor()).thenReturn(tutor);
 		when(requestEntity.getUser()).thenReturn(otherUser);
 		when(otherUser.getUserId()).thenReturn(999L);
 

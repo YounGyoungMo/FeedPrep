@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>튜터 로그인 및 알림 표시</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: #f7f7f7;
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 300px;
+        }
+
+        .login-form input,
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .login-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tutor-card {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            width: 220px;
+            height: 300px;
+            position: relative;
+        }
+
+        .tutor-emoji {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .notification-wrapper {
+            position: absolute;
+            bottom: 50px;
+            right: 20px;
+        }
+
+        .notification {
+            position: relative;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -10px;
+            right: -12px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        .logout-button {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #errorDisplay {
+            color: red;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-form" id="loginFormContainer">
+        <input type="email" id="email" placeholder="이메일" required>
+        <input type="password" id="password" placeholder="비밀번호" required>
+        <button id="loginButton">로그인</button>
+        <div id="errorDisplay"></div>
+    </div>
+    <div class="tutor-card" id="tutorCard">
+        <div class="tutor-emoji">👤</div>
+        <div>튜터1님</div>
+        <div class="notification-wrapper">
+            <div class="notification">🔔<span class="notification-badge" id="notificationBadge">0</span></div>
+        </div>
+        <button class="logout-button" id="logoutButton">로그아웃</button>
+    </div>
+    <script>
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const loginFormContainer = document.getElementById('loginFormContainer');
+        const tutorCard = document.getElementById('tutorCard');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const errorDisplay = document.getElementById('errorDisplay');
+        let eventSource = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                loginFormContainer.style.display = 'none';
+                tutorCard.style.display = 'flex';
+                fetchNotificationCount(token);
+                startSSE(token);
+            }
+        });
+
+        loginButton.addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            errorDisplay.textContent = '';
+
+            try {
+                const response = await fetch('http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                const token = data.data?.accessToken;
+
+                if (!response.ok || !token) {
+                    errorDisplay.textContent = '로그인 실패';
+                    return;
+                }
+
+                localStorage.setItem('accessToken', token);
+                loginFormContainer.style.display = 'none';
+                tutorCard.style.display = 'flex';
+                fetchNotificationCount(token);
+                startSSE(token);
+            } catch (err) {
+                errorDisplay.textContent = '로그인 오류: ' + err.message;
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            localStorage.removeItem('accessToken');
+            tutorCard.style.display = 'none';
+            loginFormContainer.style.display = 'flex';
+            notificationBadge.textContent = '0';
+        });
+
+        function startSSE() {
+            const token = localStorage.getItem('accessToken');
+            if (token == null) { return; }
+            eventSource = new EventSource(`http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/notifications/subscribe?token=${token}`);
+
+            eventSource.onopen = () => console.log("SSE 연결 성공");
+
+            eventSource.onerror = (error) => console.error("SSE 오류:", error);
+
+            eventSource.addEventListener("count", (event) => {
+                console.log("알림 수신:", event.data);
+                fetchNotificationCount(token);
+            });
+        }
+
+        async function fetchNotificationCount(token) {
+            try {
+                const response = await fetch('http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/notifications/count', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                const count = data.data?.count || 0;
+                notificationBadge.textContent = count;
+            } catch {
+                notificationBadge.textContent = '0';
+            }
+        }
+    </script>
+</body>
+
+</html>
