@@ -19,7 +19,7 @@ public class RedissonConfig {
 	private  String setAddress;
 	@Bean
 	public RedissonClient redissonClient(){
-		setAddress =redisHost + ":6379";
+		setAddress ="redis://" + redisHost + ":6379";
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress(setAddress)
