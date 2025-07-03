@@ -127,11 +127,11 @@ class PasswordFindServiceImplTest {
         User user = User.builder().userId(1L).email(email).build();
 
         MailAuthRequestDto mailAuthRequestDto =
-            new MailAuthRequestDto(email, null, null);
+            new MailAuthRequestDto(email, "123456", null);
 
         // when
         when(userRepository.getUserByEmailOrElseThrow(email)).thenReturn(user);
-        when(authNumberRedisService.getAuthNumber(email)).thenReturn(null);
+        when(authNumberRedisService.getAuthNumber(email)).thenReturn(654321L);
 
         CustomException exception = assertThrows(CustomException.class,
             () -> passwordFindService.changeLostPassword(mailAuthRequestDto)
