@@ -165,9 +165,9 @@ public class PointServiceImpl implements PointService{
 				PointType.CHARGE
 			);
 			if(!point.get(0).getAmount().equals(paymentSummaryDto.getTotalAmount())){
-				log.info("결제 금액 불일치 - "+paymentSummaryDto.getPaymentId());
-				log.info("PortOne : " + paymentSummaryDto.getTotalAmount());
-				log.info("DB : "+point.get(0).getAmount());
+				log.info("결제 금액 불일치 - {}", paymentSummaryDto.getPaymentId());
+				log.info("PortOne : {}", paymentSummaryDto.getTotalAmount());
+				log.info("DB : {}", point.get(0).getAmount());
 				point.get(0).setAmount(paymentSummaryDto.getTotalAmount());
 			}
 		}
