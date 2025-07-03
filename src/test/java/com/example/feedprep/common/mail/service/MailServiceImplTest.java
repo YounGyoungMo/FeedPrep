@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.common.mail.config.MailConfigProperties;
 import jakarta.mail.Message;
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +30,9 @@ class MailServiceImplTest {
 
     @Mock
     private JavaMailSender javaMailSender;
+
+    @Mock
+    private MailConfigProperties mailProps;
 
     @InjectMocks
     private MailServiceImpl mailService;
@@ -46,13 +51,14 @@ class MailServiceImplTest {
     @DisplayName("메세지 생성 성공")
     void createMail() throws MessagingException, IOException {
         // given
-        String email = "testemail@example.com";
+        String email = "test@gmail.com";
         Long authNumber = 123456L;
 
         MimeMessage message = new MimeMessage((Session) null);
 
         // when
         when(javaMailSender.createMimeMessage()).thenReturn(message);
+        when(mailProps.getUsername()).thenReturn("admin@feedprep.com");
 
         MimeMessage result = mailService.createMail(email,authNumber);
 

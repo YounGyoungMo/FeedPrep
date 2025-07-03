@@ -17,7 +17,7 @@ public class MailAuthRequestDto {
     private String email;
 
     @Pattern(regexp = "\\d{6}", message = "6자리 숫자여야 합니다.")
-    private Long authNumber;
+    private String authNumber;
 
     @NotBlank(message = "새로운 비밀번호를 입력하세요.")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{8,}$",

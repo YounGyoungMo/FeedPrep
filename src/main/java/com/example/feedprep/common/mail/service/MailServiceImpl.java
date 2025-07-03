@@ -2,6 +2,7 @@ package com.example.feedprep.common.mail.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.common.mail.config.MailConfigProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
@@ -9,14 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
     private final JavaMailSender javaMailSender;
-    private String senderEmail = "admin@feedprep.com";
+    private final MailConfigProperties mailProps;
 
     @Override
     public Long createAuthNumber() {
@@ -25,12 +25,11 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    @Transactional
     public MimeMessage createMail(String mail, Long AuthNumber) throws MessagingException {
 
         MimeMessage message = javaMailSender.createMimeMessage();
 
-        message.setFrom(senderEmail);
+        message.setFrom(mailProps.getUsername());
         message.setRecipients(RecipientType.TO, mail);
         message.setSubject("이메일 인증");
 
@@ -44,15 +43,12 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    @Transactional
-    public Void sendMail(MimeMessage message) {
+    public void sendMail(MimeMessage message) {
 
         try {
             javaMailSender.send(message);
         } catch (MailException e) {
             throw new CustomException(ErrorCode.SEND_MAIL_FAIL);
         }
-
-        return null;
     }
 }
