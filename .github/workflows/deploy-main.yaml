@@ -39,4 +39,6 @@ jobs:
               -e PORTONE_APISECRET="${{ secrets.PORTONE_APISECRET }}" \
               -e PORTONE_WEBHOOK_SECRET="${{ secrets.PORTONE_WEBHOOK_SECRET }}" \
               -e PORTONE_CHANNELKEY="${{ secrets.PORTONE_CHANNELKEY }}" \
+              -e EC2_URL="${{ secrets.EC2_URL }}" \
+              -e EC2_PORT="${{ secrets.EC2_PORT }}" \
               juhyeong37/feedprep:1.0

@@ -1,9 +1,24 @@
 package com.example.feedprep.domain.point.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.point.dto.PaymentResponseDto;
+import com.example.feedprep.domain.point.dto.PaymentSummaryDto;
 import com.example.feedprep.domain.point.entity.Point;
 import com.example.feedprep.domain.point.enums.PointType;
 import com.example.feedprep.domain.point.repository.PointRepository;
@@ -12,6 +27,7 @@ import com.example.feedprep.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +35,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PointServiceImpl implements PointService{
 
 	public static final Integer FEEDBACK_COST = 5000;
@@ -130,8 +147,32 @@ public class PointServiceImpl implements PointService{
 	}
 
 	@Override
-	public List<Point> getPoint(Long userId) {
+	public List<Point> getPointHistory(Long userId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		return pointRepository.findAllByUser(user);
+	}
+
+	@Override
+	public Integer getPoint(Long userId) {
+		return pointRepository.findTotalPointByUserId(userId);
+	}
+
+	@Transactional
+	@Scheduled(cron = "0 0 4 * * *")
+	@Override
+	public void verifyPaymentRecords() {
+		List<PaymentSummaryDto> oneDayPayment = paymentService.getAllPayment();
+		for(PaymentSummaryDto paymentSummaryDto : oneDayPayment){
+			List<Point> point = pointRepository.findByPaymentIdAndType(
+				paymentSummaryDto.getPaymentId(),
+				PointType.CHARGE
+			);
+			if(!point.get(0).getAmount().equals(paymentSummaryDto.getTotalAmount())){
+				log.info("결제 금액 불일치 - {}", paymentSummaryDto.getPaymentId());
+				log.info("PortOne : {}", paymentSummaryDto.getTotalAmount());
+				log.info("DB : {}", point.get(0).getAmount());
+				point.get(0).setAmount(paymentSummaryDto.getTotalAmount());
+			}
+		}
 	}
 }
