@@ -59,7 +59,9 @@ public class PasswordFindServiceImpl implements PasswordFindService{
         // 인증 확인 여부 - redis
         Long authNumber = authNumberRedisService.getAuthNumber(user.getEmail());
 
-        if(authNumber == null || !authNumber.equals(mailAuthRequestDto.getAuthNumber())) {
+        Long ReceivedNumber = Long.valueOf(mailAuthRequestDto.getAuthNumber());
+
+        if(authNumber == null || !authNumber.equals(ReceivedNumber)) {
             throw new CustomException(ErrorCode.NOT_CONFIRMED_AUTHNUMBER);
         }
 
