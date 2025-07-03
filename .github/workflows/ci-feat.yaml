@@ -51,3 +51,4 @@ jobs:
           PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
           PORTONE_CHANNELKEY: ${{ secrets.PORTONE_CHANNELKEY }}
           EC2_URL: ${{ secrets.EC2_URL }}
+          EC2_PORT: ${{ secrets.EC2_PORT }}
