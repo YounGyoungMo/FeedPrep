@@ -43,4 +43,9 @@ public interface PointRepository extends JpaRepository<Point, Long> {
 		LocalDateTime end,
 		List<PointType> types
 	);
+
+	List<Point> findByPaymentIdAndType(
+		String paymentId,
+		PointType type
+	);
 }

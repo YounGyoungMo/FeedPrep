@@ -18,6 +18,7 @@ import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.point.dto.PaymentResponseDto;
+import com.example.feedprep.domain.point.dto.PaymentSummaryDto;
 import com.example.feedprep.domain.point.entity.Point;
 import com.example.feedprep.domain.point.enums.PointType;
 import com.example.feedprep.domain.point.repository.PointRepository;
@@ -27,9 +28,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PointServiceImpl implements PointService{
 
 	public static final Integer FEEDBACK_COST = 5000;
@@ -155,23 +158,17 @@ public class PointServiceImpl implements PointService{
 	@Scheduled(cron = "0 0 4 * * *")
 	@Override
 	public void verifyPaymentRecords() {
-		LocalDateTime endTime = LocalDateTime.now();
-		LocalDateTime startTime = endTime.minusDays(1);
-		List<PointType> allowedTypes = List.of(PointType.CHARGE);
-
-		List<Point> points = pointRepository.findByCreatedAtBetweenAndDeletedFalseAndTypeIn(
-			startTime,
-			endTime,
-			allowedTypes
-		);
-
-		for(Point p : points){
-			Integer amount = p.getAmount();
-			String paymentId = p.getPaymentId();
-
-			PaymentResponseDto payment = paymentService.getPayment(paymentId);
-			if(!amount.equals(payment.getAmount().getTotal())){
-				p.setAmount(payment.getAmount().getTotal());
+		List<PaymentSummaryDto> oneDayPayment = paymentService.getAllPayment();
+		for(PaymentSummaryDto paymentSummaryDto : oneDayPayment){
+			List<Point> point = pointRepository.findByPaymentIdAndType(
+				paymentSummaryDto.getPaymentId(),
+				PointType.CHARGE
+			);
+			if(!point.get(0).getAmount().equals(paymentSummaryDto.getTotalAmount())){
+				log.info("결제 금액 불일치 - "+paymentSummaryDto.getPaymentId());
+				log.info("PortOne : " + paymentSummaryDto.getTotalAmount());
+				log.info("DB : "+point.get(0).getAmount());
+				point.get(0).setAmount(paymentSummaryDto.getTotalAmount());
 			}
 		}
 	}
