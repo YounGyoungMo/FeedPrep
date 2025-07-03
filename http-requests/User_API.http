@@ -23,6 +23,26 @@ Content-Type: application/json
   "newPassword" : "NEWasdasdjkDF23"
 }
 
+### 비밀번호 찾기 - 인증키 발송
+POST localhost:8080/users/find
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: application/json
+
+{
+  "email" : "soonch6@naver.com"
+}
+
+### 비밀번호 찾기 - 새로운 비밀번호
+PATCH localhost:8080/users/find
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: application/json
+
+{
+  "email" : "soonch6@naver.com",
+  "authNumber" : "822524",
+  "newPassword" : "Asdf1234"
+}
+
 ### 튜터 목록조회
 GET localhost:8080/users/tutorList
 Authorization: Bearer {{studentAccessToken}}
