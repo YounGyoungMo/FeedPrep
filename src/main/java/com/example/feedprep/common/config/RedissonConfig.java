@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${REDIS_URL:localhost}")
+    @Value("${spring.data.redis.host}")
 	private String redisHost;
 
 	private  String setAddress;
