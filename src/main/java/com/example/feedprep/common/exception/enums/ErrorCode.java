@@ -11,6 +11,7 @@ public enum ErrorCode {
     SOCIAL_LOGIN_TOKEN_REQUEST_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 토큰 요청에 실패했습니다."),
     SOCIAL_LOGIN_INVALID_PROVIDER(HttpStatus.BAD_REQUEST, "유효하지 않은 소셜 로그인 제공자입니다."),
     SOCIAL_LOGIN_AUTH_CODE_MISSING(HttpStatus.BAD_REQUEST, "인가 코드가 없습니다."),
+    SOCIAL_LOGIN_USERINFO_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "소셜 로그인 사용자 정보 조회에 실패했습니다."),
 
     // 잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다." ),
@@ -124,9 +125,11 @@ public enum ErrorCode {
 
     // 메세지
     NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND, "해당 메세지를 찾을 수 없습니다."),
-    NOT_FOUND_SEND_MESSAGE(HttpStatus.NOT_FOUND, "보낸 메세지가 없습니다.")
+    NOT_FOUND_SEND_MESSAGE(HttpStatus.NOT_FOUND, "보낸 메세지가 없습니다."),
 
-
+    // 결제
+    ALREADY_REFUNDED(HttpStatus.BAD_REQUEST, "이미 환불된 결제입니다."),
+    INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
     ;
 
     private final HttpStatus httpStatus;

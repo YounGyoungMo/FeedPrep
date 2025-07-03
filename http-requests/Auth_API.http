@@ -1,7 +1,13 @@
 ### 학생 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
 GET localhost:8080/oauth/authorize/kakao?role=student
 
-// 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야 함
+### 학생 소셜 로그인 (구글) - 계정없으면 회원가입후 로그인
+GET localhost:8080/oauth/authorize/google?role=student
+
+### 학생 소셜 로그인 (네이버) - 계정없으면 회원가입후 로그인
+GET localhost:8080/oauth/authorize/naver?role=student
+
+// 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야함
 
 ### 튜터 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
 GET localhost:8080/oauth/authorize/kakao?role=tutor
@@ -105,4 +111,31 @@ Content-Type: application/json
 > {%
     client.global.set("adminAccessToken", response.body.data.accessToken)
 %}
+
+### 포트원 웹훅 테스트 예시
+POST http://localhost:8080/portone-webhook
+Content-Type: application/json
+x-portone-signature: "cEbXuvfiTAkJiT2XPg8RasgfAVHkSQrY0pX0pO42xEC3YPFttZSWDaN7TRazZGLrAgEydMAt82xeE1Xu"
+x-portone-timestamp: 1698199200
+
+{
+  "type": "Transaction.Paid",
+  "data": {
+    "paymentId": "pid_20250625185355_1",
+    "merchantUid": "order_1234",
+    "status": "paid",
+    "amount": 50000,
+    "currency": "KRW",
+    "buyer": {
+      "name": "홍길동",
+      "email": "user@example.com"
+    },
+    "method": {
+      "type": "card",
+      "card": {
+        "cardNumber": "xxxx-xxxx-xxxx-1234"
+      }
+    }
+  }
+}
 

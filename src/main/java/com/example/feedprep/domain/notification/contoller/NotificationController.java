@@ -1,13 +1,17 @@
 package com.example.feedprep.domain.notification.contoller;
 
+import io.jsonwebtoken.Claims;
+
 import java.io.IOException;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,44 +23,40 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
+import com.example.feedprep.common.security.jwt.JwtUtil;
 import com.example.feedprep.common.sse.repository.EmitterRepository;
+import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.repository.NotificationRepository;
+import com.example.feedprep.domain.notification.service.NotificationPushService;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
+import com.example.feedprep.domain.user.entity.User;
+import com.example.feedprep.domain.user.repository.UserRepository;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notifications")
 public class NotificationController {
 
-	private final EmitterRepository emitterRepository;
 	private final NotificationServiceImpl notificationService;
-	private final NotificationRepository notificationRepository;
+    private final NotificationPushService notificationPushService;
 
 	@GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public SseEmitter subscribe(@AuthUser Long userId){
-		SseEmitter emitter = new SseEmitter(60 * 1000L); // 60초 타임 아웃
-
-		emitterRepository.save(userId, emitter);
-		long unreadCount = notificationRepository.getCountByReceiver(userId);
-		try{
-
-			emitter.send(SseEmitter.event()
-				.name("unread-count")
-				.data(unreadCount));
-		}catch (IOException e){
-			emitter.completeWithError(e);
-			emitterRepository.delete(userId);
-		}
-
-		// ③ emitter 종료 감지 등록 (이건 '콜백'이지 실행이 아님)
-		emitter.onCompletion(()-> emitterRepository.delete(userId));
-		emitter.onTimeout(() -> emitterRepository.delete(userId));
-		emitter.onError((e)->emitterRepository.delete(userId));
-
-		// ④ 여기서 클라이언트로 응답 = SSE 연결 시작
-		return emitter;
+	public SseEmitter subscribe(@RequestParam String token){
+		return notificationPushService.validateTokenAndCreateEmitter(token);
 	}
+
+	@GetMapping("/count")
+	public ResponseEntity<ApiResponseDto<NotificationGetCountDto>>getCount(
+		@AuthUser Long userId
+	){
+		return  ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponseDto.success(
+				SuccessCode.OK_SUCCESS_Notification,
+				notificationService.getNotificationCount(userId)));
+	}
+
 	@GetMapping
 	public ResponseEntity<ApiResponseDto<List<NotificationResponseDto>>> getNotificationList(
 		@AuthUser Long userId,

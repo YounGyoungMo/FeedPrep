@@ -32,8 +32,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         log.info("Request URI: {}", path);
 
-        String authHeader = request.getHeader("Authorization");
+        if (path.startsWith("/notifications/subscribe")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
