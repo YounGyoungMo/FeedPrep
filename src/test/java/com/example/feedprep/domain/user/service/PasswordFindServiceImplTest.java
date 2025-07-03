@@ -100,11 +100,12 @@ class PasswordFindServiceImplTest {
     void changeLostPassword_success() {
         // given
         String email = "testemail@example.com";
+        String ReceivedNumber ="123456";
         Long authNumber = 123456L;
         User user = User.builder().userId(1L).email(email).build();
 
         MailAuthRequestDto mailAuthRequestDto =
-            new MailAuthRequestDto(email, authNumber, "newPassword1234");
+            new MailAuthRequestDto(email, ReceivedNumber, "newPassword1234");
 
         // when
         when(userRepository.getUserByEmailOrElseThrow(email)).thenReturn(user);
