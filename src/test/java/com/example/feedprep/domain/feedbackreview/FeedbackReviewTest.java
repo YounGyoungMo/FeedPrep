@@ -90,7 +90,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
 		verify(notificationService, times(1))
-			.sendNotification(studentId, tutorId, 102);
+			.sendNotification(student, tutor, 102);
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
 	@Test

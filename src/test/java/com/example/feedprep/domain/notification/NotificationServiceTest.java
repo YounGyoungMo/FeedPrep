@@ -76,24 +76,27 @@ public class NotificationServiceTest {
 		Long receiverId = 2L;
 		Integer type = 101;
 
-		User sender =mock(User.class);
+		User sender = mock(User.class);
 		when(sender.getUserId()).thenReturn(senderId);
 		when(sender.getName()).thenReturn("sender");
 
 		User receiver = mock(User.class);
-		when(sender.getUserId()).thenReturn(receiverId);
-		when(sender.getName()).thenReturn( "receiver");
+		when(receiver.getUserId()).thenReturn(receiverId);
 		NotificationType notificationType = NotificationType.fromNumber(type);
 		String expectedMessage = notificationType.buildMessage(sender.getName()).orElseThrow();
 
-		Notification notification = new Notification(notificationType, senderId, receiverId, expectedMessage, notificationType.getUrlTemplate());
+		Notification notification = new Notification(
+			notificationType,
+			senderId,
+			receiverId,
+			expectedMessage,
+			notificationType.getUrlTemplate()
+		);
 
-		when(userRepository.findByIdOrElseThrow(senderId)).thenReturn(sender);
-		when(userRepository.findByIdOrElseThrow(receiverId)).thenReturn(receiver);
 		when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
 		// when
-		NotificationResponseDto responseDto = notificationService.sendNotification(senderId, receiverId, type);
+		NotificationResponseDto responseDto = notificationService.sendNotification(sender, receiver, type);
 
 		// then
 		assertThat(responseDto).isNotNull();
@@ -101,11 +104,10 @@ public class NotificationServiceTest {
 		assertThat(responseDto.getContent()).isEqualTo(expectedMessage);
 		assertThat(responseDto.getReceiverId()).isEqualTo(receiverId);
 
-		verify(userRepository).findByIdOrElseThrow(senderId);
-		verify(userRepository).findByIdOrElseThrow(receiverId);
 		verify(notificationRepository).save(any(Notification.class));
 		verify(notificationPushService).sendToUser(receiverId);
 	}
+
 
 
 	@Test
@@ -233,24 +235,6 @@ public class NotificationServiceTest {
 
 		// then
 		verify(notificationRepository, never()).findByCreatedAtBeforeOrderByCreatedAtAsc(any());
-	}
-	@Test
-	void 존재하지_않는_사용자() {
-		// given
-		Long senderId = 99L;
-		Long receiverId = 1L;
-
-		when(userRepository.findByIdOrElseThrow(senderId))
-			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
-
-		// when
-		CustomException exception = assertThrows(CustomException.class, () -> {
-			notificationService.sendNotification(senderId, receiverId, 101);
-		});
-
-		// then
-		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-
 	}
 
 	@Test
