@@ -20,11 +20,14 @@ public class RedissonConfig {
 	private int redisPort;
 
 	@Value("${use_secure_redis:true}") // EC2에서는 true로 설정
-	private boolean useSecureRedis;
+	private String useSecureRedis;
 
 	@Bean
 	public RedissonClient redissonClient() {
-		String protocol = useSecureRedis ? "rediss://" : "redis://";
+		String protocol = "redis://";
+		if(useSecureRedis.equals("true")){
+			protocol = "rediss://";
+		}
 		String address = protocol + redisHost + ":" + redisPort;
 
 		Config config = new Config();
