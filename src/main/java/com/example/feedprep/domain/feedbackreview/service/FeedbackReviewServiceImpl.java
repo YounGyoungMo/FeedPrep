@@ -56,15 +56,18 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public FeedbackReviewDetailsDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
+		if(!user.getRole().equals(UserRole.STUDENT)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
 		Feedback feedback = feedBackRepository. findWithRequestAndUserById(feedbackId)
 			.orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
-		Long tutorId = feedback.getTutor().getUserId();
+		User tutor = feedback.getTutor();
 		if(!feedback.getFeedbackRequestEntity().getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		notificationService.sendNotification(userId, tutorId,102 );
+		notificationService.sendNotification(user, tutor,102 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 
@@ -91,7 +94,6 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	public List<FeedbackReviewListDto> getReviews(Long userId, Integer page, Integer size) {
 
 		User user = userRepository.findByIdOrElseThrow(userId);
-
 		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 		Page<FeedbackReview> reviews = null;
 		if(user.getRole().equals(UserRole.APPROVED_TUTOR))
@@ -114,7 +116,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	}
 
 	@Transactional(readOnly = true)
-	@Scheduled(cron = "0 0 5 * * *")
+	@Scheduled(cron = "0 0 18 * * *")
 	public void updateRatings () {
 		String status = statusTemplate.opsForValue().get("status:updateRatings");
 		if (status != null && status.equals("processing")) {
@@ -168,6 +170,9 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public FeedbackReviewDetailsDto updateReview(Long userId, Long reviewId, FeedbackReviewRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
+		if(!user.getRole().equals(UserRole.STUDENT)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
         if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);
@@ -181,6 +186,9 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public Map<String, Object> deleteReview(Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
+		if(!user.getRole().equals(UserRole.STUDENT)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(!feedbackReview.getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.FOREIGN_REQUESTER_REVIEW_ACCESS);

@@ -67,6 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		User tutor = mock(User.class);
 		User student = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
+		when(student.getRole()).thenReturn(UserRole.STUDENT);
 		when(student.getUserId()).thenReturn(studentId);
 		when(tutor.getUserId()).thenReturn(2L); // 적당한 ID
 
@@ -90,13 +91,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
 		verify(notificationService, times(1))
-			.sendNotification(studentId, tutorId, 102);
+			.sendNotification(student, tutor, 102);
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
 	@Test
 	void 리뷰생성_실패_존재하지않는유저() {
 		Long userId = 1L;
 		Long feedbackId = 2L;
+
+		User student = mock(User.class);
 		FeedbackReviewRequestDto dto = mock(FeedbackReviewRequestDto.class);
 
 		when(userRepository.findByIdOrElseThrow(userId))
@@ -117,7 +120,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		User user = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
-
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(feedBackRepository.findWithRequestAndUserById(feedbackId))
 			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
 
@@ -142,6 +145,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		Feedback feedback = mock(Feedback.class);
 		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
+
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(feedBackRepository.findWithRequestAndUserById(feedbackId)).thenReturn(Optional.of(feedback));
 		when(feedback.getFeedbackRequestEntity()).thenReturn(requestEntity);
 		when(feedback.getTutor()).thenReturn(tutor);
@@ -163,6 +168,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
 		FeedbackReviewRequestDto feedbackReviewRequestDto = mock(FeedbackReviewRequestDto.class);
 
+		when(student.getRole()).thenReturn(UserRole.STUDENT);
 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
 
 		when(feedbackReview.getId()).thenReturn(reviewId);
@@ -198,7 +204,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		User user = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
-
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
 			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
 
@@ -219,6 +225,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		FeedbackReview review = mock(FeedbackReview.class);
 
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
+
 		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId)).thenReturn(review);
 		when(review.getUserId()).thenReturn(999L);
 
@@ -238,7 +246,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		FeedbackReviewRequestDto feedbackReviewRequestDto = mock(FeedbackReviewRequestDto.class);
 
 		when(userRepository.findByIdOrElseThrow(studentId)).thenReturn(student);
-
+		when(student.getRole()).thenReturn(UserRole.STUDENT);
 		when(feedbackReview.getUserId()).thenReturn(studentId);
 		when(feedBackReviewRepository.findByIdOrElseThrow(1L)).thenReturn(feedbackReview);
 
@@ -266,7 +274,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		User user = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
-
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
 			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
 
@@ -286,6 +294,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		FeedbackReview review = mock(FeedbackReview.class);
 
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
+
 		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId)).thenReturn(review);
 		when(review.getUserId()).thenReturn(999L);
 
@@ -327,12 +337,14 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Long tutorId = 3L;
 		Long studentId = 1L;
 		User tutor = mock(User.class);
+
 		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 
 		FeedbackReview feedbackReview = mock(FeedbackReview.class);
 		when(feedbackReview.getId()).thenReturn(1L);
 		when(feedbackReview.getUserId()).thenReturn(studentId);
+
 		when(feedbackReview.getTutorId()).thenReturn(tutorId);
 		when(feedbackReview.getContent()).thenReturn("학생이 리뷰를 달았습니다.");
 		when(feedbackReview.getRating()).thenReturn(3);
@@ -369,7 +381,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		User user = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
-
 		when(feedBackReviewRepository.findByIdOrElseThrow(reviewId))
 			.thenThrow(new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
 
@@ -437,9 +448,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 		Long studentId = 1L;
 		Long tutorId = 2L;
 
-		User student = mock(User.class);
 		User tutor = mock(User.class);
-		when(userRepository.findByIdOrElseThrow(eq(tutorId))).thenReturn(tutor);
+
+		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(tutor);
 		when(tutor.getUserId()).thenReturn(tutorId);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 
@@ -468,9 +479,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 	@Test
 	public void 평점_출력 () {
 		Long tutorId = 2L;
+		Long studentId = 2L;
+		User student  = mock(User.class);
 		User tutor  = mock(User.class);
+
+		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(student);
+
 		when(userRepository.findByIdOrElseThrow(tutorId)).thenReturn(tutor);
 		when(tutor.getUserId()).thenReturn(tutorId);
+
 		when(feedBackReviewRepository.getAverageRating(tutorId)).thenReturn(null);
 
 		Double avg = feedbackReviewService.getAverageRating(tutorId);

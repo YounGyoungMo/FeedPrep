@@ -58,6 +58,7 @@ jobs:
           EC2_PORT: ${{ secrets.EC2_PORT }}
           SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
           SMTP_AUTH: ${{ secrets.SMTP_AUTH }}
+          USE_SECURE_REDIS: ${{ secrets.USE_SECURE_REDIS }}
 
       - name: Install xmllint
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils

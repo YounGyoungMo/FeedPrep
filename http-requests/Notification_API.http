@@ -1,8 +1,15 @@
-### GET request to example server
-GET localhost:8080/notifications
+### 알림 조회
+GET {{distributeHost}}/notifications
 Authorization: Bearer {{tutorAccessToken}}
 
+### 알림 개수 조회
+GET {{distributeHost}}/notifications/count
+Authorization: Bearer {{tutorAccessToken}}
 
-###
-GET localhost:8080/notifications/count
+### 알림 읽음 처리
+PATCH {{distributeHost}}/notifications/5
+Authorization: Bearer {{tutorAccessToken}}
+
+### 알림 삭제 처리
+DELETE {{distributeHost}}/notifications/5
 Authorization: Bearer {{tutorAccessToken}}
