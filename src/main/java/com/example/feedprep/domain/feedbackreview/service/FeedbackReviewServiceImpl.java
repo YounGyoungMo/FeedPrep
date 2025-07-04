@@ -114,7 +114,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	}
 
 	@Transactional(readOnly = true)
-	@Scheduled(cron = "0 0 5 * * *")
+	@Scheduled(cron = "0 0 18 * * *")
 	public void updateRatings () {
 		String status = statusTemplate.opsForValue().get("status:updateRatings");
 		if (status != null && status.equals("processing")) {
