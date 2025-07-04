@@ -23,6 +23,7 @@ public class FeedbackRequestDetailsDto {
 	private String state;
 	private RejectReason rejectReason;
 	private String etcContent;
+	private String feedbackContent;
 	private String modifiedAt;
 
 	public FeedbackRequestDetailsDto(FeedbackRequestEntity entity){
@@ -35,6 +36,7 @@ public class FeedbackRequestDetailsDto {
 		this.state = requestState.getDescription();
 		this.rejectReason = entity.getRejectReason();
 		this.etcContent = entity.getEtcContent();
+		this.feedbackContent = entity.getFeedbackContent();
 		this.modifiedAt = entity.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 }
