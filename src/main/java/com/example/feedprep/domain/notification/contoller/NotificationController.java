@@ -45,7 +45,7 @@ public class NotificationController {
 	){
 		return  ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponseDto.success(
-				SuccessCode.OK_SUCCESS_Notification,
+				SuccessCode.OK_SUCCESS_NOTIFICATION,
 				notificationService.getNotificationCount(userId)));
 	}
 
@@ -57,7 +57,7 @@ public class NotificationController {
 	){
 		return  ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponseDto.success(
-				SuccessCode.OK_SUCCESS_Notification,
+				SuccessCode.OK_SUCCESS_NOTIFICATION,
 				notificationService.getNotifications(userId, page, size)));
 	}
 
@@ -66,15 +66,7 @@ public class NotificationController {
 		@AuthUser Long userId,
 		@PathVariable Long notificationId){
 		return  ResponseEntity.status(HttpStatus.OK)
-			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_Notification_IS_READ,
-				notificationService.isRead(userId,notificationId)));
-	}
-	@PatchMapping("/{notificationId}/Stale")
-	public ResponseEntity<ApiResponseDto<NotificationResponseDto>> isStaleNotification(
-		@AuthUser Long userId,
-		@PathVariable Long notificationId){
-		return  ResponseEntity.status(HttpStatus.OK)
-			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_Notification_IS_READ,
+			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_NOTIFICATION_IS_READ,
 				notificationService.isRead(userId,notificationId)));
 	}
 
