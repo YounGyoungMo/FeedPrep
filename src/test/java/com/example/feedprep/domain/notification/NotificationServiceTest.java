@@ -4,6 +4,7 @@ package com.example.feedprep.domain.notification;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -13,8 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +32,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.enums.NotificationType;
@@ -76,24 +76,27 @@ public class NotificationServiceTest {
 		Long receiverId = 2L;
 		Integer type = 101;
 
-		User sender =mock(User.class);
+		User sender = mock(User.class);
 		when(sender.getUserId()).thenReturn(senderId);
 		when(sender.getName()).thenReturn("sender");
 
 		User receiver = mock(User.class);
-		when(sender.getUserId()).thenReturn(receiverId);
-		when(sender.getName()).thenReturn( "receiver");
+		when(receiver.getUserId()).thenReturn(receiverId);
 		NotificationType notificationType = NotificationType.fromNumber(type);
 		String expectedMessage = notificationType.buildMessage(sender.getName()).orElseThrow();
 
-		Notification notification = new Notification(notificationType, senderId, receiverId, expectedMessage, notificationType.getUrlTemplate());
+		Notification notification = new Notification(
+			notificationType,
+			senderId,
+			receiverId,
+			expectedMessage,
+			notificationType.getUrlTemplate()
+		);
 
-		when(userRepository.findByIdOrElseThrow(senderId)).thenReturn(sender);
-		when(userRepository.findByIdOrElseThrow(receiverId)).thenReturn(receiver);
 		when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
 		// when
-		NotificationResponseDto responseDto = notificationService.sendNotification(senderId, receiverId, type);
+		NotificationResponseDto responseDto = notificationService.sendNotification(sender, receiver, type);
 
 		// then
 		assertThat(responseDto).isNotNull();
@@ -101,11 +104,10 @@ public class NotificationServiceTest {
 		assertThat(responseDto.getContent()).isEqualTo(expectedMessage);
 		assertThat(responseDto.getReceiverId()).isEqualTo(receiverId);
 
-		verify(userRepository).findByIdOrElseThrow(senderId);
-		verify(userRepository).findByIdOrElseThrow(receiverId);
 		verify(notificationRepository).save(any(Notification.class));
 		verify(notificationPushService).sendToUser(receiverId);
 	}
+
 
 
 	@Test
@@ -153,6 +155,7 @@ public class NotificationServiceTest {
 		when(notification.getReceiverId()).thenReturn(receiverId);
 		when(notification.getUrl()).thenReturn("null");
 		when(notification.isRead()).thenReturn(true);
+		when(notification.isStale()).thenReturn(true);
 
 		when(notificationRepository.findByIdOrElseThrow(1L)).thenReturn(notification);
 
@@ -161,6 +164,8 @@ public class NotificationServiceTest {
 
 		assertEquals(1L, responseDto.getId());
 		assertEquals(1L, responseDto.getReceiverId());
+		assertTrue(responseDto.isRead());
+		assertTrue(responseDto.isStale());
 		verify(notification, times(1)).updateReadState(true);
 	}
 
@@ -177,7 +182,7 @@ public class NotificationServiceTest {
 
 		when(notificationRepository.findByIdOrElseThrow(1L)).thenReturn(notification);
 
-		ApiResponseDto responseDto =
+		Map<String, Object> responseDto =
 			// when
 			notificationService.deleteNotification(receiverId, 1L);
 
@@ -233,24 +238,6 @@ public class NotificationServiceTest {
 
 		// then
 		verify(notificationRepository, never()).findByCreatedAtBeforeOrderByCreatedAtAsc(any());
-	}
-	@Test
-	void 존재하지_않는_사용자() {
-		// given
-		Long senderId = 99L;
-		Long receiverId = 1L;
-
-		when(userRepository.findByIdOrElseThrow(senderId))
-			.thenThrow(new CustomException(ErrorCode.USER_NOT_FOUND));
-
-		// when
-		CustomException exception = assertThrows(CustomException.class, () -> {
-			notificationService.sendNotification(senderId, receiverId, 101);
-		});
-
-		// then
-		assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
-
 	}
 
 	@Test

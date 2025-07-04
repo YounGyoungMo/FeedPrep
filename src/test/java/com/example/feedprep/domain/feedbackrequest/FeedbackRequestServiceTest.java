@@ -82,6 +82,7 @@ public class FeedbackRequestServiceTest {
 		User user = mock(User.class);
 		User tutor = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(dto.getTutorId()).thenReturn(tutorId);
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.STUDENT); // 승인되지 않은 상태
@@ -103,6 +104,7 @@ public class FeedbackRequestServiceTest {
 		User user = mock(User.class);
 		User tutor = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(dto.getTutorId()).thenReturn(tutorId);
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
@@ -130,6 +132,7 @@ public class FeedbackRequestServiceTest {
 		FeedbackRequestEntity existingRequest = mock(FeedbackRequestEntity.class);
 
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(dto.getTutorId()).thenReturn(tutorId);
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);

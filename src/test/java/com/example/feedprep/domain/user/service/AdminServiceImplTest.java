@@ -60,12 +60,13 @@ class AdminServiceImplTest {
     void approveTutor_success() {
         // given
         User tutorUser = User.builder().userId(1L).role(UserRole.PENDING_TUTOR).build();
+        User adminUser = User.builder().userId(2L).role(UserRole.ADMIN).build();
         Long adminId = 2L;
         Long messageId = 3L;
 
         // when
         when(userRepository.findByIdOrElseThrow(1L)).thenReturn(tutorUser);
-
+        when(userRepository.findByIdOrElseThrow(2L)).thenReturn(adminUser);
         ApproveTutorResponseDto result =
             adminServiceImpl.approveTutor(adminId, tutorUser.getUserId(), messageId);
 
@@ -74,7 +75,7 @@ class AdminServiceImplTest {
         verify(tutorMessageService, times(1))
             .deleteMessageTutor(tutorUser.getUserId());
         verify(notificationService, times(1))
-            .sendNotification(adminId, tutorUser.getUserId(), 202);
+            .sendNotification(adminUser, tutorUser , 202);
     }
 
     @Test

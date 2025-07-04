@@ -42,6 +42,8 @@ public class FeedbackRequestEntity extends BaseTimeEntity {
 
 	private String content;
 
+	private String feedbackContent;
+
 	@Column(nullable = false)
 	private RequestState requestState;
 
@@ -66,6 +68,9 @@ public class FeedbackRequestEntity extends BaseTimeEntity {
 	//변경
 	public void updateRequestState(RequestState requestState){
 		this.requestState = requestState;
+	}
+	public void updateFeedbackContet(String content){
+		this.feedbackContent = content;
 	}
 	public void updateFeedbackRequestEntity(FeedbackRequestDto dto, User tutor, Document document){
 		this.tutor = tutor;
