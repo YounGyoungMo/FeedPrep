@@ -21,11 +21,10 @@ public class RedissonConfig {
 	public RedissonClient redissonClient(){
 		setAddress ="redis://" + redisHost + ":6379";
 		Config config = new Config();
-		config.useClusterServers()
-			.addNodeAddress(setAddress)
-			.setMasterConnectionPoolSize(10)
-			.setSlaveConnectionPoolSize(10)
-			.setScanInterval(2000);
+		config.useSingleServer()
+			.setAddress(setAddress)
+			.setConnectionMinimumIdleSize(1)
+			.setConnectionPoolSize(10);
 		return Redisson.create(config);
 	}
 }
