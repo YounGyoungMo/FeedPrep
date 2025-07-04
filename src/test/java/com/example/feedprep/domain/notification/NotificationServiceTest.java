@@ -13,8 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.enums.NotificationType;
@@ -179,7 +178,7 @@ public class NotificationServiceTest {
 
 		when(notificationRepository.findByIdOrElseThrow(1L)).thenReturn(notification);
 
-		ApiResponseDto responseDto =
+		Map<String, Object> responseDto =
 			// when
 			notificationService.deleteNotification(receiverId, 1L);
 
