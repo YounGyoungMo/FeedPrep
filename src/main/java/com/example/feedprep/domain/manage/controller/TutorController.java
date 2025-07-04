@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.controller;
+package com.example.feedprep.domain.manage.controller;
 
 
 import static com.example.feedprep.common.exception.enums.SuccessCode.*;
@@ -6,7 +6,7 @@ import static com.example.feedprep.common.exception.enums.SuccessCode.*;
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
-import com.example.feedprep.domain.user.service.TutorService;
+import com.example.feedprep.domain.manage.service.TutorService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users/tutor")
+@RequestMapping("/manage/tutor")
 @RequiredArgsConstructor
 public class TutorController {
 

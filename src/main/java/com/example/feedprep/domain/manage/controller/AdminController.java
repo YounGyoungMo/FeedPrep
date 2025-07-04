@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.controller;
+package com.example.feedprep.domain.manage.controller;
 
 import static com.example.feedprep.common.exception.enums.SuccessCode.*;
 
@@ -7,8 +7,8 @@ import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
-import com.example.feedprep.domain.user.dto.response.ApproveTutorResponseDto;
-import com.example.feedprep.domain.user.service.AdminService;
+import com.example.feedprep.domain.manage.dto.ApproveTutorResponseDto;
+import com.example.feedprep.domain.manage.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users/admin/authority")
+@RequestMapping("/manage/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
