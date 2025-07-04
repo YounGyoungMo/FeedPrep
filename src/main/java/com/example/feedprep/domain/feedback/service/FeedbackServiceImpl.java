@@ -44,6 +44,7 @@ public class FeedbackServiceImpl implements FeedbackService{
 		}
 		Feedback feedback = new Feedback(dto, tutor);
 		request.updateRequestState(RequestState.COMPLETED);
+		request.updateFeedbackContet(dto.getContent());
 		feedback.updateFeedbackRequest(request);
 		Feedback saveFeedback = feedBackRepository.save(feedback);
 		notificationService.sendNotification(tutor,user, 102 );
