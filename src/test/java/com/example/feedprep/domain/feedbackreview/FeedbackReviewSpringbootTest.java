@@ -24,6 +24,7 @@ import com.example.feedprep.domain.feedback.dto.request.FeedbackWriteRequestDto;
 import com.example.feedprep.domain.feedback.dto.response.FeedbackResponseDto;
 import com.example.feedprep.domain.feedback.service.FeedbackServiceImpl;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
+import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestServiceImpl;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
@@ -77,19 +78,22 @@ public class FeedbackReviewSpringbootTest  {
 				requestDtos.add(new FeedbackRequestDto(users.get(0).getUserId(), documents.get(i).getDocumentId(),"의뢰 드립니다."));
 			}
 			//유저 신청
-			feedbackRequestService.createRequest( users.get(1).getUserId(), requestDtos.get(0));
-			feedbackRequestService.createRequest( users.get(2).getUserId(), requestDtos.get(1));
-			feedbackRequestService.createRequest( users.get(3).getUserId(), requestDtos.get(2));
+			UserFeedbackRequestDetailsDto request1 =
+				feedbackRequestService.createRequest( users.get(1).getUserId(), requestDtos.get(0));
+			UserFeedbackRequestDetailsDto request2 =
+				feedbackRequestService.createRequest( users.get(2).getUserId(), requestDtos.get(1));
+			UserFeedbackRequestDetailsDto request3 =
+				feedbackRequestService.createRequest( users.get(3).getUserId(), requestDtos.get(2));
 
-			Long user1 = users.get(0).getUserId();
-			feedbackRequestService.acceptRequest(user1, 1L);
-			feedbackRequestService.acceptRequest(users.get(0).getUserId(), 2L);
-			feedbackRequestService.acceptRequest(users.get(0).getUserId(), 3L);
+			Long tutor = users.get(0).getUserId();
+			feedbackRequestService.acceptRequest(tutor, request1.getId());
+			feedbackRequestService.acceptRequest(tutor, request2.getId());
+			feedbackRequestService.acceptRequest(tutor, request3.getId());
 			//튜터 피드백 작성
 			FeedbackWriteRequestDto feedbackWriteRequestDto =new FeedbackWriteRequestDto("작성 완료!");
-			FeedbackResponseDto first = feedbackService.createFeedback(users.get(0).getUserId(),1L, feedbackWriteRequestDto);
-			FeedbackResponseDto second = feedbackService.createFeedback(users.get(0).getUserId(),2L, feedbackWriteRequestDto);
-			FeedbackResponseDto third = feedbackService.createFeedback(users.get(0).getUserId(),3L, feedbackWriteRequestDto);
+			FeedbackResponseDto first = feedbackService.createFeedback(tutor,request1.getId(), feedbackWriteRequestDto);
+			FeedbackResponseDto second = feedbackService.createFeedback(tutor, request2.getId(), feedbackWriteRequestDto);
+			FeedbackResponseDto third = feedbackService.createFeedback(tutor,request3.getId(), feedbackWriteRequestDto);
 
 			//유저
 			Random random =new Random();
