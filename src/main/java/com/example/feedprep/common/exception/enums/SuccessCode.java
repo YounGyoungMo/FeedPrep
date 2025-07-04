@@ -74,6 +74,7 @@ public enum SuccessCode {
 
     // 관리자
     APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다."),
+    GET_TUTOR_MESSAGE(HttpStatus.OK, "튜터 활동 승인 메세지를 확인합니다."),
 
     SUCCESS_FETCH_INFO(HttpStatus.OK, "성공 했습니다."),
     TRANSACTION_HISTORY(HttpStatus.OK, "거래 내역입니다.")

@@ -41,4 +41,6 @@ jobs:
               -e PORTONE_CHANNELKEY="${{ secrets.PORTONE_CHANNELKEY }}" \
               -e EC2_URL="${{ secrets.EC2_URL }}" \
               -e EC2_PORT="${{ secrets.EC2_PORT }}" \
+              -e SMTP_EMAIL="${{ secrets.SMTP_EMAIL }}" \
+              -e SMTP_AUTH="${{ secrets.SMTP_AUTH }}" \
               juhyeong37/feedprep:1.0
