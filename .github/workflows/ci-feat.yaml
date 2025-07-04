@@ -54,3 +54,4 @@ jobs:
           EC2_PORT: ${{ secrets.EC2_PORT }}
           SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
           SMTP_AUTH: ${{ secrets.SMTP_AUTH }}
+          USE_SECURE_REDIS: ${{ secrets.USE_SECURE_REDIS }}
