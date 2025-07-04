@@ -17,9 +17,9 @@ POST localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-  "name": "윤경모",
-  "email": "user123@naver.com",
-  "password": "asdasdjkDF23",
+  "name": "전현진",
+  "email": "soonch6@naver.com",
+  "password": "Asdf1234",
   "role": "STUDENT"
 }
 
@@ -28,8 +28,8 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "user123@naver.com",
-  "password": "asdasdjkDF23"
+  "email": "soonch6@naver.com",
+  "password": "ASdfg1234"
 }
 
 > {%

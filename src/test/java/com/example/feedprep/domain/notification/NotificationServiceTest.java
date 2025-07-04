@@ -164,7 +164,6 @@ public class NotificationServiceTest {
 		verify(notification, times(1)).updateReadState(true);
 	}
 
-	@Disabled
 	@Test
 	void deleteNotification() {
 		// given
