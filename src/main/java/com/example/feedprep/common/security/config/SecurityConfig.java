@@ -48,7 +48,6 @@ public class SecurityConfig {
                             "/portone-webhook").permitAll()
                         .requestMatchers( "/notifications/subscribe").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                     .requestMatchers("/users/admin/authority").hasRole("ADMIN")
                     .requestMatchers("/users/tutor").hasAnyRole("PENDING_TUTOR","APPROVED_TUTOR","ADMIN")
 
