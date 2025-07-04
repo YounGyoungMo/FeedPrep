@@ -165,7 +165,7 @@ public class NotificationServiceTest {
 		assertEquals(1L, responseDto.getId());
 		assertEquals(1L, responseDto.getReceiverId());
 		assertTrue(responseDto.isRead());
-		assertTrue(responseDto.isStayle());
+		assertTrue(responseDto.isStale());
 		verify(notification, times(1)).updateReadState(true);
 	}
 
