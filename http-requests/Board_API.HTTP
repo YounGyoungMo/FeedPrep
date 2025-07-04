@@ -1,5 +1,5 @@
 ### 게시글 등록
-POST localhost:8080/boards
+POST {{distributeHost}}/boards
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -12,11 +12,11 @@ Content-Type: application/json
 }
 
 ### 게시글 전체 조회 (학생)
-GET localhost:8080/boards
+GET {{distributeHost}}/boards
 Authorization: Bearer {{studentAccessToken}}
 
 ### 게시글 수정
-PUT localhost:8080/boards/1
+PUT {{distributeHost}}/boards/1
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -29,29 +29,29 @@ Content-Type: application/json
 }
 
 ### 게시글 추천
-PUT localhost:8080/boards/1/recommend
+PUT {{distributeHost}}/boards/1/recommend
 Authorization: Bearer {{studentAccessToken}}
 
 ### 게시글 추천 취소
-DELETE localhost:8080/boards/1/recommend
+DELETE {{distributeHost}}/boards/1/recommend
 Authorization: Bearer {{studentAccessToken}}
 
 ### 인기 게시글 조회
-GET localhost:8080/boards/popular
+GET {{distributeHost}}/boards/popular
 Authorization: Bearer {{studentAccessToken}}
 
 ### 스크랩 추가
-POST localhost:8080/boards/1/scrap
+POST {{distributeHost}}/boards/1/scrap
 Authorization: Bearer {{studentAccessToken}}
 
 ### 스크랩 여부 확인
-GET localhost:8080/boards/1/scrap
+GET {{distributeHost}}/boards/1/scrap
 Authorization: Bearer {{studentAccessToken}}
 
 ### 스크랩 목록 조회
-GET localhost:8080/boards/scraps
+GET {{distributeHost}}/boards/scraps
 Authorization: Bearer {{studentAccessToken}}
 
 ### 스크랩 취소
-DELETE localhost:8080/boards/1/scrap
+DELETE {{distributeHost}}/boards/1/scrap
 Authorization: Bearer {{studentAccessToken}}

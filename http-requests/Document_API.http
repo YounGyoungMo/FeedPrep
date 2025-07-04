@@ -1,6 +1,6 @@
 ### 문서 등록
-POST localhost:8080/documents
-Authorization: Bearer {{tutorAccessToken}}
+POST {{distributeHost}}documents
+Authorization: Bearer {{anotherStudentAccessToken}}
 Content-Type: multipart/form-data; boundary=my-upload-boundary
 
 --my-upload-boundary
@@ -11,13 +11,13 @@ Content-Type: application/png
 --my-upload-boundary--
 
 ### 문서 목록 조회
-GET localhost:8080/documents
+GET {{distributeHost}}/documents
 Authorization: Bearer {{studentAccessToken}}
 
 ### 문서 상세 조회 - presigned url 생성
-GET localhost:8080/documents/1
+GET {{distributeHost}}/documents/1
 Authorization: Bearer {{tutorAccessToken}}
 
 ### 문서 단건 삭제
-DELETE localhost:8080/documents/1
+DELETE {{distributeHost}}/documents/1
 Authorization: Bearer {{studentAccessToken}}

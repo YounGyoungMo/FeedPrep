@@ -1,35 +1,35 @@
 ### 학생 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
-GET localhost:8080/oauth/authorize/kakao?role=student
+GET {{distributeHost}}/oauth/authorize/kakao?role=student
 
 ### 학생 소셜 로그인 (구글) - 계정없으면 회원가입후 로그인
-GET localhost:8080/oauth/authorize/google?role=student
+GET {{distributeHost}}/oauth/authorize/google?role=student
 
 ### 학생 소셜 로그인 (네이버) - 계정없으면 회원가입후 로그인
-GET localhost:8080/oauth/authorize/naver?role=student
+GET {{distributeHost}}/oauth/authorize/naver?role=student
 
 // 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야함
 
 ### 튜터 소셜 로그인 (카카오) - 계정없으면 회원가입후 로그인
-GET localhost:8080/oauth/authorize/kakao?role=tutor
+GET {{distributeHost}}authorize/kakao?role=tutor
 
 ### 학생 회원가입
-POST  http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com:8080/auth/signup
+POST {{distributeHost}}/signup
 Content-Type: application/json
 
 {
   "name": "[학생]전현진",
-  "email": "soonch6@naver.com",
+  "email": "soonch10@naver.com",
   "password": "Asdf1234",
   "role": "STUDENT"
 }
 
 ### 학생 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "soonch6@naver.com",
-  "password": "ASdfg1234"
+  "email": "soonch5@naver.com",
+  "password": "Asdf1234"
 }
 
 > {%
@@ -38,7 +38,7 @@ Content-Type: application/json
 %}
 
 ### 다른 학생
-POST localhost:8080/auth/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
@@ -49,7 +49,7 @@ Content-Type: application/json
 }
 
 ### 다른 학생 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
@@ -63,7 +63,7 @@ Content-Type: application/json
 %}
 
 ### 튜터 회원가입
-POST localhost:8080/auth/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
@@ -74,7 +74,7 @@ Content-Type: application/json
 }
 
 ### 튜터 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
@@ -88,7 +88,7 @@ Content-Type: application/json
 
 
 ### 관리자 회원가입
-POST localhost:8080/admin/signup
+POST {{distributeHost}}/admin/signup
 Content-Type: application/json
 
 {
@@ -100,7 +100,7 @@ Content-Type: application/json
 }
 
 ### 관리자 로그인
-POST localhost:8080/admin/login
+POST {{distributeHost}}/admin/login
 Content-Type: application/json
 
 {
@@ -113,7 +113,7 @@ Content-Type: application/json
 %}
 
 ### 포트원 웹훅 테스트 예시
-POST http://localhost:8080/portone-webhook
+POST {{distributeHost}}/portone-webhook
 Content-Type: application/json
 x-portone-signature: "cEbXuvfiTAkJiT2XPg8RasgfAVHkSQrY0pX0pO42xEC3YPFttZSWDaN7TRazZGLrAgEydMAt82xeE1Xu"
 x-portone-timestamp: 1698199200

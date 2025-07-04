@@ -19,8 +19,8 @@ public class PaymentWebhookController {
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> receiveWebhook(
-		@RequestHeader("x-portone-signature") String signature,
-		@RequestHeader("x-portone-timestamp") String timestamp,
+		@RequestHeader("webhook-signature") String signature,
+		@RequestHeader("webhook-timestamp") String timestamp,
 		@RequestBody String rawBody) {
 
 		pointService.handleWebhook(webhookSecret, rawBody, signature, timestamp);
