@@ -46,23 +46,23 @@ public class NotificationServiceImpl implements NotificationService{
 	private final NotificationPushService notificationPushService;
 
 	@Override
-	public NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type) {
+	public NotificationResponseDto sendNotification(User sender, User receiver, Integer type) {
 
-		User senderUser = userRepository.findByIdOrElseThrow(senderId);
-		User receiverUser = userRepository.findByIdOrElseThrow(receiverId);
+		Long senderUserId = sender.getUserId();
+		Long receiverUserId = receiver.getUserId();
 		NotificationType notificationType =  NotificationType.fromNumber(type);
-        String message = notificationType.buildMessage(senderUser.getName())
+        String message = notificationType.buildMessage(sender.getName())
 			.orElseThrow(()->new RuntimeException("발송 실패"));
 		Notification notification =
 			new Notification(notificationType
-			,senderUser.getUserId()
-			, receiverUser.getUserId()
+			,senderUserId
+			,receiverUserId
 			, message
 			,notificationType.getUrlTemplate()
 		);
 
 		Notification saveNotification = notificationRepository.save(notification);
-		notificationPushService.sendToUser(receiverId);
+		notificationPushService.sendToUser(receiverUserId);
 		return new NotificationResponseDto(saveNotification);
 	}
 
