@@ -9,6 +9,7 @@ import com.example.feedprep.common.exception.enums.ErrorCode;
 import com.example.feedprep.common.message.service.TutorMessageService;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.document.repository.DocumentRepository;
+import com.example.feedprep.domain.manage.service.TutorServiceImpl;
 import com.example.feedprep.domain.notification.service.NotificationService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;

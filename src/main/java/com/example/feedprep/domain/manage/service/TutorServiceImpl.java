@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.service;
+package com.example.feedprep.domain.manage.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;

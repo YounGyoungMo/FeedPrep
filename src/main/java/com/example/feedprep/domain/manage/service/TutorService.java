@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.service;
+package com.example.feedprep.domain.manage.service;
 
 import com.example.feedprep.common.message.dto.response.TutorMessageResponseDdo;
 import java.util.List;
