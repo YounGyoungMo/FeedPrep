@@ -35,7 +35,7 @@ public class AdminController {
         @RequestParam Long messageId
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(ApiResponseDto.success(APPROVE_TUTOR,adminService.getMessageTutor(messageId)));
+            .body(ApiResponseDto.success(GET_TUTOR_MESSAGE,adminService.getMessageTutor(messageId)));
     }
 
     @PutMapping("/tutor/{tutorId}")
