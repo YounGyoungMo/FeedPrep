@@ -4,6 +4,7 @@ package com.example.feedprep.domain.notification;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -154,6 +155,7 @@ public class NotificationServiceTest {
 		when(notification.getReceiverId()).thenReturn(receiverId);
 		when(notification.getUrl()).thenReturn("null");
 		when(notification.isRead()).thenReturn(true);
+		when(notification.isStale()).thenReturn(true);
 
 		when(notificationRepository.findByIdOrElseThrow(1L)).thenReturn(notification);
 
@@ -162,6 +164,8 @@ public class NotificationServiceTest {
 
 		assertEquals(1L, responseDto.getId());
 		assertEquals(1L, responseDto.getReceiverId());
+		assertTrue(responseDto.isRead());
+		assertTrue(responseDto.isStayle());
 		verify(notification, times(1)).updateReadState(true);
 	}
 
