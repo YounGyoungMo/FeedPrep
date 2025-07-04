@@ -44,7 +44,7 @@ public class S3ServiceImpl implements S3Service{
     public String uploadFile(MultipartFile file, String directory) {
 
         if(file.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_FILE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_FILE);
         }
 
         String bucket = getBucketName();

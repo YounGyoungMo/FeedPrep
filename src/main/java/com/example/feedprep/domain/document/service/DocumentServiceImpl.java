@@ -31,7 +31,7 @@ public class DocumentServiceImpl implements DocumentService{
     public DocumentResponseDto createDocument(MultipartFile file, String resume, Long userId) {
 
         if(file.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_FILE);
+            throw new CustomException(ErrorCode.BAD_REQUEST_FILE);
         }
 
         Long megabyte = s3Service.convertFileSizeType(5L, "mb");

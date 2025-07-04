@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.dto.response;
+package com.example.feedprep.domain.manage.dto;
 
 
 import com.example.feedprep.domain.user.enums.UserRole;
