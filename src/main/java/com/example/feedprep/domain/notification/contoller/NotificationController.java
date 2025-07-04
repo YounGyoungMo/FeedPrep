@@ -61,7 +61,7 @@ public class NotificationController {
 				notificationService.getNotifications(userId, page, size)));
 	}
 
-	@PatchMapping("/{notificationId}/Read")
+	@PatchMapping("/{notificationId}")
 	public ResponseEntity<ApiResponseDto<NotificationResponseDto>> isReadNotification(
 		@AuthUser Long userId,
 		@PathVariable Long notificationId){
