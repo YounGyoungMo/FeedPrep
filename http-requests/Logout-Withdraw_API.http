@@ -7,8 +7,12 @@ DELETE http://localhost:8080/boards/1/comments/1
 Authorization: Bearer {{studentAccessToken}}
 
 ### 학생 로그아웃
-POST localhost:8080/auth/logout
+POST http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/:8080/auth/logout
 Authorization: Bearer {{studentAccessToken}}
+
+### 다른 학생 로그아웃
+POST localhost:8080/auth/logout
+Authorization: Bearer {{anotherStudentAccessToken}}
 
 ### 학생 회원탈퇴
 DELETE localhost:8080/auth/withdraw

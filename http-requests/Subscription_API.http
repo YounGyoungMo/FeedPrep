@@ -1,5 +1,5 @@
 ### 구독
-POST localhost:8080/subscriptions?userId=2
+POST localhost:8080/subscriptions?userId=3
 Authorization: Bearer {{studentAccessToken}}
 
 ### 구독 취소

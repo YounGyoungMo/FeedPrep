@@ -1,6 +1,6 @@
 ### 문서 등록
 POST localhost:8080/documents
-Authorization: Bearer {{tutorAccessToken}}
+Authorization: Bearer {{anotherStudentAccessToken}}
 Content-Type: multipart/form-data; boundary=my-upload-boundary
 
 --my-upload-boundary

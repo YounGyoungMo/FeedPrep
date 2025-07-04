@@ -1,3 +1,0 @@
-### 매칭
-GET localhost:8080/tutor
-Authorization: Bearer {{studentAccessToken}}

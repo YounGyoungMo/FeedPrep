@@ -47,6 +47,10 @@ Content-Type: application/json
 GET localhost:8080/users/tutorList
 Authorization: Bearer {{studentAccessToken}}
 
+### 매칭
+GET localhost:8080/tutor
+Authorization: Bearer {{studentAccessToken}}
+
 ### [튜터] 활동 요청 신청
 POST localhost:8080/users/tutor?adminId=4&documentId=1
 Authorization: Bearer {{tutorAccessToken}}
@@ -69,7 +73,7 @@ Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-  "techStack" : "스프링-부트"
+  "techStack" : "프론트"
 }
 
 ### [관리자] 기술 스택 삭제

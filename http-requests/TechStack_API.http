@@ -3,11 +3,11 @@ GET localhost:8080/tech-stacks
 Authorization: Bearer {{studentAccessToken}}
 
 ### 기술 스택 추가 (튜터)
-POST localhost:8080/tech-stacks?techId=1
+POST localhost:8080/tech-stacks?techId=4
 Authorization: Bearer {{tutorAccessToken}}
 
 ### 기술 스택 추가 (학생)
-POST localhost:8080/tech-stacks?techId=1
+POST localhost:8080/tech-stacks?techId=2
 Authorization: Bearer {{studentAccessToken}}
 
 ### 기술 스택 삭제 (튜터)

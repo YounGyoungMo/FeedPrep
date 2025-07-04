@@ -1,8 +1,13 @@
-### GET request to example server
+### GET request to example server 전체 알림 확인
 GET localhost:8080/notifications
 Authorization: Bearer {{tutorAccessToken}}
 
 
-###
+### 미확인 알림 갯수 확인
 GET localhost:8080/notifications/count
+Authorization: Bearer {{tutorAccessToken}}
+
+
+### 알림 확인
+PATCH localhost:8080/notifications/2
 Authorization: Bearer {{tutorAccessToken}}
