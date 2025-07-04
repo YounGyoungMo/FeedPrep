@@ -5,10 +5,11 @@ import java.util.List;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
+import com.example.feedprep.domain.user.entity.User;
 
 public interface NotificationService {
 
-	 NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type);
+	 NotificationResponseDto sendNotification(User sender, User receiver, Integer type);
 
 	List<NotificationResponseDto> getNotifications(Long userId, Integer page, Integer size);
 
