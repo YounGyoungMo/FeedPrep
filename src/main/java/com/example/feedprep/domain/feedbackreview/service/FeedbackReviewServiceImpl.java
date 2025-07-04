@@ -76,9 +76,6 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Override
 	public FeedbackReviewDetailsDto getReview( Long userId, Long reviewId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
-		if(!user.getRole().equals(UserRole.STUDENT)){
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
 		FeedbackReview feedbackReview = feedBackReviewRepository.findByIdOrElseThrow(reviewId);
 		if(user.getRole().equals(UserRole.STUDENT)){
 			if(!feedbackReview.getUserId().equals(userId)){
@@ -97,9 +94,6 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	public List<FeedbackReviewListDto> getReviews(Long userId, Integer page, Integer size) {
 
 		User user = userRepository.findByIdOrElseThrow(userId);
-		if(!user.getRole().equals(UserRole.STUDENT)){
-			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
-		}
 		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 		Page<FeedbackReview> reviews = null;
 		if(user.getRole().equals(UserRole.APPROVED_TUTOR))
