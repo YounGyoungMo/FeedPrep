@@ -102,7 +102,7 @@ public class PointServiceImpl implements PointService{
 		try {
 			// 웹훅 검증
 			if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
-				log.info("검증 실패");
+				log.error("검증 실패");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -110,7 +110,7 @@ public class PointServiceImpl implements PointService{
 			JsonNode root = objectMapper.readTree(rawBody);
 			JsonNode data = root.path("data");
 			if (!data.has("paymentId")) {
-				log.info("파싱 실패");
+				log.error("파싱 실패");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -118,14 +118,14 @@ public class PointServiceImpl implements PointService{
 			String paymentId = data.get("paymentId").asText();
 
 			if(!type.equals("Transaction.Paid")){
-				log.info("결제 상태 불량");
+				log.error("결제 상태 불량");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
 			// 결제 정보 조회
 			PaymentResponseDto payment = paymentService.getPayment(paymentId);
 			if (payment == null) {
-				log.info("데이터 이상");
+				log.error("데이터 이상");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -134,13 +134,14 @@ public class PointServiceImpl implements PointService{
 			if (payment.getAmount().getTotal().equals(pendingHistory.getAmount())) {
 				pendingHistory.setType(PointType.CHARGE);
 				pointRepository.saveAndFlush(pendingHistory);
-				log.info("충전성공");
+				log.error("충전성공");
 			} else {
 				// 금액 불일치 시 처리 로직
-				log.info("금액 불일치");
+				log.error("금액 불일치");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			log.error("예외처리");
 			throw new CustomException(ErrorCode.BAD_REQUEST);
 		}
 	}
