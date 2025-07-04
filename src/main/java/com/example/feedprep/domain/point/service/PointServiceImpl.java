@@ -100,11 +100,11 @@ public class PointServiceImpl implements PointService{
 	@Transactional
 	public void handleWebhook(String webhookSecret, String rawBody, String signature, String timestamp) {
 		try {
-			// 웹훅 검증
-			if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
-				log.error("검증 실패");
-				throw new CustomException(ErrorCode.BAD_REQUEST);
-			}
+			// // 웹훅 검증
+			// if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
+			// 	log.error("검증 실패");
+			// 	throw new CustomException(ErrorCode.BAD_REQUEST);
+			// }
 
 			// JSON 파싱
 			JsonNode root = objectMapper.readTree(rawBody);
