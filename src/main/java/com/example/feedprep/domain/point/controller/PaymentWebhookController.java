@@ -22,10 +22,12 @@ public class PaymentWebhookController {
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> receiveWebhook(
-		@RequestHeader("webhook-signature") String signature,
-		@RequestHeader("webhook-timestamp") String timestamp,
+		// @RequestHeader("webhook-signature") String signature,
+		// @RequestHeader("webhook-timestamp") String timestamp,
 		@RequestBody String rawBody) {
 		log.error("예외처리 컨트롤러");
+		String signature = "signature";
+		String timestamp = "timestamp";
 		pointService.handleWebhook(webhookSecret, rawBody, signature, timestamp);
 		return ResponseEntity.ok().build();
 	}
