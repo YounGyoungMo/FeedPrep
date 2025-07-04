@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +45,10 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	public UserFeedbackRequestDetailsDto createRequest(Long userId, FeedbackRequestDto dto) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		User tutor = userRepository.findByIdOrElseThrow(dto.getTutorId(), ErrorCode.NOT_FOUND_TUTOR);
-        if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
+		if(!user.getRole().equals(UserRole.STUDENT)){
+			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
+		}
+		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.PENDING_TUTOR);
 		}
 
@@ -90,7 +90,7 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 	{
 		//유저 본인 확인
 		User user = userRepository.findByIdOrElseThrow(userId);
-		if(!user.getUserId().equals(userId)){
+		if(!user.getRole().equals(UserRole.STUDENT)){
 			throw  new CustomException(ErrorCode. UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -221,20 +221,15 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		Integer rejectNumber,
 		FeedbackRejectRequestDto dto){
 
-		// 1. 튜터 본인 확인
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
-
-		// 2. 피드백 요청 존재 여부 확인
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findByIdOrElseThrow(feedbackRequestId);
 		User user = request.getUser();
-		// 2. 피드백 존재 여부 확인(Pendding 상태 거절)
 		if(!request.getRequestState().equals(RequestState.PENDING)){
 			throw new CustomException(ErrorCode.CANNOT_REJECT_NON_PENDING_FEEDBACK);
 		}
-		//3. 본인에게 신청한 피드백인지 검사
 		if(!request.getTutor().getUserId().equals(tutor.getUserId())){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
