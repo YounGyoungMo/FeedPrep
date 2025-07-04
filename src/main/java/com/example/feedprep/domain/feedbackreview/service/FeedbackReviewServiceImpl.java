@@ -58,13 +58,13 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		Feedback feedback = feedBackRepository. findWithRequestAndUserById(feedbackId)
 			.orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_FEEDBACK));
-		Long tutorId = feedback.getTutor().getUserId();
+		User tutor = feedback.getTutor();
 		if(!feedback.getFeedbackRequestEntity().getUser().getUserId().equals(userId)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		notificationService.sendNotification(userId, tutorId,102 );
+		notificationService.sendNotification(user, tutor,102 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 

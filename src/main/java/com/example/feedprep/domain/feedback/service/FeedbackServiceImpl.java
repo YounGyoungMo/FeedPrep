@@ -38,7 +38,7 @@ public class FeedbackServiceImpl implements FeedbackService{
 		// 2. 피드백 요청 상태 확인 (이미 완료/거절된 요청인지)
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findPendingByIdAndTutorOrElseThrow(
 			tutor.getUserId(), requestId, ErrorCode.USER_NOT_FOUND);
-        Long userId = request.getUser().getUserId();
+		User user = request.getUser();
 		if(!request.getRequestState().equals(RequestState.IN_PROGRESS)){
 			throw new CustomException(ErrorCode.INVALID_REQUEST_STATE);
 		}
@@ -46,7 +46,7 @@ public class FeedbackServiceImpl implements FeedbackService{
 		request.updateRequestState(RequestState.COMPLETED);
 		feedback.updateFeedbackRequest(request);
 		Feedback saveFeedback = feedBackRepository.save(feedback);
-		notificationService.sendNotification(tutorId,userId, 102 );
+		notificationService.sendNotification(tutor,user, 102 );
 		return new FeedbackResponseDto(saveFeedback);
 	}
 
