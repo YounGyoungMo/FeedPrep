@@ -1,9 +1,7 @@
 package com.example.feedprep.domain.notification.contoller;
 
-import io.jsonwebtoken.Claims;
-
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,15 +20,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.example.feedprep.common.exception.enums.SuccessCode;
 import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.common.security.annotation.AuthUser;
-import com.example.feedprep.common.security.jwt.JwtUtil;
-import com.example.feedprep.common.sse.repository.EmitterRepository;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
-import com.example.feedprep.domain.notification.repository.NotificationRepository;
 import com.example.feedprep.domain.notification.service.NotificationPushService;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
-import com.example.feedprep.domain.user.entity.User;
-import com.example.feedprep.domain.user.repository.UserRepository;
 
 @Slf4j
 @RestController
@@ -53,7 +45,7 @@ public class NotificationController {
 	){
 		return  ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponseDto.success(
-				SuccessCode.OK_SUCCESS_Notification,
+				SuccessCode.OK_SUCCESS_NOTIFICATION,
 				notificationService.getNotificationCount(userId)));
 	}
 
@@ -65,7 +57,7 @@ public class NotificationController {
 	){
 		return  ResponseEntity.status(HttpStatus.OK)
 			.body(ApiResponseDto.success(
-				SuccessCode.OK_SUCCESS_Notification,
+				SuccessCode.OK_SUCCESS_NOTIFICATION,
 				notificationService.getNotifications(userId, page, size)));
 	}
 
@@ -74,12 +66,14 @@ public class NotificationController {
 		@AuthUser Long userId,
 		@PathVariable Long notificationId){
 		return  ResponseEntity.status(HttpStatus.OK)
-			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_Notification_IS_READ,
+			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_NOTIFICATION_IS_READ,
 				notificationService.isRead(userId,notificationId)));
 	}
 
 	@DeleteMapping("/{notificationId}")
-	public ResponseEntity<ApiResponseDto> deleteNotification(@AuthUser Long userId, @PathVariable Long notificationId){
-		return new ResponseEntity<>(notificationService.deleteNotification(userId, notificationId), HttpStatus.OK);
+	public ResponseEntity<ApiResponseDto<Map<String, Object>>> deleteNotification(@AuthUser Long userId, @PathVariable Long notificationId){
+		return  ResponseEntity.status(HttpStatus.OK)
+			.body(ApiResponseDto.success(SuccessCode.OK_SUCCESS_FEEDBACK_REVIEW_DELETED,
+				notificationService.deleteNotification(userId, notificationId)));
 	}
 }

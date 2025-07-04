@@ -57,7 +57,7 @@ class TutorServiceImplTest {
         verify(tutorMessageService, times(1))
             .createdMessageTutor(tutor.getUserId(), document.getDocumentId(), document.getFileUrl());
         verify(notificationService, times(1))
-            .sendNotification(tutor.getUserId(),admin.getUserId(),201);
+            .sendNotification(tutor,admin,201);
     }
 
     @Test

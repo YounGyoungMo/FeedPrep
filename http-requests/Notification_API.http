@@ -1,13 +1,15 @@
-### GET request to example server 전체 알림 확인
+### 알림 조회
 GET {{distributeHost}}/notifications
 Authorization: Bearer {{tutorAccessToken}}
 
-
-### 미확인 알림 갯수 확인
+### 알림 개수 조회
 GET {{distributeHost}}/notifications/count
 Authorization: Bearer {{tutorAccessToken}}
 
+### 알림 읽음 처리
+PATCH {{distributeHost}}/notifications/5
+Authorization: Bearer {{tutorAccessToken}}
 
-### 알림 확인
-PATCH {{distributeHost}}/notifications/2
+### 알림 삭제 처리
+DELETE {{distributeHost}}/notifications/5
 Authorization: Bearer {{tutorAccessToken}}

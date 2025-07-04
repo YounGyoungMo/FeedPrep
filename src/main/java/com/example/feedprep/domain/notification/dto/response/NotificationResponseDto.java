@@ -16,6 +16,7 @@ public class NotificationResponseDto {
 	private String content;
 	private String url;
 	private boolean isRead;
+	private boolean isStale;
 	private LocalDateTime createdAt;
 
 	public NotificationResponseDto(Notification notification) {
@@ -25,6 +26,7 @@ public class NotificationResponseDto {
 		this.content = notification.getContent();
 		this.url = notification.getUrl();
 		this.isRead = notification.isRead();
+		this.isStale = notification.isStale();
 		this.createdAt = notification.getCreatedAt();
 	}
 }

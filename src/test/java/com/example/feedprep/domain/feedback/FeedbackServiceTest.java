@@ -107,7 +107,6 @@ public class FeedbackServiceTest {
 		when(tutor.getUserId()).thenReturn(tutorId);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 		User user = mock(User.class);
-		when(user.getUserId()).thenReturn(tutorId);
 
 		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
 		when(requestEntity.getUser()).thenReturn(user);

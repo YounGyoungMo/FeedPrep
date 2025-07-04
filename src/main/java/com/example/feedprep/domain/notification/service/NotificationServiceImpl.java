@@ -4,7 +4,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
-import com.example.feedprep.common.exception.enums.SuccessCode;
-import com.example.feedprep.common.response.ApiResponseDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.entity.Notification;
@@ -46,23 +46,23 @@ public class NotificationServiceImpl implements NotificationService{
 	private final NotificationPushService notificationPushService;
 
 	@Override
-	public NotificationResponseDto sendNotification(Long senderId, Long receiverId, Integer type) {
+	public NotificationResponseDto sendNotification(User sender, User receiver, Integer type) {
 
-		User senderUser = userRepository.findByIdOrElseThrow(senderId);
-		User receiverUser = userRepository.findByIdOrElseThrow(receiverId);
+		Long senderUserId = sender.getUserId();
+		Long receiverUserId = receiver.getUserId();
 		NotificationType notificationType =  NotificationType.fromNumber(type);
-        String message = notificationType.buildMessage(senderUser.getName())
+        String message = notificationType.buildMessage(sender.getName())
 			.orElseThrow(()->new RuntimeException("발송 실패"));
 		Notification notification =
 			new Notification(notificationType
-			,senderUser.getUserId()
-			, receiverUser.getUserId()
+			,senderUserId
+			,receiverUserId
 			, message
 			,notificationType.getUrlTemplate()
 		);
 
 		Notification saveNotification = notificationRepository.save(notification);
-		notificationPushService.sendToUser(receiverId);
+		notificationPushService.sendToUser(receiverUserId);
 		return new NotificationResponseDto(saveNotification);
 	}
 
@@ -94,17 +94,17 @@ public class NotificationServiceImpl implements NotificationService{
 
 	@Transactional
 	@Override
-	public ApiResponseDto deleteNotification(Long userId, Long notificationId) {
+	public Map<String , Object> deleteNotification(Long userId, Long notificationId) {
 		User user = userRepository.findByIdOrElseThrow(userId);
 		Notification notification = notificationRepository.findByIdOrElseThrow(notificationId);
 		if(!notification.getReceiverId().equals(user.getUserId())){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
 		notificationRepository.delete(notification);
+		Map<String , Object> data = new HashMap<>();
+		data.put("date",  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
-		return new ApiResponseDto<>(SuccessCode.OK_SUCCESS_Notification_DELETED.getHttpStatus().value(),
-			                        SuccessCode.OK_SUCCESS_Notification_DELETED.getMessage(),
-			                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		return data;
 
 	}
 
