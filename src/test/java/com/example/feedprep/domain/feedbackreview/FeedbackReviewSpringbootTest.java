@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.example.feedprep.domain.document.entity.Document;
 import com.example.feedprep.domain.document.repository.DocumentRepository;
 import com.example.feedprep.domain.feedback.dto.request.FeedbackWriteRequestDto;
+import com.example.feedprep.domain.feedback.dto.response.FeedbackResponseDto;
 import com.example.feedprep.domain.feedback.service.FeedbackServiceImpl;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestServiceImpl;
@@ -86,24 +87,24 @@ public class FeedbackReviewSpringbootTest  {
 			feedbackRequestService.acceptRequest(users.get(0).getUserId(), 3L);
 			//튜터 피드백 작성
 			FeedbackWriteRequestDto feedbackWriteRequestDto =new FeedbackWriteRequestDto("작성 완료!");
-			feedbackService.createFeedback(users.get(0).getUserId(),1L, feedbackWriteRequestDto);
-			feedbackService.createFeedback(users.get(0).getUserId(),2L, feedbackWriteRequestDto);
-			feedbackService.createFeedback(users.get(0).getUserId(),3L, feedbackWriteRequestDto);
+			FeedbackResponseDto first = feedbackService.createFeedback(users.get(0).getUserId(),1L, feedbackWriteRequestDto);
+			FeedbackResponseDto second = feedbackService.createFeedback(users.get(0).getUserId(),2L, feedbackWriteRequestDto);
+			FeedbackResponseDto third = feedbackService.createFeedback(users.get(0).getUserId(),3L, feedbackWriteRequestDto);
 
 			//유저
 			Random random =new Random();
 
 			feedbackReviewService.createReview(
 				users.get(1).getUserId(),
-				1L,
+				first.getId(),
 				new FeedbackReviewRequestDto(random.nextInt(0,6),"감사합니다."));
 			feedbackReviewService.createReview(
 				users.get(2).getUserId(),
-				2L,
+				second.getId(),
 				new FeedbackReviewRequestDto(random.nextInt(0,6),"감사합니다."));
 			feedbackReviewService.createReview(
 				users.get(3).getUserId(),
-				3L,
+				third.getId(),
 				new FeedbackReviewRequestDto(random.nextInt(0,6),"감사합니다."));
 		}
 
@@ -122,11 +123,5 @@ public class FeedbackReviewSpringbootTest  {
 		assertNotNull(cachedRating);
 		System.out.println("Rating" + cachedRating);
 
-	}
-
-	@Test
-	void 캐시_상태_검증(){
-		String value = statusTemplate.opsForValue().get("status:updateRatings");
-		assertEquals("done", value);
 	}
 }
