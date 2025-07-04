@@ -43,4 +43,5 @@ jobs:
               -e EC2_PORT="${{ secrets.EC2_PORT }}" \
               -e SMTP_EMAIL="${{ secrets.SMTP_EMAIL }}" \
               -e SMTP_AUTH="${{ secrets.SMTP_AUTH }}" \
+              -e USE_SECURE_REDIS="true" \
               juhyeong37/feedprep:1.0
