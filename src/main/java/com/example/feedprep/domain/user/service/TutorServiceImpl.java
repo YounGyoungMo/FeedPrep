@@ -48,7 +48,7 @@ public class TutorServiceImpl implements TutorService {
         tutorMessageService.createdMessageTutor(userId,document.getDocumentId(),document.getFileUrl());
 
         // 요청 알림 보내기
-        notificationService.sendNotification(userId, adminId, 201);
+        notificationService.sendNotification(tutor, admin, 201);
     }
 
     @Override

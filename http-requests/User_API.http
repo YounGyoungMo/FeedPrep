@@ -47,12 +47,24 @@ Content-Type: application/json
 GET localhost:8080/users/tutorList
 Authorization: Bearer {{studentAccessToken}}
 
+### [튜터] 활동 요청 신청
+POST localhost:8080/users/tutor?adminId=4&documentId=1
+Authorization: Bearer {{tutorAccessToken}}
+
+### [튜터] 보낸 신청 확인
+GET localhost:8080/users/tutor
+Authorization: Bearer {{tutorAccessToken}}
+
+### [관리자] 튜터 활동 요청 메세지 확인
+GET localhost:8080/users/admin/authority/tutor?messageId=1
+Authorization: Bearer {{adminAccessToken}}
+
 ### [관리자] 튜터 승인
-POST localhost:8080/admin/authority/tutor/2
+PUT localhost:8080/users/admin/authority/tutor/3
 Authorization: Bearer {{adminAccessToken}}
 
 ### [관리자] 기술 스택 생성
-POST localhost:8080/admin/authority/tech-stacks
+POST localhost:8080/users/admin/authority/tech-stacks
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -61,5 +73,5 @@ Content-Type: application/json
 }
 
 ### [관리자] 기술 스택 삭제
-DELETE localhost:8080/admin/authority/tech-stacks/3
+DELETE localhost:8080/users/admin/authority/tech-stacks/3
 Authorization: Bearer {{adminAccessToken}}

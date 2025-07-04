@@ -39,7 +39,7 @@ public class AdminServiceImpl implements AdminService{
 
         // 튜터가 활동전 상태 확인
         User user = userRepository.findByIdOrElseThrow(tutorId);
-
+        User admin = userRepository.findByIdOrElseThrow(adminId);
         if(!user.getRole().equals(UserRole.PENDING_TUTOR)){
             throw new CustomException(ErrorCode.NOT_PENDING_TUTOR);
         }
@@ -53,7 +53,7 @@ public class AdminServiceImpl implements AdminService{
         }
 
         // 튜터에게 알림 보내기
-        notificationService.sendNotification(adminId, tutorId, 202);
+        notificationService.sendNotification(admin, user, 202);
 
         return new ApproveTutorResponseDto(user.getRole());
     }
