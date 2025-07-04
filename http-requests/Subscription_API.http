@@ -1,15 +1,15 @@
 ### 구독
-POST localhost:8080/subscriptions?userId=3
+POST {{distributeHost}}/subscriptions?userId=3
 Authorization: Bearer {{studentAccessToken}}
 
 ### 구독 취소
-DELETE localhost:8080/subscriptions/1
+DELETE {{distributeHost}}/subscriptions/1
 Authorization: Bearer {{studentAccessToken}}
 
 ### 내가 구독한 튜터 목록
-GET localhost:8080/subscriptions?getType=SUBSCRIPTIONS
+GET {{distributeHost}}/subscriptions?getType=SUBSCRIPTIONS
 Authorization: Bearer {{studentAccessToken}}
 
 ### 날 구독한 학생 목록
-GET localhost:8080/subscriptions?getType=SUBSCRIBERS
+GET {{distributeHost}}/subscriptions?getType=SUBSCRIBERS
 Authorization: Bearer {{tutorAccessToken}}

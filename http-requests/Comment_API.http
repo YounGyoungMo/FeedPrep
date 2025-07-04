@@ -1,5 +1,5 @@
 ### [학생] 댓글 작성
-POST http://localhost:8080/boards/1/comments
+POST {{distributeHost}}/boards/1/comments
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -9,7 +9,7 @@ Content-Type: application/json
 
 
 ### [학생] 댓글 수정
-PUT http://localhost:8080/boards/1/comments/2
+PUT {{distributeHost}}/boards/1/comments/2
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### [튜터] 대댓글 작성
-POST http://localhost:8080/boards/1/comments/3/reply
+POST {{distributeHost}}/boards/1/comments/3/reply
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
@@ -28,15 +28,15 @@ Content-Type: application/json
 
 
 ### [학생] 댓글 전체 조회 (유저, 튜터)
-GET http://localhost:8080/boards/1/comments
+GET {{distributeHost}}/boards/1/comments
 Authorization: Bearer {{studentAccessToken}}
 
 
 ### [학생] 댓글 추천
-POST http://localhost:8080/comments/1/like
+POST {{distributeHost}}/comments/1/like
 Authorization: Bearer {{tutorAccessToken}}
 
 
 ### [학생] 댓글 추천 취소
-DELETE http://localhost:8080/comments/1/like
+DELETE {{distributeHost}}/comments/1/like
 Authorization: Bearer {{studentAccessToken}}

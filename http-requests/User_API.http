@@ -1,9 +1,9 @@
 ### 내 프로필 조회
-GET localhost:8080/users/me
+GET {{distributeHost}}/users/me
 Authorization: Bearer {{studentAccessToken}}
 
 ### 내 프로필 수정
-PUT localhost:8080/users/me
+PUT {{distributeHost}}/users/me
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 }
 
 ### 비밀번호 수정
-PATCH localhost:8080/users/me
+PATCH {{distributeHost}}/users/me
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### 비밀번호 찾기 - 인증키 발송
-POST localhost:8080/users/find
+POST {{distributeHost}}/users/find
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### 비밀번호 찾기 - 새로운 비밀번호
-PATCH localhost:8080/users/find
+PATCH {{distributeHost}}/users/find
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -44,31 +44,31 @@ Content-Type: application/json
 }
 
 ### 튜터 목록조회
-GET localhost:8080/users/tutorList
+GET {{distributeHost}}/users/tutorList
 Authorization: Bearer {{studentAccessToken}}
 
 ### 매칭
-GET localhost:8080/tutor
+GET {{distributeHost}}/tutor
 Authorization: Bearer {{studentAccessToken}}
 
 ### [튜터] 활동 요청 신청
-POST localhost:8080/users/tutor?adminId=4&documentId=1
+POST {{distributeHost}}/users/tutor?adminId=4&documentId=1
 Authorization: Bearer {{tutorAccessToken}}
 
 ### [튜터] 보낸 신청 확인
-GET localhost:8080/users/tutor
+GET {{distributeHost}}/users/tutor
 Authorization: Bearer {{tutorAccessToken}}
 
 ### [관리자] 튜터 활동 요청 메세지 확인
-GET localhost:8080/users/admin/authority/tutor?messageId=1
+GET {{distributeHost}}/users/admin/authority/tutor?messageId=1
 Authorization: Bearer {{adminAccessToken}}
 
 ### [관리자] 튜터 승인
-PUT localhost:8080/users/admin/authority/tutor/3
+PUT {{distributeHost}}/users/admin/authority/tutor/3
 Authorization: Bearer {{adminAccessToken}}
 
 ### [관리자] 기술 스택 생성
-POST localhost:8080/users/admin/authority/tech-stacks
+POST {{distributeHost}}/users/admin/authority/tech-stacks
 Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
@@ -77,5 +77,5 @@ Content-Type: application/json
 }
 
 ### [관리자] 기술 스택 삭제
-DELETE localhost:8080/users/admin/authority/tech-stacks/3
+DELETE {{distributeHost}}/users/admin/authority/tech-stacks/3
 Authorization: Bearer {{adminAccessToken}}
