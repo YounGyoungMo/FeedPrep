@@ -26,6 +26,7 @@ public class PaymentWebhookController {
 		// @RequestHeader("webhook-timestamp") String timestamp,
 		@RequestBody String rawBody) {
 		log.error("예외처리 컨트롤러");
+		System.out.println(rawBody);
 		String signature = "signature";
 		String timestamp = "timestamp";
 		pointService.handleWebhook(webhookSecret, rawBody, signature, timestamp);
