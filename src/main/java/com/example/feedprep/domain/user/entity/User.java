@@ -94,4 +94,5 @@ public class User extends BaseTimeEntity {
     public void withdraw() {
         this.deletedAt = LocalDateTime.now();
     }
+    public void updateRating(Double rating){this.rating = rating; }
 }
