@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +42,30 @@ public class FeedbackServiceTest {
 	private FeedbackRequestEntityRepository feedbackRequestEntityRepository;
 	@Mock
 	private FeedBackRepository feedbackRepository;
+
+	@Test
+	void 피드백_생성_실패_중복_작성_시_예외_발생() {
+		// given
+		Long tutorId = 1L;
+		Long requestId = 1L;
+		FeedbackWriteRequestDto dto = mock(FeedbackWriteRequestDto.class);
+
+		User tutor = mock(User.class);
+
+		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
+
+		// 중복 피드백 존재하도록 설정
+		given(feedbackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorUserId(requestId, tutorId))
+			.willReturn(true);
+
+		// when & then
+		CustomException exception = assertThrows(CustomException.class,
+			() -> feedbackService.createFeedback(tutorId, requestId, dto)
+		);
+
+		assertEquals(ErrorCode.DUPLICATE_FEEDBACK, exception.getErrorCode());
+		assertEquals("이미 동일한 내용으로 작성하였습니다.", exception.getMessage());
+	}
 
 	@Test
 	void 피드백_작성_추가_존재하지_않는_튜터일때_경우_예외_발생() {

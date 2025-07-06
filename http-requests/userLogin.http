@@ -1,0 +1,253 @@
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "마이크",
+  "email": "soonch10@naver.com",
+  "password": "Asdf1234",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "제니",
+  "email": "jenny21@gmail.com",
+  "password": "Qwer5678",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "토니",
+  "email": "tony88@daum.net",
+  "password": "Zxcv1357",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "엘라",
+  "email": "ella.book@naver.com",
+  "password": "Poiu2468",
+  "role": "STUDENT"
+}
+
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "로이",
+  "email": "royking@kakao.com",
+  "password": "Mnbv4321",
+  "role": "STUDENT"
+}
+
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "세라",
+  "email": "sarah.w@outlook.com",
+  "password": "Hjkl0987",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "에디",
+  "email": "eddy.dev@naver.com",
+  "password": "Ghjk7645",
+  "role": "STUDENT"
+}
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "수빈",
+  "email": "soobin_11@daum.net",
+  "password": "Vbnm3456",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "준호",
+  "email": "junho.park@gmail.com",
+  "password": "Yuiop123",
+  "role": "STUDENT"
+}
+
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "지아",
+  "email": "jia.lim@kakao.com",
+  "password": "Lkjh5678",
+  "role": "STUDENT"
+}
+
+
+
+
+### 학생 로그인 1
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "soonch10@naver.com",
+  "password": "Asdf1234"
+}
+
+> {%
+    client.global.set("studentAccessToken1", response.body.data.accessToken)
+    client.global.set("studentRefreshToken1", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 2
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "jenny21@gmail.com",
+  "password": "Qwer5678"
+}
+
+> {%
+    client.global.set("studentAccessToken2", response.body.data.accessToken)
+    client.global.set("studentRefreshToken2", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 3
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tony88@daum.net",
+  "password": "Zxcv1357"
+}
+
+> {%
+    client.global.set("studentAccessToken3", response.body.data.accessToken)
+    client.global.set("studentRefreshToken3", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 4
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ella.book@naver.com",
+  "password": "Poiu2468"
+}
+
+> {%
+    client.global.set("studentAccessToken4", response.body.data.accessToken)
+    client.global.set("studentRefreshToken4", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 5
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "royking@kakao.com",
+  "password": "Mnbv4321"
+}
+
+> {%
+    client.global.set("studentAccessToken5", response.body.data.accessToken)
+    client.global.set("studentRefreshToken5", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 6
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "sarah.w@outlook.com",
+  "password": "Hjkl0987"
+}
+
+> {%
+    client.global.set("studentAccessToken6", response.body.data.accessToken)
+    client.global.set("studentRefreshToken6", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 7
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "eddy.dev@naver.com",
+  "password": "Ghjk7645"
+}
+
+> {%
+    client.global.set("studentAccessToken7", response.body.data.accessToken)
+    client.global.set("studentRefreshToken7", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 8
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "soobin_11@daum.net",
+  "password": "Vbnm3456"
+}
+
+> {%
+    client.global.set("studentAccessToken8", response.body.data.accessToken)
+    client.global.set("studentRefreshToken8", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 9
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "junho.park@gmail.com",
+  "password": "Yuiop123"
+}
+
+> {%
+    client.global.set("studentAccessToken9", response.body.data.accessToken)
+    client.global.set("studentRefreshToken9", response.body.data.refreshToken)
+%}
+
+### 학생 로그인 10
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "jia.lim@kakao.com",
+  "password": "Lkjh5678"
+}
+
+> {%
+    client.global.set("studentAccessToken10", response.body.data.accessToken)
+    client.global.set("studentRefreshToken10", response.body.data.refreshToken)
+%}

@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -29,6 +29,8 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.FeedbackRe
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
+import com.example.feedprep.domain.point.repository.PointRepository;
+import com.example.feedprep.domain.point.service.PointService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -49,6 +51,10 @@ public class FeedbackRequestServiceSpringbootTest {
 	private DocumentRepository documentRepository;
 	@Autowired
 	private FeedbackRequestService feedbackRequestService;
+	@Autowired
+	private PointRepository pointRepository;
+	@Autowired
+	private PointService pointService;
 
 	private List<User> tutors;
 	private List<User> users;
@@ -70,6 +76,9 @@ public class FeedbackRequestServiceSpringbootTest {
 
 	@BeforeEach
 	void setup(){
+
+		pointRepository.deleteAll();
+
 		// 튜터 4명
 		tutors = List.of(
 			new User("Tutor1", "tutor1@naver.com", "tester1234", UserRole.APPROVED_TUTOR),//1L
@@ -93,6 +102,10 @@ public class FeedbackRequestServiceSpringbootTest {
 		document = new Document(users.get(0), "api/ef/?");
 		documentRepository.save(document);
 
+		for(int i= 0; i< users.size(); i++){
+			String PaymentId = "pid_" + UUID.randomUUID();
+			pointService.pointCharge(users.get(i).getUserId(), PaymentId, 100000000);
+		}
 		requestDtos = List.of(
 			new FeedbackRequestDto(1L, 1L, "paragon"),
 			new FeedbackRequestDto(2L, 1L, "paragon1"),
