@@ -1,0 +1,292 @@
+### 피드백 신청 수락 1~10 (tutorAccessToken1)
+PATCH {{distributeHost}}/feedback-requests/1/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/2/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/3/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/4/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/5/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/6/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/7/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/8/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/9/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/10/accept
+Authorization: Bearer {{tutorAccessToken1}}
+Content-Type: application/json
+
+### 피드백 신청 수락 11~20 (tutorAccessToken2)
+PATCH {{distributeHost}}/feedback-requests/11/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/12/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/13/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/14/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/15/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/16/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/17/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/18/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/19/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/20/accept
+Authorization: Bearer {{tutorAccessToken2}}
+Content-Type: application/json
+### 피드백 신청 수락 21~30 (tutorAccessToken3)
+PATCH {{distributeHost}}/feedback-requests/21/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/22/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/23/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/24/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/25/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/26/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/27/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/28/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/29/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/30/accept
+Authorization: Bearer {{tutorAccessToken3}}
+Content-Type: application/json
+### 피드백 신청 수락 31~40 (tutorAccessToken4)
+PATCH {{distributeHost}}/feedback-requests/31/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/32/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/33/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/34/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/35/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/36/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/37/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/38/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/39/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/40/accept
+Authorization: Bearer {{tutorAccessToken4}}
+Content-Type: application/json
+
+### 피드백 신청 수락 41~50 (tutorAccessToken5)
+PATCH {{distributeHost}}/feedback-requests/41/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/42/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/43/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/44/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/45/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/46/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/47/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/48/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/49/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###
+
+PATCH {{distributeHost}}/feedback-requests/50/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json

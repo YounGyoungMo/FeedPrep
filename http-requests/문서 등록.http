@@ -1,0 +1,116 @@
+### 문서 등록1
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken1}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록2
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken2}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록3
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken3}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록4
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken4}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+### 문서 등록5
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken5}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록6
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken6}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+### 문서 등록7
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken7}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록8
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken8}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+### 문서 등록9
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken9}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 등록10
+POST localhost:8080/documents
+Authorization: Bearer {{studentAccessToken10}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
