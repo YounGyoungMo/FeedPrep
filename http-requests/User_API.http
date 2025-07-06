@@ -45,37 +45,10 @@ Content-Type: application/json
 
 ### 튜터 목록조회
 GET {{distributeHost}}/users/tutorList
-Authorization: Bearer {{studentAccessToken}}
+Authorization: Bearer {{tutorAccessToken5}}
 
 ### 매칭
 GET {{distributeHost}}/tutor
 Authorization: Bearer {{studentAccessToken}}
 
-### [튜터] 활동 요청 신청
-POST {{distributeHost}}/users/tutor?adminId=4&documentId=1
-Authorization: Bearer {{tutorAccessToken}}
 
-### [튜터] 보낸 신청 확인
-GET {{distributeHost}}/users/tutor
-Authorization: Bearer {{tutorAccessToken}}
-
-### [관리자] 튜터 활동 요청 메세지 확인
-GET {{distributeHost}}/users/admin/authority/tutor?messageId=1
-Authorization: Bearer {{adminAccessToken}}
-
-### [관리자] 튜터 승인
-PUT {{distributeHost}}/users/admin/authority/tutor/3
-Authorization: Bearer {{adminAccessToken}}
-
-### [관리자] 기술 스택 생성
-POST {{distributeHost}}/users/admin/authority/tech-stacks
-Authorization: Bearer {{adminAccessToken}}
-Content-Type: application/json
-
-{
-  "techStack" : "프론트"
-}
-
-### [관리자] 기술 스택 삭제
-DELETE {{distributeHost}}/users/admin/authority/tech-stacks/3
-Authorization: Bearer {{adminAccessToken}}
