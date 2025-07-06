@@ -32,10 +32,11 @@ public class FeedbackServiceImpl implements FeedbackService{
 	@Override
 	public FeedbackResponseDto createFeedback(Long tutorId, Long requestId, FeedbackWriteRequestDto dto) {
 
-		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
-		if (feedBackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorId(requestId, tutorId)) {
+
+		if (feedBackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorUserId(requestId, tutorId)) {
 			throw new CustomException(ErrorCode.DUPLICATE_FEEDBACK);
 		}
+		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
