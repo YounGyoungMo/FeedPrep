@@ -1,0 +1,34 @@
+
+### 튜터
+
+### [튜터] 활동 요청 신청
+POST {{distributeHost}}/manage/tutor?adminId=4&documentId=1
+Authorization: Bearer {{tutorAccessToken}}
+
+### [튜터] 보낸 신청 확인
+GET {{distributeHost}}/manage/tutor
+Authorization: Bearer {{tutorAccessToken}}
+
+
+### 관리자
+
+### [관리자] 튜터 활동 요청 메세지 확인
+GET {{distributeHost}}/manage/admin/tutor?messageId=1
+Authorization: Bearer {{adminAccessToken}}
+
+### [관리자] 튜터 승인
+PUT {{distributeHost}}/manage/admin/tutor/3
+Authorization: Bearer {{adminAccessToken}}
+
+### [관리자] 기술 스택 생성
+POST {{distributeHost}}/manage/admin/tech-stacks
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+
+{
+  "techStack" : "프론트"
+}
+
+### [관리자] 기술 스택 삭제
+DELETE {{distributeHost}}/manage/admin/tech-stacks/3
+Authorization: Bearer {{adminAccessToken}}
