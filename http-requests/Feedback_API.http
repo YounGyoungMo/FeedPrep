@@ -42,7 +42,7 @@ GET {{distributeHost}}/feedback-requests/tutor?page=0&size=20
 Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 신청 수락 (튜터)
-PATCH {{distributeHost}}/feedback-requests/1/accept?rejectNumber=1
+PATCH {{distributeHost}}/feedback-requests/1/accept?
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
