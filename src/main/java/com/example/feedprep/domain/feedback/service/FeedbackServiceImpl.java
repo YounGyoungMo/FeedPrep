@@ -31,7 +31,11 @@ public class FeedbackServiceImpl implements FeedbackService{
 	@Transactional
 	@Override
 	public FeedbackResponseDto createFeedback(Long tutorId, Long requestId, FeedbackWriteRequestDto dto) {
+
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
+		if (feedBackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorId(requestId, tutorId)) {
+			throw new CustomException(ErrorCode.DUPLICATE_FEEDBACK);
+		}
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
 		}
