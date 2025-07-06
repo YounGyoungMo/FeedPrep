@@ -59,6 +59,10 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Transactional
 	@Override
 	public FeedbackReviewDetailsDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
+
+		if(feedBackReviewRepository.existsByFeedbackIdAndUserId(feedbackId, userId)){
+			throw new CustomException(ErrorCode.DUPLICATE_FEEDBACK_REVIEW);
+		}
 		User user = userRepository.findByIdOrElseThrow(userId);
 		if(!user.getRole().equals(UserRole.STUDENT)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
@@ -71,7 +75,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		notificationService.sendNotification(user, tutor,102 );
+		notificationService.sendNotification(user, tutor,105 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 

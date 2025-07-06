@@ -20,4 +20,4 @@ Authorization: Bearer {{studentAccessToken}}
 
 ### 문서 단건 삭제
 DELETE {{distributeHost}}/documents/1
-Authorization: Bearer {{adminAccessToken}}
+Authorization: Bearer {{studentAccessToken}}

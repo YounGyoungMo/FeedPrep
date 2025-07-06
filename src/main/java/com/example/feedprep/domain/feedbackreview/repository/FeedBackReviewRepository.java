@@ -33,4 +33,6 @@ public interface FeedBackReviewRepository extends JpaRepository<FeedbackReview, 
 	default FeedbackReview findByIdOrElseThrow(Long id){
 		return findByIdAndDeletedAtIsNull(id).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
 	}
+
+	boolean existsByFeedbackIdAndUserId(Long feedbackId, Long userId);
 }

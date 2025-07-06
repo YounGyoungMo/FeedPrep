@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,7 +35,6 @@ import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewDetailsDto;
 import com.example.feedprep.domain.feedbackreview.entity.FeedbackReview;
 import com.example.feedprep.domain.feedbackreview.repository.FeedBackReviewRepository;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
-import com.example.feedprep.domain.notification.service.NotificationService;
 import com.example.feedprep.domain.notification.service.NotificationServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
@@ -91,7 +90,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		assertDoesNotThrow(() -> feedbackReviewService.createReview(studentId, feedbackId, feedbackReviewRequestDto));
 		verify(notificationService, times(1))
-			.sendNotification(student, tutor, 102);
+			.sendNotification(student, tutor, 105);
 		verify(feedBackReviewRepository, times(1)).save(any());
 	}
 	@Test
@@ -130,7 +129,25 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 		assertEquals(ErrorCode.NOT_FOUND_FEEDBACK, exception.getErrorCode());
 	}
+	@Test
+	void 리뷰_생성_이미_작성된_리뷰가_존재하면_예외_발생() {
+		// given
+		Long feedbackId = 1L;
+		Long userId = 1L;
 
+		FeedbackReviewRequestDto requestDto = mock(FeedbackReviewRequestDto.class);
+		given(feedBackReviewRepository.existsByFeedbackIdAndUserId(feedbackId, userId))
+			.willReturn(true);
+
+		// when & then
+		CustomException exception = assertThrows(
+			CustomException.class,
+			() -> feedbackReviewService.createReview(feedbackId, userId, requestDto)
+		);
+
+		assertEquals(ErrorCode.DUPLICATE_FEEDBACK_REVIEW, exception.getErrorCode());
+		assertEquals("이미 이 피드백에 대한 리뷰를 작성하였습니다.", exception.getMessage());
+	}
 	@Test
 	void 리뷰생성_실패_작성자가아님() {
 		Long userId = 1L;
