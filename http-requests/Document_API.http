@@ -1,6 +1,6 @@
 ### 문서 등록
 POST {{distributeHost}}/documents
-Authorization: Bearer {{anotherStudentAccessToken}}
+Authorization: Bearer {{adminAccessToken}}
 Content-Type: multipart/form-data; boundary=my-upload-boundary
 
 --my-upload-boundary
@@ -19,5 +19,5 @@ GET {{distributeHost}}/documents/2
 Authorization: Bearer {{studentAccessToken}}
 
 ### 문서 단건 삭제
-DELETE {{distributeHost}}/documents/4
-Authorization: Bearer {{studentAccessToken}}
+DELETE {{distributeHost}}/documents/1
+Authorization: Bearer {{adminAccessToken}}

@@ -45,7 +45,7 @@ Content-Type: application/json
 
 ### 튜터 목록조회
 GET {{distributeHost}}/users/tutorList
-Authorization: Bearer {{studentAccessToken}}
+Authorization: Bearer {{tutorAccessToken5}}
 
 ### 매칭
 GET {{distributeHost}}/tutor

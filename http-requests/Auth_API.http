@@ -92,7 +92,7 @@ POST {{distributeHost}}/admin/signup
 Content-Type: application/json
 
 {
-  "name": "[관리자]윤경모",
+  "name": "[관리자]김형진",
   "email": "admin124@naver.com",
   "password": "asdasdjkDF23",
   "role": "ADMIN",
@@ -104,7 +104,7 @@ POST {{distributeHost}}/admin/login
 Content-Type: application/json
 
 {
-  "email": "admin123@naver.com",
+  "email": "admin124@naver.com",
   "password": "asdasdjkDF23"
 }
 

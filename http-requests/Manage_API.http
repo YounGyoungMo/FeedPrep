@@ -26,7 +26,7 @@ Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
-  "techStack" : "프론트"
+  "techStack" : "Thymeleaf"
 }
 
 ### [관리자] 기술 스택 삭제
