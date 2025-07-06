@@ -17,7 +17,7 @@ import com.example.feedprep.domain.matching.service.TutorMatchingService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/tutor")
+@RequestMapping("/user/matches")
 @RequiredArgsConstructor
 public class TutorMatchingController {
 

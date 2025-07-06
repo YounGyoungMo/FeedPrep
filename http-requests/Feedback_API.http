@@ -1,53 +1,53 @@
 ###피드백 신청
-POST localhost:8080/feedback-requests
-Authorization: Bearer {{studentAccessToken}}
+POST {{distributeHost}}/feedback-requests
+Authorization: Bearer {{anotherStudentAccessToken}}
 Content-Type: application/json
 
 {
-  "tutorId": 2,
-  "documentId": 1,
+  "tutorId": 3,
+  "documentId": 7,
   "content":"이력서 검토를 받고 싶습니다."
 }
 
 ###피드백 신청 조회
-GET localhost:8080/feedback-requests
+GET {{distributeHost}}/feedback-requests
 Authorization: Bearer {{studentAccessToken}}
 
 ###피드백 신청 수정
-PUT localhost:8080/feedback-requests/1
+PUT {{distributeHost}}/feedback-requests/1
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
 {
-  "tutorId": 2,
+  "tutorId": 3,
   "documentId": 2,
   "content":"이러한 이유로 이력서를 수정했습니다."
 }
 
 ###피드백 신청 취소
-DELETE localhost:8080/feedback-requests/1
+DELETE {{distributeHost}}/feedback-requests/2
+Authorization: Bearer {{anotherStudentAccessToken}}
+
+
+###피드백 상세 조회 (학생, 튜터) - 학생
+GET {{distributeHost}}/feedback-requests/1
 Authorization: Bearer {{studentAccessToken}}
 
-
-###피드백 상세 조회 (튜터, 유저)
-GET localhost:8080/feedback-requests/2
-Authorization: Bearer {{studentAccessToken}}
-
-###피드백 상세 조회 (튜터, 유저)
-GET localhost:8080/feedback-requests/1
+###피드백 상세 조회 (학생, 튜터) - 튜터
+GET {{distributeHost}}/feedback-requests/1
 Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 전체 조회 (튜터)
-GET localhost:8080/feedback-requests/tutor?page=0&size=20
+GET {{distributeHost}}/feedback-requests/tutor?page=0&size=20
 Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 신청 수락 (튜터)
-PATCH localhost:8080/feedback-requests/1/accept?rejectNumber=1
+PATCH {{distributeHost}}/feedback-requests/1
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 ###피드백 신청 거절 (튜터)
-PATCH localhost:8080/feedback-requests/2/reject?rejectNumber=1
+PATCH {{distributeHost}}/feedback-requests/2
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
@@ -56,7 +56,7 @@ Content-Type: application/json
 }
 
 ###피드백 작성 (튜터)
-POST localhost:8080/feedback?requestId=3
+POST {{distributeHost}}/feedback?requestId=1
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
@@ -64,9 +64,8 @@ Content-Type: application/json
   "content": "10자 이상 입력하세요"
 }
 
-
 ###피드백 수정 (튜터)
-PATCH localhost:8080/feedback/1
+PATCH {{distributeHost}}/feedback/1
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
@@ -74,34 +73,31 @@ Content-Type: application/json
   "content": "수정되었습니다. 10자 이상입니다."
 }
 
-
-
-###피드백 리뷰 작성 (유저)
-POST localhost:8080/feedback/1/review
+###피드백 리뷰 작성 (학생)
+POST {{distributeHost}}/feedback/1/review
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
 {
-  "rating": 5,
+  "rating": 4,
   "content" : "유익한 리뷰 였습니다!"
 }
 
-
-###피드백 리뷰 단건 조회 (유저, 튜터)
-GET localhost:8080/feedback/review/1
+###피드백 리뷰 단건 조회 (학생, 튜터) - 학생
+GET {{distributeHost}}/feedback/review/1
 Authorization: Bearer {{studentAccessToken}}
 
-###피드백 리뷰 단건 조회 (유저, 튜터)
-GET localhost:8080/feedback/review/1
+###피드백 리뷰 단건 조회 (학생, 튜터) - 튜터
+GET {{distributeHost}}/feedback/review/1
 Authorization: Bearer {{tutorAccessToken}}
 
 
-###피드백 리뷰 다건 조회 (유저, 튜터)
-GET localhost:8080/feedback/review
+###피드백 리뷰 다건 조회 (학생, 튜터)
+GET {{distributeHost}}/feedback/review
 Authorization: Bearer {{studentAccessToken}}
 
-###피드백 리뷰 수정 (유저)
-PUT localhost:8080/feedback/1/review/1
+###피드백 리뷰 수정 (학생)
+PUT {{distributeHost}}/feedback/1/review/1
 Authorization: Bearer {{studentAccessToken}}
 Content-Type: application/json
 
@@ -110,6 +106,6 @@ Content-Type: application/json
   "content" : "유익한 리뷰이였습니다!"
 }
 
-###피드백 리뷰 삭제 (유저)
-DELETE localhost:8080/feedback/1/review/1
+###피드백 리뷰 삭제 (학생)
+DELETE {{distributeHost}}/feedback/1/review/1
 Authorization: Bearer {{studentAccessToken}}

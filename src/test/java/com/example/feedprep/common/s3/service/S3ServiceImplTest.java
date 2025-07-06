@@ -77,7 +77,7 @@ class S3ServiceImplTest {
 
     @Test
     @DisplayName("업로드 할 파일이 없음")
-    void uploadFile_NOT_FOUND_FILE() {
+    void uploadFile_BAD_REQUEST_FILE() {
         // given
         String directory = "test-dir";
         MockMultipartFile emptyFile = new MockMultipartFile(
@@ -93,7 +93,7 @@ class S3ServiceImplTest {
         );
 
         // then
-        assertEquals(ErrorCode.NOT_FOUND_FILE, exception.getErrorCode());
+        assertEquals(ErrorCode.BAD_REQUEST_FILE, exception.getErrorCode());
     }
 
     @Test

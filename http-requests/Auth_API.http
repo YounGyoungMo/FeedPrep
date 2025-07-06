@@ -1,16 +1,17 @@
-### 학생 소셜 회원가입 (카카오)
+
+### 학생 소셜 회원가입 및 로그인 (카카오)
 GET localhost:8080/oauth/authorize/kakao?role=student
 
 ### 학생 소셜 로그인 (카카오)
 GET localhost:8080/oauth/authorize/kakao
 
-### 학생 소셜 회원가입 (구글)
+### 학생 소셜 회원가입 및 로그인 (구글)
 GET localhost:8080/oauth/authorize/google?role=student
 
 ### 학생 소셜 로그인 (구글)
 GET localhost:8080/oauth/authorize/google
 
-### 학생 소셜 회원가입 (네이버)
+### 학생 소셜 회원가입 및 로그인 (네이버)
 GET localhost:8080/oauth/authorize/naver?role=student
 
 ### 학생 소셜 로그인 (네이버)
@@ -18,24 +19,27 @@ GET localhost:8080/oauth/authorize/naver
 
 // 로그아웃이나 다른 요청하려면 페이지에 나타난 액세스 토큰 수동으로 복붙 해야함
 
+### 튜터 소셜 회원가입 및 로그인 (카카오)
+GET {{distributeHost}}authorize/kakao?role=tutor
+
 ### 학생 회원가입
-POST localhost:8080/auth/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
-  "name": "전현진",
-  "email": "soonch6@naver.com",
-  "password": "Asdf1234",
+  "name": "[학생]전현진",
+  "email": "soonch10@naver.com",
+  "password": "Asdfqwer1234",
   "role": "STUDENT"
 }
 
 ### 학생 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "soonch6@naver.com",
-  "password": "ASdfg1234"
+  "email": "soonch10@naver.com",
+  "password": "Asdfqwer1234"
 }
 
 > {%
@@ -44,18 +48,18 @@ Content-Type: application/json
 %}
 
 ### 다른 학생
-POST localhost:8080/auth/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
-  "name": "윤경모",
+  "name": "[학생]윤경모",
   "email": "anotherUser1234@naver.com",
   "password": "asdasdjkDF23",
   "role": "STUDENT"
 }
 
 ### 다른 학생 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
@@ -69,18 +73,18 @@ Content-Type: application/json
 %}
 
 ### 튜터 회원가입
-POST localhost:8080/auth/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
-  "name": "윤경모",
+  "name": "[튜터]윤경모",
   "email": "tutor12345@naver.com",
   "password": "asdasdjkDF23",
   "role": "TUTOR"
 }
 
 ### 튜터 로그인
-POST localhost:8080/auth/login
+POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
@@ -94,23 +98,23 @@ Content-Type: application/json
 
 
 ### 관리자 회원가입
-POST localhost:8080/admin/signup
+POST {{distributeHost}}/admin/signup
 Content-Type: application/json
 
 {
-  "name": "윤경모",
-  "email": "admin123@naver.com",
+  "name": "[관리자]김형진",
+  "email": "admin124@naver.com",
   "password": "asdasdjkDF23",
   "role": "ADMIN",
   "secretCode": "{{JWT_SECRET_KEY}}"
 }
 
 ### 관리자 로그인
-POST localhost:8080/admin/login
+POST {{distributeHost}}/admin/login
 Content-Type: application/json
 
 {
-  "email": "admin123@naver.com",
+  "email": "admin124@naver.com",
   "password": "asdasdjkDF23"
 }
 
@@ -119,7 +123,7 @@ Content-Type: application/json
 %}
 
 ### 포트원 웹훅 테스트 예시
-POST http://localhost:8080/portone-webhook
+POST {{distributeHost}}/portone-webhook
 Content-Type: application/json
 x-portone-signature: "cEbXuvfiTAkJiT2XPg8RasgfAVHkSQrY0pX0pO42xEC3YPFttZSWDaN7TRazZGLrAgEydMAt82xeE1Xu"
 x-portone-timestamp: 1698199200

@@ -13,18 +13,29 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.data.redis.host}")
+	@Value("${spring.data.redis.host}")
 	private String redisHost;
 
-	private  String setAddress;
+	@Value("${spring.data.redis.port:6379}")
+	private int redisPort;
+
+	@Value("${use_secure_redis:true}") // EC2에서는 true로 설정
+	private String useSecureRedis;
+
 	@Bean
-	public RedissonClient redissonClient(){
-		setAddress ="redis://" + redisHost + ":6379";
+	public RedissonClient redissonClient() {
+		String protocol = "redis://";
+		if(useSecureRedis.equals("true")){
+			protocol = "rediss://";
+		}
+		String address = protocol + redisHost + ":" + redisPort;
+
 		Config config = new Config();
 		config.useSingleServer()
-			.setAddress(setAddress)
+			.setAddress(address)
 			.setConnectionMinimumIdleSize(1)
 			.setConnectionPoolSize(10);
+
 		return Redisson.create(config);
 	}
 }

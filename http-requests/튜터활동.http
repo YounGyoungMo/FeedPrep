@@ -1,0 +1,65 @@
+### 튜터 로그인 5
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "serena_edu@daum.net",
+  "password": "Pass9876a"
+}
+
+> {%
+    client.global.set("tutorAccessToken5", response.body.data.accessToken)
+%}
+
+### 기술 스택 추가
+POST {{distributeHost}}/tech-stacks?techId=1
+Authorization: Bearer {{tutorAccessToken5}}
+
+###피드백 전체 조회 (튜터)
+GET {{distributeHost}}/feedback-requests/tutor?page=0&size=20
+Authorization: Bearer {{tutorAccessToken5}}
+
+###피드백 상세 조회 (학생, 튜터) - 튜터
+GET {{distributeHost}}/feedback-requests/1
+Authorization: Bearer {{tutorAccessToken5}}
+
+
+### 알림 조회
+GET {{distributeHost}}/notifications
+Authorization: Bearer {{tutorAccessToken5}}
+
+### 알림 개수 조회
+GET {{distributeHost}}/notifications/count
+Authorization: Bearer {{tutorAccessToken5}}
+
+###피드백 신청 수락 (튜터)
+PATCH {{distributeHost}}/feedback-requests/1/accept
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+###피드백 작성 (튜터)
+POST {{distributeHost}}/feedback?requestId=1
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+{
+  "content": "직무 관련 경험을 더 강조해 보세요."
+}
+
+###피드백 리뷰 다건 조회 (학생, 튜터)
+GET {{distributeHost}}/feedback/review
+Authorization: Bearer {{tutorAccessToken5}}
+
+###피드백 리뷰 단건 조회 (학생, 튜터) - 튜터
+GET {{distributeHost}}/feedback/review/51
+Authorization: Bearer {{tutorAccessToken5}}
+
+###피드백 신청 거절 (튜터), 내용이 빈약해  실패
+PATCH {{distributeHost}}/feedback-requests/2/reject?rejectNumber=2
+Authorization: Bearer {{tutorAccessToken5}}
+Content-Type: application/json
+
+{
+  "etcReason": "거절"
+}
+

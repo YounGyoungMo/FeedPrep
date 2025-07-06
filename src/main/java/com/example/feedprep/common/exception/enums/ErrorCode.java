@@ -52,11 +52,11 @@ public enum ErrorCode {
 
     //유저
     INVALID_USER_ROLE(HttpStatus.BAD_REQUEST, "잘못된 역할입니다. STUDENT, PENDING_TUTOR, ADMIN 중 하나를 선택해 주세요"),
-    NOT_FOUND_TUTOR(HttpStatus.BAD_REQUEST,"검색 된 튜터가 없습니다."),
+    NOT_FOUND_TUTOR(HttpStatus.NOT_FOUND,"검색 된 튜터가 없습니다."),
 
     // 문서 및 S3 파일
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND,"해당 문서를 찾을 수 없습니다."),
-    NOT_FOUND_FILE(HttpStatus.NOT_FOUND, "업로드 할 이력서를 넣어 주세요."),
+    BAD_REQUEST_FILE(HttpStatus.BAD_REQUEST, "업로드 할 이력서를 넣어 주세요."),
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드에 실패했습니다."),
     DONT_CREATE_MORE(HttpStatus.BAD_REQUEST, "이력서 저장은 최대 5개까지 입니다."),
     FOREIGN_DOCUMENT_ACCESS(HttpStatus.FORBIDDEN, "자신의 문서만 조회 할 수 있습니다."),
@@ -101,6 +101,8 @@ public enum ErrorCode {
 
     FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않은 리뷰에 접근할 수 없습니다."),
     DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
+    DUPLICATE_FEEDBACK(HttpStatus.CONFLICT, "이미 동일한 내용으로 작성하였습니다."),
+    DUPLICATE_FEEDBACK_REVIEW(HttpStatus.CONFLICT, "이미 이 피드백에 대한 리뷰를 작성하였습니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
 
     BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다."),

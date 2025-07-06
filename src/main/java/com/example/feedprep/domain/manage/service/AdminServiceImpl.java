@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.service;
+package com.example.feedprep.domain.manage.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
@@ -8,7 +8,7 @@ import com.example.feedprep.domain.notification.service.NotificationService;
 import com.example.feedprep.domain.techstack.dto.CreateTechStackRequestDto;
 import com.example.feedprep.domain.techstack.entity.TechStack;
 import com.example.feedprep.domain.techstack.repository.TechStackRepository;
-import com.example.feedprep.domain.user.dto.response.ApproveTutorResponseDto;
+import com.example.feedprep.domain.manage.dto.ApproveTutorResponseDto;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -39,7 +39,7 @@ public class AdminServiceImpl implements AdminService{
 
         // 튜터가 활동전 상태 확인
         User user = userRepository.findByIdOrElseThrow(tutorId);
-
+        User admin = userRepository.findByIdOrElseThrow(adminId);
         if(!user.getRole().equals(UserRole.PENDING_TUTOR)){
             throw new CustomException(ErrorCode.NOT_PENDING_TUTOR);
         }
@@ -53,7 +53,7 @@ public class AdminServiceImpl implements AdminService{
         }
 
         // 튜터에게 알림 보내기
-        notificationService.sendNotification(adminId, tutorId, 202);
+        notificationService.sendNotification(admin, user, 202);
 
         return new ApproveTutorResponseDto(user.getRole());
     }

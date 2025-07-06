@@ -31,6 +31,11 @@ public class FeedbackServiceImpl implements FeedbackService{
 	@Transactional
 	@Override
 	public FeedbackResponseDto createFeedback(Long tutorId, Long requestId, FeedbackWriteRequestDto dto) {
+
+
+		if (feedBackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorUserId(requestId, tutorId)) {
+			throw new CustomException(ErrorCode.DUPLICATE_FEEDBACK);
+		}
 		User tutor = userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR);
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
@@ -38,15 +43,16 @@ public class FeedbackServiceImpl implements FeedbackService{
 		// 2. 피드백 요청 상태 확인 (이미 완료/거절된 요청인지)
 		FeedbackRequestEntity request = feedbackRequestEntityRepository.findPendingByIdAndTutorOrElseThrow(
 			tutor.getUserId(), requestId, ErrorCode.USER_NOT_FOUND);
-        Long userId = request.getUser().getUserId();
+		User user = request.getUser();
 		if(!request.getRequestState().equals(RequestState.IN_PROGRESS)){
 			throw new CustomException(ErrorCode.INVALID_REQUEST_STATE);
 		}
 		Feedback feedback = new Feedback(dto, tutor);
 		request.updateRequestState(RequestState.COMPLETED);
+		request.updateFeedbackContet(dto.getContent());
 		feedback.updateFeedbackRequest(request);
 		Feedback saveFeedback = feedBackRepository.save(feedback);
-		notificationService.sendNotification(tutorId,userId, 102 );
+		notificationService.sendNotification(tutor,user, 102 );
 		return new FeedbackResponseDto(saveFeedback);
 	}
 

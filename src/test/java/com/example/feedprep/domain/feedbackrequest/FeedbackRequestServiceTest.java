@@ -24,6 +24,7 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackReq
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestServiceImpl;
+import com.example.feedprep.domain.point.service.PointServiceImpl;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -31,12 +32,16 @@ import com.example.feedprep.domain.user.repository.UserRepository;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class FeedbackRequestServiceTest {
+
 	@Mock
 	private FeedbackRequestEntityRepository feedbackRequestEntityRepository;
 	@Mock
 	private UserRepository userRepository;
 	@Mock
 	private DocumentRepository documentRepository;
+	@Mock
+	private PointServiceImpl pointService;
+
 	@InjectMocks
 	private FeedbackRequestServiceImpl feedbackRequestService;
 
@@ -82,6 +87,7 @@ public class FeedbackRequestServiceTest {
 		User user = mock(User.class);
 		User tutor = mock(User.class);
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(dto.getTutorId()).thenReturn(tutorId);
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.STUDENT); // 승인되지 않은 상태
@@ -98,18 +104,26 @@ public class FeedbackRequestServiceTest {
 		Long userId = 1L;
 		Long tutorId = 2L;
 		Long documentId = 3L;
-		FeedbackRequestDto dto = mock(FeedbackRequestDto.class);
+		String paymentId = "pid_123";
+		int amount = 5000;
+
 
 		User user = mock(User.class);
 		User tutor = mock(User.class);
-		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
-		when(dto.getTutorId()).thenReturn(tutorId);
-		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
-		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
+		FeedbackRequestDto dto = mock(FeedbackRequestDto.class);
 		when(dto.getDocumentId()).thenReturn(documentId);
+
+		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
+
+		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
+		when(dto.getTutorId()).thenReturn(tutorId);
+		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 
 		when(documentRepository.findByIdOrElseThrow(documentId))
 			.thenThrow(new CustomException(ErrorCode.INVALID_DOCUMENT));
+
+		when(pointService.getPoint(userId)).thenReturn(5000);
 
 		CustomException exception = assertThrows(CustomException.class,
 			() -> feedbackRequestService.createRequest(userId, dto));
@@ -130,12 +144,17 @@ public class FeedbackRequestServiceTest {
 		FeedbackRequestEntity existingRequest = mock(FeedbackRequestEntity.class);
 
 		when(userRepository.findByIdOrElseThrow(userId)).thenReturn(user);
+		when(user.getRole()).thenReturn(UserRole.STUDENT);
 		when(dto.getTutorId()).thenReturn(tutorId);
+
 		when(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR)).thenReturn(tutor);
 		when(tutor.getRole()).thenReturn(UserRole.APPROVED_TUTOR);
 		when(tutor.getUserId()).thenReturn(tutorId);
 		when(dto.getDocumentId()).thenReturn(documentId);
+
 		when(documentRepository.findByIdOrElseThrow(documentId)).thenReturn(document);
+
+		when(pointService.getPoint(userId)).thenReturn(5000);
 
 		when(feedbackRequestEntityRepository.findTop1ByUser_UserIdAndTutor_UserIdAndRequestState(
 			eq(userId), eq(tutorId), eq(RequestState.PENDING))

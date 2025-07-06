@@ -1,4 +1,4 @@
-package com.example.feedprep.domain.user.service;
+package com.example.feedprep.domain.manage.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
@@ -48,7 +48,7 @@ public class TutorServiceImpl implements TutorService {
         tutorMessageService.createdMessageTutor(userId,document.getDocumentId(),document.getFileUrl());
 
         // 요청 알림 보내기
-        notificationService.sendNotification(userId, adminId, 201);
+        notificationService.sendNotification(tutor, admin, 201);
     }
 
     @Override

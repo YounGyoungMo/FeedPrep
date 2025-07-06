@@ -17,7 +17,7 @@ public interface FeedBackReviewRepository extends JpaRepository<FeedbackReview, 
 
 
 
-	Optional<FeedbackReview> findById(Long id);
+	Optional<FeedbackReview> findByIdAndDeletedAtIsNull(Long id);
 
 	//학생이 작성한 리뷰를 확인
 	@Query("SELECT fr FROM FeedbackReview fr WHERE fr.userId = :userId AND fr.deletedAt IS null ")
@@ -31,6 +31,8 @@ public interface FeedBackReviewRepository extends JpaRepository<FeedbackReview, 
 	Double getAverageRating(@Param("tutorId") Long tutorId);
 
 	default FeedbackReview findByIdOrElseThrow(Long id){
-		return findById(id).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
+		return findByIdAndDeletedAtIsNull(id).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND_FEEDBACK_REVIEW));
 	}
+
+	boolean existsByFeedbackIdAndUserId(Long feedbackId, Long userId);
 }

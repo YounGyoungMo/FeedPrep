@@ -18,7 +18,10 @@ import com.example.feedprep.domain.feedback.dto.response.FeedbackResponseDto;
 import com.example.feedprep.domain.feedback.service.FeedbackService;
 import com.example.feedprep.domain.feedbackrequestentity.dto.request.FeedbackRequestDto;
 import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedbackRequestDetailsDto;
+import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
+import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
+import com.example.feedprep.domain.point.service.PointService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -37,6 +40,10 @@ public class FeedbackServiceSpringBootTest {
 	private DocumentRepository documentRepository;
 	@Autowired
 	private FeedbackRequestService feedbackRequestService;
+	@Autowired
+	private FeedbackRequestEntityRepository feedbackRequestEntityRepository;
+	@Autowired
+	private PointService pointService;
 	@Autowired
 	private FeedbackService feedbackService;
 
@@ -65,9 +72,10 @@ public class FeedbackServiceSpringBootTest {
 		tutors = new User("Tutor1", "tutor1@naver.com", "tester1234", UserRole.APPROVED_TUTOR);
 		// 유저 5명
 		users = new User("Paragon0", "p0@naver.com", "tester1234", UserRole.STUDENT);
+
 		userRepository.save(tutors);
 		userRepository.save(users);
-
+		pointService.pointCharge(users.getUserId(), "pid_123", 10000);
 		// Document 생성
 		document = new Document(users, "api/ef/?");
 		documentRepository.save(document);
@@ -89,7 +97,11 @@ public class FeedbackServiceSpringBootTest {
 		FeedbackResponseDto response = feedbackService.createFeedback(1L, 1L, requestDto);
 		long end= System.currentTimeMillis();
 		System.out.println("수정 작업 실행 시간: " + (end - start) + "ms"); // DB 조회
+
+		FeedbackRequestEntity checkUpdate = feedbackRequestEntityRepository.findByIdOrElseThrow(1L);
+
 		assertNotNull(response);
+		showResult(checkUpdate.getFeedbackContent());
 		showResult(response);
 	}
 	@Transactional

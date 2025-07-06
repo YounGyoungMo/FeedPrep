@@ -93,7 +93,7 @@ class DocumentServiceImplTest {
         );
 
         // then
-        assertEquals(ErrorCode.NOT_FOUND_FILE, exception.getErrorCode());
+        assertEquals(ErrorCode.BAD_REQUEST_FILE, exception.getErrorCode());
     }
 
     @Test

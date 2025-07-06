@@ -21,7 +21,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 	List<Notification> findByCreatedAtBeforeOrderByCreatedAtAsc(LocalDateTime threshold);
 
-	@Query("SELECT n FROM Notification n where n.receiverId =:receiverId")
+	@Query("SELECT n FROM Notification n where n.receiverId =:receiverId AND n.isStale = false")
 	Page<Notification> findNotificationByReceiverId(@Param("receiverId") Long receiverId, PageRequest pageRequest);
 
 	@Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.isRead = false")

@@ -61,9 +61,9 @@ public enum SuccessCode {
     OK_SUCCESS_FEEDBACK_REVIEW_UPDATE(HttpStatus.CREATED, "피드백 리뷰가 수정 되었습니다."),
     OK_SUCCESS_FEEDBACK_REVIEW_DELETED(HttpStatus.OK, "피드백 리뷰가 정상적으로 삭제되었습니다."),
     //알림
-    OK_SUCCESS_Notification(HttpStatus.OK, "알림을 정상적으로 조회 했습니다."),
-    OK_SUCCESS_Notification_IS_READ(HttpStatus.OK, "알림이 정상적으로 읽기 완료로 변경되었습니다."),
-    OK_SUCCESS_Notification_DELETED(HttpStatus.OK, "알림을 정상적으로 삭제 되었습니다."),
+    OK_SUCCESS_NOTIFICATION(HttpStatus.OK, "알림을 정상적으로 조회 했습니다."),
+    OK_SUCCESS_NOTIFICATION_IS_READ(HttpStatus.OK, "알림이 정상적으로 읽기 완료로 변경되었습니다."),
+    OK_SUCCESS_NOTIFICATION_DELETED(HttpStatus.OK, "알림을 정상적으로 삭제 되었습니다."),
 
     // 기술스택
     TECH_STACK_CREATED(HttpStatus.CREATED, "기술 스택을 추가하였습니다."),
@@ -74,6 +74,7 @@ public enum SuccessCode {
 
     // 관리자
     APPROVE_TUTOR(HttpStatus.OK, "튜터 활동을 승인하였습니다."),
+    GET_TUTOR_MESSAGE(HttpStatus.OK, "튜터 활동 승인 메세지를 확인합니다."),
 
     SUCCESS_FETCH_INFO(HttpStatus.OK, "성공 했습니다."),
     TRANSACTION_HISTORY(HttpStatus.OK, "거래 내역입니다.")
