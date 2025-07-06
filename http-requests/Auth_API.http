@@ -13,13 +13,13 @@ GET {{distributeHost}}/oauth/authorize/naver?role=student
 GET {{distributeHost}}authorize/kakao?role=tutor
 
 ### 학생 회원가입
-POST {{distributeHost}}/signup
+POST {{distributeHost}}/auth/signup
 Content-Type: application/json
 
 {
   "name": "[학생]전현진",
   "email": "soonch10@naver.com",
-  "password": "Asdf1234",
+  "password": "Asdfqwer1234",
   "role": "STUDENT"
 }
 
@@ -28,8 +28,8 @@ POST {{distributeHost}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "soonch5@naver.com",
-  "password": "Asdf1234"
+  "email": "soonch10@naver.com",
+  "password": "Asdfqwer1234"
 }
 
 > {%
@@ -93,7 +93,7 @@ Content-Type: application/json
 
 {
   "name": "[관리자]윤경모",
-  "email": "admin123@naver.com",
+  "email": "admin124@naver.com",
   "password": "asdasdjkDF23",
   "role": "ADMIN",
   "secretCode": "{{JWT_SECRET_KEY}}"

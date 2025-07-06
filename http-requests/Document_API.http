@@ -1,5 +1,5 @@
 ### 문서 등록
-POST {{distributeHost}}documents
+POST {{distributeHost}}/documents
 Authorization: Bearer {{anotherStudentAccessToken}}
 Content-Type: multipart/form-data; boundary=my-upload-boundary
 
@@ -15,9 +15,9 @@ GET {{distributeHost}}/documents
 Authorization: Bearer {{studentAccessToken}}
 
 ### 문서 상세 조회 - presigned url 생성
-GET {{distributeHost}}/documents/1
-Authorization: Bearer {{tutorAccessToken}}
+GET {{distributeHost}}/documents/2
+Authorization: Bearer {{studentAccessToken}}
 
 ### 문서 단건 삭제
-DELETE {{distributeHost}}/documents/1
+DELETE {{distributeHost}}/documents/4
 Authorization: Bearer {{studentAccessToken}}
