@@ -13,5 +13,5 @@ public interface FeedBackRepository extends JpaRepository<Feedback, Long> {
 	@Query("SELECT f FROM Feedback f JOIN FETCH f.feedbackRequestEntity fr JOIN FETCH fr.user WHERE f.id = :id")
 	Optional<Feedback> findWithRequestAndUserById(Long id);
 
-	boolean existsFeedbackByFeedbackRequestEntityIdAndTutorId(Long feedbackRequestEntityId, Long tutorId);
+	boolean existsFeedbackByFeedbackRequestEntityIdAndTutorUserId(Long feedbackRequestEntityId, Long tutorId);
 }
