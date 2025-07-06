@@ -21,6 +21,7 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedba
 import com.example.feedprep.domain.feedbackrequestentity.entity.FeedbackRequestEntity;
 import com.example.feedprep.domain.feedbackrequestentity.repository.FeedbackRequestEntityRepository;
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestService;
+import com.example.feedprep.domain.point.service.PointService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -41,6 +42,8 @@ public class FeedbackServiceSpringBootTest {
 	private FeedbackRequestService feedbackRequestService;
 	@Autowired
 	private FeedbackRequestEntityRepository feedbackRequestEntityRepository;
+	@Autowired
+	private PointService pointService;
 	@Autowired
 	private FeedbackService feedbackService;
 
@@ -69,9 +72,10 @@ public class FeedbackServiceSpringBootTest {
 		tutors = new User("Tutor1", "tutor1@naver.com", "tester1234", UserRole.APPROVED_TUTOR);
 		// 유저 5명
 		users = new User("Paragon0", "p0@naver.com", "tester1234", UserRole.STUDENT);
+
 		userRepository.save(tutors);
 		userRepository.save(users);
-
+		pointService.pointCharge(users.getUserId(), "pid_123", 10000);
 		// Document 생성
 		document = new Document(users, "api/ef/?");
 		documentRepository.save(document);
