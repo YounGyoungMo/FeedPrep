@@ -33,12 +33,13 @@ public class GoogleOAuthClient implements OAuthClient {
     public String getAuthorizationUrl(String role) {
         ProviderConfig prop = oAuthProperties.getProviders().get(OAuthProvider.GOOGLE);
         DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(prop.getAuthorizeUri());
+
         return factory.builder()
                 .queryParam("response_type", "code")
                 .queryParam("client_id", prop.getClientId())
                 .queryParam("redirect_uri", prop.getRedirectUri())
                 .queryParam("scope", "openid email profile")
-                .queryParam("state", role)
+                .queryParam("state", role != null ? role : "default")
                 .build()
                 .toString();
     }

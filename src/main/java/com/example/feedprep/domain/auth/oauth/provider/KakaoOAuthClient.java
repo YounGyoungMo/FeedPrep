@@ -41,7 +41,7 @@ public class KakaoOAuthClient implements OAuthClient {
                 .queryParam("response_type", "code")
                 .queryParam("client_id", prop.getClientId())
                 .queryParam("redirect_uri", prop.getRedirectUri())
-                .queryParam("state", role)
+                .queryParam("state", role != null ? role : "default")
                 .build()
                 .toString();
     }

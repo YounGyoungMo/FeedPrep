@@ -110,4 +110,6 @@ public class OAuthServiceTest {
         assertThat(result.getEmail()).isEqualTo("google@example.com");
         assertThat(result.getRole()).isEqualTo(UserRole.STUDENT);
     }
+
+    
 }

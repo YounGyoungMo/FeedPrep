@@ -14,6 +14,7 @@ import com.example.feedprep.domain.auth.oauth.enums.OAuthProvider;
 import com.example.feedprep.domain.auth.repository.RefreshTokenRepository;
 import com.example.feedprep.domain.auth.service.OAuthService;
 import com.example.feedprep.domain.user.entity.User;
+import com.example.feedprep.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class OAuthController {
     private final OAuthClientFactory oAuthClientFactory;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     // 카카오, 네이버, 구글 로그인 화면으로 리다이렉트
     // 가입 전에 role도 같이 전송
@@ -60,6 +62,7 @@ public class OAuthController {
             @RequestParam("code") String code,
             @RequestParam("state") String roleState
     ) {
+
         String role = roleState.toUpperCase();
         OAuthProvider oAuthProvider = OAuthProvider.fromString(providerName);
         OAuthClient client = oAuthClientFactory.getClient(oAuthProvider);
@@ -70,8 +73,18 @@ public class OAuthController {
         // 액세스 토큰으로 사용자 정보 조회
         OAuthUserResponseDto userInfo = client.getUserInfo(providerAccessToken);
 
-        // 소셜 회원가입 처리 또는 기존 소셜 계정 회원 반환
-        User user = oAuthService.socialSignup(userInfo, role);
+        User user;
+
+        // role 값이 빈 문자열일 경우 기존 가입자 정보 조회 및 예외 처리
+        if (role.equalsIgnoreCase("default")) {
+            user = userRepository.findByProviderAndProviderId(userInfo.getProvider(), userInfo.getProviderId());
+            if (user == null) {
+                throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            }
+        } else {
+            // 소셜 회원 가입 처리 또는 기존 소셜 계정 회원 반환
+            user = oAuthService.socialSignup(userInfo, role);
+        }
 
         // 내 사이트 액세스 토큰 생성
         String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
@@ -85,7 +98,6 @@ public class OAuthController {
             existingRefreshToken = new RefreshToken(refreshTokenString, user);
         }
         refreshTokenRepository.save(existingRefreshToken);
-
 
         TokenResponseDto responseDto = new TokenResponseDto(accessToken, refreshTokenString);
         return ResponseEntity.status(HttpStatus.OK)
