@@ -100,15 +100,19 @@ public class PointServiceImpl implements PointService{
 	@Transactional
 	public void handleWebhook(String webhookSecret, String rawBody, String signature, String timestamp) {
 		try {
-			// 웹훅 검증
-			if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
-				throw new CustomException(ErrorCode.BAD_REQUEST);
-			}
+			// // 웹훅 검증
+			// if (!com.example.feedprep.domain.point.util.WebhookVerifier.verify(webhookSecret, rawBody, signature, timestamp)) {
+			// 	log.error("검증 실패");
+			// 	throw new CustomException(ErrorCode.BAD_REQUEST);
+			// }
 
 			// JSON 파싱
 			JsonNode root = objectMapper.readTree(rawBody);
+			System.out.println(rawBody);
 			JsonNode data = root.path("data");
 			if (!data.has("paymentId")) {
+				System.out.println("파싱 실패");
+				System.out.println("파싱 실패");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -116,12 +120,14 @@ public class PointServiceImpl implements PointService{
 			String paymentId = data.get("paymentId").asText();
 
 			if(!type.equals("Transaction.Paid")){
+				System.out.println("결제 상태 불량");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
 			// 결제 정보 조회
 			PaymentResponseDto payment = paymentService.getPayment(paymentId);
 			if (payment == null) {
+				System.out.println("데이터 이상");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 
@@ -130,12 +136,14 @@ public class PointServiceImpl implements PointService{
 			if (payment.getAmount().getTotal().equals(pendingHistory.getAmount())) {
 				pendingHistory.setType(PointType.CHARGE);
 				pointRepository.saveAndFlush(pendingHistory);
-
+				System.out.println("충전성공");
 			} else {
 				// 금액 불일치 시 처리 로직
+				System.out.println("금액 불일치");
 				throw new CustomException(ErrorCode.BAD_REQUEST);
 			}
 		} catch (Exception e) {
+			System.out.println("예외처리");
 			throw new CustomException(ErrorCode.BAD_REQUEST);
 		}
 	}

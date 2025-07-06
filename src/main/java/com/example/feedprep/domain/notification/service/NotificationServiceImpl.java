@@ -10,10 +10,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.common.s3.service.S3ServiceImpl;
 import com.example.feedprep.domain.notification.dto.response.NotificationGetCountDto;
 import com.example.feedprep.domain.notification.dto.response.NotificationResponseDto;
 import com.example.feedprep.domain.notification.entity.Notification;
@@ -31,7 +33,7 @@ import com.example.feedprep.domain.notification.repository.NotificationRepositor
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.repository.UserRepository;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService{
@@ -44,6 +46,8 @@ public class NotificationServiceImpl implements NotificationService{
 	private final RedissonClient redissonClient;
 
 	private final NotificationPushService notificationPushService;
+
+	private static final Logger slackLogger = LoggerFactory.getLogger(S3ServiceImpl.class);
 
 	@Override
 	public NotificationResponseDto sendNotification(User sender, User receiver, Integer type) {
@@ -157,15 +161,14 @@ public class NotificationServiceImpl implements NotificationService{
 					cleanupNotifications(getNotifications);
 				}
 				statusTemplate.opsForValue().set("status:notificationCheck", "done", 10, TimeUnit.MINUTES);
-				log.info("알림 정리 완료: 총 {}건 처리됨", getNotifications.size());
-				log.info("상태 완료: status:notificationCheck = done");
+				slackLogger.info("상태 완료: status:notificationCheck = done 알림 정리 완료: 총 {}건 처리됨", getNotifications.size());
 			}
 		} catch(InterruptedException ex){
-			log.warn("[업데이트 실패] 락 대기 중 인터럽트 발생", ex);
+			slackLogger.warn("[업데이트 실패] 락 대기 중 인터럽트 발생", ex);
 			Thread.currentThread().interrupt(); // 복원
 		}catch (Exception ex) {
 			statusTemplate.opsForValue().set("status:notificationCheck", "error", 10, TimeUnit.MINUTES);
-			log.error("[알림 정리 시스템] 예외 발생", ex);
+			slackLogger.error("[알림 정리 시스템] 예외 발생", ex);
 		}
 		finally {
 			if(isLocked){
