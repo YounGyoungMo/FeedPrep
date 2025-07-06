@@ -28,6 +28,7 @@ import com.example.feedprep.domain.feedbackrequestentity.dto.response.UserFeedba
 import com.example.feedprep.domain.feedbackrequestentity.service.FeedbackRequestServiceImpl;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewRequestDto;
 import com.example.feedprep.domain.feedbackreview.service.FeedbackReviewServiceImpl;
+import com.example.feedprep.domain.point.service.PointService;
 import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
@@ -48,7 +49,8 @@ public class FeedbackReviewSpringbootTest  {
 	FeedbackServiceImpl feedbackService;
 	@Autowired
 	FeedbackReviewServiceImpl feedbackReviewService;
-
+	@Autowired
+	private PointService pointService;
 	@Autowired
 	RedisTemplate<String, Double> redisTemplate; // 상속 받은 Redis
 	@Autowired
@@ -70,6 +72,7 @@ public class FeedbackReviewSpringbootTest  {
 
 			List<Document> documents = new ArrayList<>();
 			for(int i =1; i< users.size(); i++){
+				pointService.pointCharge(users.get(i).getUserId(), "pid_12" + i, 10000);
 				documents.add( new Document(users.get(i), "test/url"));
 			}
 			documentRepository.saveAll(documents);
