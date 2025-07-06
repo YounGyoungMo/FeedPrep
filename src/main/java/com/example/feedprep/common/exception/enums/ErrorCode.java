@@ -101,6 +101,8 @@ public enum ErrorCode {
 
     FOREIGN_REQUESTER_REVIEW_ACCESS(HttpStatus.FORBIDDEN, "본인이 작성하지 않은 리뷰에 접근할 수 없습니다."),
     DUPLICATE_FEEDBACK_REQUEST(HttpStatus.CONFLICT, "이미 같은 튜터님께 신청 대기 중입니다."),
+    DUPLICATE_FEEDBACK(HttpStatus.CONFLICT, "이미 동일한 내용으로 작성하였습니다."),
+    DUPLICATE_FEEDBACK_REVIEW(HttpStatus.CONFLICT, "이미 이 피드백에 대한 리뷰를 작성하였습니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "피드백 처리 중 내부 오류가 발생했습니다."),
 
     BAD_REQUEST_STATE(HttpStatus.BAD_REQUEST, "유효하지 않은 상태 번호입니다."),
