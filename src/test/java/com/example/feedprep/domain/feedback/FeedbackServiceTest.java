@@ -51,13 +51,11 @@ public class FeedbackServiceTest {
 		FeedbackWriteRequestDto dto = mock(FeedbackWriteRequestDto.class);
 
 		User tutor = mock(User.class);
-		given(userRepository.findByIdOrElseThrow(tutorId, ErrorCode.NOT_FOUND_TUTOR))
-			.willReturn(tutor);
 
 		FeedbackRequestEntity requestEntity = mock(FeedbackRequestEntity.class);
 
 		// 중복 피드백 존재하도록 설정
-		given(feedbackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorId(requestId, tutorId))
+		given(feedbackRepository.existsFeedbackByFeedbackRequestEntityIdAndTutorUserId(requestId, tutorId))
 			.willReturn(true);
 
 		// when & then
