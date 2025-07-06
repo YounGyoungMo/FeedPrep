@@ -71,7 +71,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		notificationService.sendNotification(user, tutor,102 );
+		notificationService.sendNotification(user, tutor,105 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 
