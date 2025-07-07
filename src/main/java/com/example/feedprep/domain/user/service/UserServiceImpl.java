@@ -2,6 +2,7 @@ package com.example.feedprep.domain.user.service;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.domain.techstack.dto.UserTechStackDto;
 import com.example.feedprep.domain.user.dto.request.NewPasswordRequestDto;
 import com.example.feedprep.domain.user.dto.request.UpdateMyInfoRequestDto;
 import com.example.feedprep.domain.user.dto.response.PasswordModifiedAtResponseDto;
@@ -36,14 +37,22 @@ public class UserServiceImpl implements UserService {
         }
 
         List<TutorResponseDto> responseDtoList = tutorList.stream()
-            .map(user -> new TutorResponseDto(
-                user.getUserId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getRating(),
-                user.getUserTechStacks()
-            )).toList();
+            .map(user -> {
+                List<UserTechStackDto> userTechStackDtos = user.getUserTechStacks().stream()
+                    .map(uts -> new UserTechStackDto(
+                        uts.getRelationId(),
+                        uts.getTechStack().getTechStack()
+                    )).toList();
+
+                return new TutorResponseDto(
+                    user.getUserId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getRole(),
+                    user.getRating(),
+                    userTechStackDtos
+                );
+            }).toList();
 
         return responseDtoList;
     }

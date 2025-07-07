@@ -150,7 +150,7 @@
             errorDisplay.textContent = '';
 
             try {
-                const response = await fetch('http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/auth/login', {
+                const response = await fetch('http://localhost:8080/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -187,7 +187,7 @@
         function startSSE() {
             const token = localStorage.getItem('accessToken');
             if (token == null) { return; }
-            eventSource = new EventSource(`http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/notifications/subscribe?token=${token}`);
+            eventSource = new EventSource(`http://localhost:8080/notifications/subscribe?token=${token}`);
 
             eventSource.onopen = () => console.log("SSE 연결 성공");
 
@@ -201,7 +201,7 @@
 
         async function fetchNotificationCount(token) {
             try {
-                const response = await fetch('http://ec2-43-201-108-109.ap-northeast-2.compute.amazonaws.com/notifications/count', {
+                const response = await fetch('http://localhost:8080/notifications/count', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
                 const data = await response.json();

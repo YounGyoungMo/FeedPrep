@@ -1,0 +1,120 @@
+### 튜터 회원가입 1
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[튜터]윤경모",
+  "email": "tutor567@naver.com",
+  "password": "asdasdjkDF23",
+  "role": "TUTOR"
+}
+
+### 튜터 회원가입 2
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[튜터]루미",
+  "email": "lumi.tutor@gmail.com",
+  "password": "QweRTY123",
+  "role": "TUTOR"
+}
+
+### 튜터 회원가입 3
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[튜터]제이슨",
+  "email": "jason.teacher@kakao.com",
+  "password": "Tutor4321",
+  "role": "TUTOR"
+}
+
+### 튜터 회원가입 4
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[튜터]나린",
+  "email": "narin.study@outlook.com",
+  "password": "Study2025",
+  "role": "TUTOR"
+}
+
+### 튜터 회원가입 5
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[튜터]세레나",
+  "email": "serena_edu@daum.net",
+  "password": "Pass9876a",
+  "role": "TUTOR"
+}
+
+### 튜터 로그인 1
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tutor567@naver.com",
+  "password": "asdasdjkDF23"
+}
+
+> {%
+    client.global.set("tutorAccessToken1", response.body.data.accessToken)
+%}
+
+### 튜터 로그인 2
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "lumi.tutor@gmail.com",
+  "password": "QweRTY123"
+}
+
+> {%
+    client.global.set("tutorAccessToken2", response.body.data.accessToken)
+%}
+
+### 튜터 로그인 3
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "jason.teacher@kakao.com",
+  "password": "Tutor4321"
+}
+
+> {%
+    client.global.set("tutorAccessToken3", response.body.data.accessToken)
+%}
+
+### 튜터 로그인 4
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "narin.study@outlook.com",
+  "password": "Study2025"
+}
+
+> {%
+    client.global.set("tutorAccessToken4", response.body.data.accessToken)
+%}
+
+### 튜터 로그인 5
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "serena_edu@daum.net",
+  "password": "Pass9876a"
+}
+
+> {%
+    client.global.set("tutorAccessToken5", response.body.data.accessToken)
+%}
+

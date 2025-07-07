@@ -51,7 +51,9 @@ public class FeedbackRequestServiceImpl implements FeedbackRequestService {
 		if(!tutor.getRole().equals(UserRole.APPROVED_TUTOR)){
 			throw new CustomException(ErrorCode.PENDING_TUTOR);
 		}
-
+		if(pointService.getPoint(userId) < 100){
+		 	throw new CustomException(ErrorCode.INSUFFICIENT_POINTS);
+		}
 		Document document = documentRepository.findByIdOrElseThrow(dto.getDocumentId());
 
         FeedbackRequestEntity feedbackRequestEntity =

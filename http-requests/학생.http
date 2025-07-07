@@ -1,0 +1,120 @@
+### 학생 회원가입
+POST {{distributeHost}}/auth/signup
+Content-Type: application/json
+
+{
+  "name": "[학생]전현진",
+  "email": "soonch67890@gmail.com",
+  "password": "Asdfqwer1234",
+  "role": "STUDENT"
+}
+
+### 학생 로그인
+POST {{distributeHost}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "soonch67890@gmail.com",
+  "password": "Asdfqwer1234"
+}
+
+> {%
+  client.global.set("studentAccessToken", response.body.data.accessToken)
+%}
+
+
+### 문서 등록
+POST {{distributeHost}}/documents
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: multipart/form-data; boundary=my-upload-boundary
+
+--my-upload-boundary
+Content-Disposition: form-data; name="file"; filename="test-image-20.png"
+Content-Type: application/png
+
+< ../src/main/resources/test-image-20.png
+--my-upload-boundary--
+
+### 문서 상세 조회 - presigned url 생성
+GET {{distributeHost}}/documents/11
+Authorization: Bearer {{studentAccessToken}}
+
+
+### 기술 스택 종류 조회
+GET {{distributeHost}}/tech-stacks
+Authorization: Bearer {{studentAccessToken}}
+
+### 기술 스택 추가 (학생)
+POST {{distributeHost}}/tech-stacks?techId=1
+Authorization: Bearer {{studentAccessToken}}
+
+### 내가 선택한 기술 스택 조회 (튜터, 학생)
+GET {{distributeHost}}/tech-stacks/me
+Authorization: Bearer {{studentAccessToken}}
+
+
+### 튜터 목록조회
+GET {{distributeHost}}/users/tutorList
+Authorization: Bearer {{studentAccessToken}}
+
+### 매칭
+GET {{distributeHost}}/user/matches
+Authorization: Bearer {{studentAccessToken}}
+
+
+###피드백 신청
+POST {{distributeHost}}/feedback-requests
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: application/json
+
+{
+  "tutorId": 11,
+  "documentId": 11,
+  "content":"이력서 검토를 받고 싶습니다."
+}
+
+###피드백 신청 전체 조회
+GET {{distributeHost}}/feedback-requests
+Authorization: Bearer {{studentAccessToken}}
+
+###피드백 신청 상세 조회 - 피드백 된 내용 확인 가능
+GET {{distributeHost}}/feedback-requests/51
+Authorization: Bearer {{studentAccessToken}}
+
+
+### 알림 조회
+GET {{distributeHost}}/notifications
+Authorization: Bearer {{studentAccessToken}}
+
+###피드백 신청 상세 조회 - 피드백 된 내용 확인 가능
+GET {{distributeHost}}/feedback-requests/51
+Authorization: Bearer {{studentAccessToken}}
+
+
+###피드백 리뷰 작성 (학생)
+POST {{distributeHost}}/feedback/51/review
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: application/json
+
+{
+  "rating": 4,
+  "content" : "유익한 리뷰 였습니다!"
+}
+
+###피드백 리뷰 수정 (학생)
+PUT {{distributeHost}}/feedback/51/review/51
+Authorization: Bearer {{studentAccessToken}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "content" : "실수로 4점 눌렀어요 5점 만점이에요!"
+}
+
+###피드백 리뷰 단건 조회
+GET {{distributeHost}}/feedback/review/51
+Authorization: Bearer {{studentAccessToken}}
+
+###피드백 리뷰 삭제 (학생)
+DELETE {{distributeHost}}/feedback/51/review/51
+Authorization: Bearer {{studentAccessToken}}

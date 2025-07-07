@@ -1,5 +1,6 @@
 package com.example.feedprep.domain.user.dto.response;
 
+import com.example.feedprep.domain.techstack.dto.UserTechStackDto;
 import com.example.feedprep.domain.techstack.entity.UserTechStack;
 import com.example.feedprep.domain.user.enums.UserRole;
 import java.util.List;
@@ -17,5 +18,5 @@ public class TutorResponseDto {
     private String email;
     private UserRole role;
     private Double rating;
-    private List<UserTechStack> userTechStacks;
+    private List<UserTechStackDto> userTechStacks;
 }

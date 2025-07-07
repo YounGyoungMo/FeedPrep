@@ -8,6 +8,9 @@ import static org.mockito.Mockito.when;
 
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.domain.techstack.dto.UserTechStackDto;
+import com.example.feedprep.domain.techstack.entity.TechStack;
+import com.example.feedprep.domain.techstack.entity.UserTechStack;
 import com.example.feedprep.domain.user.dto.request.NewPasswordRequestDto;
 import com.example.feedprep.domain.user.dto.request.UpdateMyInfoRequestDto;
 import com.example.feedprep.domain.user.dto.response.PasswordModifiedAtResponseDto;
@@ -47,8 +50,15 @@ class UserServiceImplTest {
     @DisplayName("튜터 목록 조회 성공")
     void getTutorList_success() {
         // given
-        User user1 = User.builder().userId(1L).role(UserRole.APPROVED_TUTOR).build();
-        User user2 = User.builder().userId(2L).role(UserRole.APPROVED_TUTOR).build();
+        UserTechStack uts1 = UserTechStack.builder().relationId(11L)
+            .techStack(TechStack.builder().techStack("Java").build()).build();
+        UserTechStack uts2 = UserTechStack.builder().relationId(12L)
+            .techStack(TechStack.builder().techStack("Spring").build()).build();
+
+        User user1 = User.builder().userId(1L).role(UserRole.APPROVED_TUTOR)
+            .userTechStacks(List.of(uts1)).build();
+        User user2 = User.builder().userId(2L).role(UserRole.APPROVED_TUTOR)
+            .userTechStacks(List.of(uts2)).build();
 
         List<User> mockUserList = Arrays.asList(user1,user2);
 
@@ -59,9 +69,19 @@ class UserServiceImplTest {
 
         // then
         TutorResponseDto tutor1 = new TutorResponseDto(
-            user1.getUserId(),null,null,user1.getRole(), user1.getRating(), null);
+            user1.getUserId(),
+            null,
+            null,
+            user1.getRole(),
+            user1.getRating(),
+            List.of(new UserTechStackDto(uts1.getRelationId(), uts1.getTechStack().getTechStack())));
         TutorResponseDto tutor2 = new TutorResponseDto(
-            user2.getUserId(),null,null,user2.getRole(), user2.getRating(),null);
+            user2.getUserId(),
+            null,
+            null,
+            user2.getRole(),
+            user2.getRating(),
+            List.of(new UserTechStackDto(uts2.getRelationId(), uts2.getTechStack().getTechStack())));
 
         assertThat(result)
             .isNotNull()

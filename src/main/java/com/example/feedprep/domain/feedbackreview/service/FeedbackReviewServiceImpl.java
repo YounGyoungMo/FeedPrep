@@ -9,10 +9,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.feedprep.common.exception.base.CustomException;
 import com.example.feedprep.common.exception.enums.ErrorCode;
+import com.example.feedprep.common.s3.service.S3ServiceImpl;
 import com.example.feedprep.domain.feedback.entity.Feedback;
 import com.example.feedprep.domain.feedback.repository.FeedBackRepository;
 import com.example.feedprep.domain.feedbackreview.dto.FeedbackReviewListDto;
@@ -36,7 +38,7 @@ import com.example.feedprep.domain.user.entity.User;
 import com.example.feedprep.domain.user.enums.UserRole;
 import com.example.feedprep.domain.user.repository.UserRepository;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class FeedbackReviewServiceImpl implements FeedbackReviewService {
@@ -45,7 +47,9 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
     private final UserRepository userRepository;
 	private final RedissonClient redissonClient;
     private final NotificationServiceImpl notificationService;
-	@Autowired
+
+	private static final Logger slackLogger = LoggerFactory.getLogger(S3ServiceImpl.class);
+
 	@Qualifier("ratingTemplate")
 	private final RedisTemplate<String, Double> redisTemplate;
 
@@ -55,6 +59,10 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	@Transactional
 	@Override
 	public FeedbackReviewDetailsDto createReview( Long userId, Long feedbackId, FeedbackReviewRequestDto dto) {
+
+		if(feedBackReviewRepository.existsByFeedbackIdAndUserId(feedbackId, userId)){
+			throw new CustomException(ErrorCode.DUPLICATE_FEEDBACK_REVIEW);
+		}
 		User user = userRepository.findByIdOrElseThrow(userId);
 		if(!user.getRole().equals(UserRole.STUDENT)){
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REQUESTER_ACCESS);
@@ -67,7 +75,7 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 		}
 		FeedbackReview feedbackReview = new FeedbackReview(dto, feedback, user);
 		FeedbackReview saveReview = feedBackReviewRepository.save(feedbackReview);
-		notificationService.sendNotification(user, tutor,102 );
+		notificationService.sendNotification(user, tutor,105 );
 	    return new FeedbackReviewDetailsDto(saveReview);
 	}
 
@@ -116,11 +124,11 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 	}
 
 	@Transactional(readOnly = true)
-	@Scheduled(cron = "0 0 18 * * *")
+	@Scheduled(cron = "0 0 5 * * *")
 	public void updateRatings () {
 		String status = statusTemplate.opsForValue().get("status:updateRatings");
 		if (status != null && status.equals("processing")) {
-			log.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
+			slackLogger.info("[updateRatings] 다른 서버에서 캐싱 중이라 패스합니다.");
 			return; // 락 시도 없이 종료
 		}
 
@@ -150,15 +158,14 @@ public class FeedbackReviewServiceImpl implements FeedbackReviewService {
 						}
 					}
 					statusTemplate.opsForValue().set("status:updateRatings", "done", 10, TimeUnit.MINUTES);
-					log.info("캐시 완료: {} tutors, TTL: {}s", getTutors.size(), TimeUnit.SECONDS);
-					log.info("상태 완료: status:updateRatings = done");
+					slackLogger.info("상태 완료: status:updateRatings = done 캐시 완료: {} tutors, TTL: {}s", getTutors.size(), TimeUnit.SECONDS);
 				}
 			} catch(InterruptedException ex){
-				log.warn("[업데이트 실패] 락 대기 중 인터럽트 발생", ex);
+				slackLogger.warn("[업데이트 실패] 락 대기 중 인터럽트 발생", ex);
 				Thread.currentThread().interrupt(); // 복원
 			}catch (Exception ex) {
 				statusTemplate.opsForValue().set("status:updateRatings", "error", 10, TimeUnit.MINUTES);
-				log.error("[평점 업데이트 실패] 예외 발생", ex);
+				slackLogger.error("[평점 업데이트 실패] 예외 발생", ex);
 			}
 			finally {
 				if(isLocked){

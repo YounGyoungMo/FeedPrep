@@ -1,5 +1,5 @@
 ###피드백 신청
-POST {{distributeHost}}/feedback-requests/student
+POST {{distributeHost}}/feedback-requests
 Authorization: Bearer {{anotherStudentAccessToken}}
 Content-Type: application/json
 
@@ -42,12 +42,12 @@ GET {{distributeHost}}/feedback-requests/tutor?page=0&size=20
 Authorization: Bearer {{tutorAccessToken}}
 
 ###피드백 신청 수락 (튜터)
-PATCH {{distributeHost}}/feedback-requests/1/accept?rejectNumber=1
+PATCH {{distributeHost}}/feedback-requests/1
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
 ###피드백 신청 거절 (튜터)
-PATCH {{distributeHost}}/feedback-requests/2/reject?rejectNumber=1
+PATCH {{distributeHost}}/feedback-requests/2
 Authorization: Bearer {{tutorAccessToken}}
 Content-Type: application/json
 
